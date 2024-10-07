@@ -1,7 +1,5 @@
 bin/
 build/
-notebooks/
-papers/
 notes/
 
 *.o
