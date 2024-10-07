@@ -1,7 +1,8 @@
 #include "ggq.hpp"
 
 template<typename InputClass>
-QuadratureRule<InputClass>::QuadratureRule(InputFunctionType function, InputClass& inputClass, double lowerBoundInput, double upperBoundInput) : 
+QuadratureRule<InputClass>::QuadratureRule(double lowerBoundInput, double upperBoundInput, InputFunctionType function = NULL, 
+InputMethodType methd = NULL, InputClass& inputClass = NULL) : 
 lowerBound(lowerBoundInput), upperBound(upperBoundInput), functionPtr(function), objectRef(inputClass)
 {
 
