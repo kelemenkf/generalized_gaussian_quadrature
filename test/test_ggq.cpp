@@ -48,6 +48,8 @@ BOOST_AUTO_TEST_CASE( TestConstructorValidation ) {
     BOOST_CHECK_NO_THROW(QuadratureRuleFixture<TestClass> quadrature(lowerBound, upperBound, &testFunction));
 
     BOOST_CHECK_NO_THROW(QuadratureRuleFixture<TestClass> quadrature(lowerBound, upperBound, nullptr, &TestClass::testMethod, &testObject));
+
+    BOOST_CHECK_THROW(QuadratureRuleFixture<TestClass> quadrature(lowerBound, upperBound), std::invalid_argument);
 }
 
 

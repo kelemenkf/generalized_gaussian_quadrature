@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <functional>
+#include <iostream>
 
 template <typename InputClass>
 class QuadratureRule
@@ -21,7 +22,8 @@ private:
 
 public:
     QuadratureRule(double lowerBoundInput, double upperBoundInput, InputFunctionType function = nullptr, 
-    InputMethodType mehtod = nullptr, InputClass* inputObject = nullptr)
+    InputMethodType method = nullptr, InputClass* inputObject = nullptr) : lowerBound(lowerBoundInput), upperBound(upperBoundInput),
+    functionPtr(function), methodPtr(method), objectPtr(inputObject)
     {
         validateFunctionExistence();
     };
@@ -39,7 +41,7 @@ private:
 
     void validateFunctionExistence()
     {
-        if (!((functionPtr) || (methodPtr && objectPtr))) 
+        if (functionPtr == nullptr && methodPtr == nullptr && objectPtr == nullptr)
         {
             throw std::invalid_argument("No function was supplied");
         }
