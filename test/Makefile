@@ -116,6 +116,44 @@ depend:
 	cd /Users/kelemenkf/dev/generalized_gaussian_quadrature && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
+# Convenience name for target.
+test/CMakeFiles/test_ggq.dir/rule:
+	cd /Users/kelemenkf/dev/generalized_gaussian_quadrature && $(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test/CMakeFiles/test_ggq.dir/rule
+.PHONY : test/CMakeFiles/test_ggq.dir/rule
+
+# Convenience name for target.
+test_ggq: test/CMakeFiles/test_ggq.dir/rule
+.PHONY : test_ggq
+
+# fast build rule for target.
+test_ggq/fast:
+	cd /Users/kelemenkf/dev/generalized_gaussian_quadrature && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ggq.dir/build.make test/CMakeFiles/test_ggq.dir/build
+.PHONY : test_ggq/fast
+
+test_ggq.o: test_ggq.cpp.o
+.PHONY : test_ggq.o
+
+# target to build an object file
+test_ggq.cpp.o:
+	cd /Users/kelemenkf/dev/generalized_gaussian_quadrature && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ggq.dir/build.make test/CMakeFiles/test_ggq.dir/test_ggq.cpp.o
+.PHONY : test_ggq.cpp.o
+
+test_ggq.i: test_ggq.cpp.i
+.PHONY : test_ggq.i
+
+# target to preprocess a source file
+test_ggq.cpp.i:
+	cd /Users/kelemenkf/dev/generalized_gaussian_quadrature && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ggq.dir/build.make test/CMakeFiles/test_ggq.dir/test_ggq.cpp.i
+.PHONY : test_ggq.cpp.i
+
+test_ggq.s: test_ggq.cpp.s
+.PHONY : test_ggq.s
+
+# target to generate assembly for a file
+test_ggq.cpp.s:
+	cd /Users/kelemenkf/dev/generalized_gaussian_quadrature && $(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ggq.dir/build.make test/CMakeFiles/test_ggq.dir/test_ggq.cpp.s
+.PHONY : test_ggq.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -124,6 +162,10 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... test_ggq"
+	@echo "... test_ggq.o"
+	@echo "... test_ggq.i"
+	@echo "... test_ggq.s"
 .PHONY : help
 
 

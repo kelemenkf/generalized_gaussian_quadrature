@@ -116,6 +116,32 @@ depend:
 	$(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
+#=============================================================================
+# Target rules for targets named ggq_library
+
+# Build rule for target.
+ggq_library: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ggq_library
+.PHONY : ggq_library
+
+# fast build rule for target.
+ggq_library/fast:
+	$(MAKE) $(MAKESILENT) -f src/CMakeFiles/ggq_library.dir/build.make src/CMakeFiles/ggq_library.dir/build
+.PHONY : ggq_library/fast
+
+#=============================================================================
+# Target rules for targets named test_ggq
+
+# Build rule for target.
+test_ggq: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_ggq
+.PHONY : test_ggq
+
+# fast build rule for target.
+test_ggq/fast:
+	$(MAKE) $(MAKESILENT) -f test/CMakeFiles/test_ggq.dir/build.make test/CMakeFiles/test_ggq.dir/build
+.PHONY : test_ggq/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -124,6 +150,8 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... ggq_library"
+	@echo "... test_ggq"
 .PHONY : help
 
 

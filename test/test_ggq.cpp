@@ -22,24 +22,17 @@ double testFunction(const std::vector<double>& input)
 }
 
 
-template<typename InputClass = double>
+template<typename InputClass>
 struct QuadratureRuleFixture: public QuadratureRule<InputClass>
 {
-    QuadratureRuleFixture(double lowerBoundInput, double upperBoundInput, InputTypeFunction function = NULL, 
-    InputTypeMethod method = NULL, InputClass& inputObject = NULL) : QuadratureRule(lowerBoundInput, upperBoundInput, function, method, 
+    using InputMethodType = double (InputClass::*)(const std::vector<double>&);
+    using InputFunctionType = double (*)(const std::vector<double>&);
+
+    QuadratureRuleFixture(double lowerBoundInput, double upperBoundInput, InputFunctionType function = nullptr, 
+    InputMethodType method = nullptr, InputClass* inputObject = nullptr) : QuadratureRule<InputClass>(lowerBoundInput, upperBoundInput, function, method, 
     inputObject) {};
 
     ~QuadratureRuleFixture() {};
-
-    InputFunctionType* testGetFunctionPointer()
-    {
-        return getFunctionPointer();
-    }
-
-    InputMethodType* testGetMethodPointer()
-    {
-        return getMethodPointer();
-    }
 };
 
 
@@ -50,7 +43,11 @@ BOOST_AUTO_TEST_CASE( TestConstructorValidation ) {
     double lowerBound = 10.5;
     double upperBound = 20.4;
 
-    QuadratureRuleFixture quadrature(lowerBound, upperBound);
+    TestClass testObject;
+
+    BOOST_CHECK_NO_THROW(QuadratureRuleFixture<TestClass> quadrature(lowerBound, upperBound, &testFunction));
+
+    BOOST_CHECK_NO_THROW(QuadratureRuleFixture<TestClass> quadrature(lowerBound, upperBound, nullptr, &TestClass::testMethod, &testObject));
 }
 
 

@@ -1,6 +1,0 @@
-/Users/kelemenkf/dev/generalized_gaussian_quadrature/CMakeFiles/edit_cache.dir
-/Users/kelemenkf/dev/generalized_gaussian_quadrature/CMakeFiles/rebuild_cache.dir
-/Users/kelemenkf/dev/generalized_gaussian_quadrature/src/CMakeFiles/edit_cache.dir
-/Users/kelemenkf/dev/generalized_gaussian_quadrature/src/CMakeFiles/rebuild_cache.dir
-/Users/kelemenkf/dev/generalized_gaussian_quadrature/test/CMakeFiles/edit_cache.dir
-/Users/kelemenkf/dev/generalized_gaussian_quadrature/test/CMakeFiles/rebuild_cache.dir

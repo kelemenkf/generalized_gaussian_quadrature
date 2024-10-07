@@ -1,6 +1,10 @@
-#include <vector>
+#ifndef GGQ_HPP
+#define GGQ_HPP
 
-template <typename InputClass = double>
+#include <vector>
+#include <functional>
+
+template <typename InputClass>
 class QuadratureRule
 {
 private:
@@ -8,35 +12,38 @@ private:
     double upperBound;
 
     using InputMethodType = double (InputClass::*)(const std::vector<double>&);
+    InputClass* objectPtr;
     InputMethodType methodPtr;
-    InputClass& objectRef;
 
-    using InputFunctionType = double ()(const std::vector<double>);
+    using InputFunctionType = double(*)(const std::vector<double>&);
     InputFunctionType functionPtr;
 
 
 public:
-    QuadratureRule(double lowerBoundInput, double upperBoundInput, InputFunctionType function = NULL, 
-    InputMethodType mehtod = NULL, InputClass& inputObject = NULL);
-
-    ~QuadratureRule();
-
-
-protected: 
-    InputFunctionType* getFunctionPointer()
+    QuadratureRule(double lowerBoundInput, double upperBoundInput, InputFunctionType function = nullptr, 
+    InputMethodType mehtod = nullptr, InputClass* inputObject = nullptr)
     {
-        return functionPtr;
-    }
+        validateFunctionExistence();
+    };
 
-
-    InputMethodType* getMethodPointer()
+    ~QuadratureRule() 
     {
-        return methodPtr;
-    }
+
+    };
 
 
 private: 
     static double validateLowerBound(double input);
 
     static double validateUpperBound(double input);
+
+    void validateFunctionExistence()
+    {
+        if (!((functionPtr) || (methodPtr && objectPtr))) 
+        {
+            throw std::invalid_argument("No function was supplied");
+        }
+    };
 };
+
+#endif
