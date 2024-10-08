@@ -23,12 +23,7 @@ public:
     : QuadratureRule<InputClass>(lowerBoundInput, upperBoundInput, inputFunctionPtr, inputMethodPtr, objectPtr), 
     k(validateK(kInput)), precision(validatePrecision(precisionInput)) {
         calculateMesh();
-
-        for (auto element = legendreMesh.begin(); element != legendreMesh.end(); ++element)
-        {
-            std::cout << *element << " ";
-        }
-        std::cout << std::endl;
+        transformMesh();
     };
 
     ~Discretizer() {};
@@ -44,7 +39,13 @@ private:
         std::transform(positiveZeros.rbegin(), positiveZeros.rend(), legendreMesh.begin(), [](double value){ return -value; });
     }
 
-    void transformMesh();
+    void transformMesh()
+    {
+        std::transform(legendreMesh.begin(), legendreMesh.end(), legendreMesh.begin(), [this](double value)
+        { 
+            return ((this->upperBound - this->lowerBound) * value + (this->upperBound + this->lowerBound)) / 2; 
+        });
+    }
 
     static int validateK(int inputK)
     {

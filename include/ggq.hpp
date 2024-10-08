@@ -10,7 +10,7 @@
 template <typename InputClass>
 class QuadratureRule
 {
-private:
+protected:
     double lowerBound;
     double upperBound;
 

@@ -54,10 +54,32 @@ BOOST_AUTO_TEST_CASE( TestDiscretizerValidation ) {
 
 
 BOOST_AUTO_TEST_CASE( TestLegendreMeshEven ) {  
+    double lowerBound = -1;
+    double upperBound = 1;
+    int k = 1;
+    std::vector<double> roots = {-0.57735, 0.57735};
+
+    DiscretizerFixture<TestClass> discretizer(k, 0.01, lowerBound, upperBound, testFunction, nullptr, nullptr);
+    std::vector<double> estimatedRoots = discretizer.testGetLegendreMesh();
+
+    BOOST_CHECK_EQUAL(estimatedRoots.size(), 2*k);
+
+    for (size_t i = 0; i < estimatedRoots.size(); ++i)
+    {
+        BOOST_CHECK_CLOSE_FRACTION(estimatedRoots[i], roots[i], 0.0001);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE( TestLegendreMeshTransformed ) {  
     double lowerBound = 1;
     double upperBound = 2;
     int k = 1;
     std::vector<double> roots = {-0.57735, 0.57735};
+    std::transform(roots.begin(), roots.end(), roots.begin(), [&lowerBound, &upperBound](double value)
+    { 
+        return ((upperBound - lowerBound) * value + (upperBound + lowerBound)) / 2;
+    });
 
     DiscretizerFixture<TestClass> discretizer(k, 0.01, lowerBound, upperBound, testFunction, nullptr, nullptr);
     std::vector<double> estimatedRoots = discretizer.testGetLegendreMesh();
