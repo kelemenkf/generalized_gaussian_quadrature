@@ -4,6 +4,8 @@
 #include <vector>
 #include <functional>
 #include <iostream>
+#include <algorithm>
+
 
 template <typename InputClass>
 class QuadratureRule
