@@ -35,10 +35,6 @@ public:
 
 
 private: 
-    static double validateLowerBound(double input);
-
-    static double validateUpperBound(double input);
-
     void validateFunctionExistence()
     {
         if (functionPtr == nullptr && methodPtr == nullptr && objectPtr == nullptr)
