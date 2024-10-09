@@ -17,6 +17,7 @@ private:
     double precision;
     std::vector<double> legendreMesh;
     std::vector<double> transformedMesh;
+    matrix<double> legendreMatrix;
 
     using InputMethodType = double (InputClass::*)(const std::vector<double>&);
     using InputFunctionType = double(*)(const std::vector<double>&);
@@ -29,15 +30,30 @@ public:
     k(validateK(kInput)), precision(validatePrecision(precisionInput)) {
         calculateMesh();
         transformMesh();
+        calculateLegendrePolynomials(legendreMatrix);
     };
 
     ~Discretizer() {};
 
 
-private:     
-    inline double transformNode(double value) const
+private:    
+    void calculateLegendrePolynomials(matrix<double>& inputMatrix)
     {
-        return ((this->upperBound - this->lowerBound) * value + (this->upperBound + this->lowerBound)) / 2;
+        inputMatrix.resize(2*k, 2*k);
+        for (size_t i = 0; i < 2*k; ++i)
+        {
+            for (size_t j = 0; j < legendreMesh.size(); ++j)
+            {
+                if (i == 0)
+                {
+                    inputMatrix(i, j) = 1;
+                }
+                else
+                {
+                    inputMatrix(i, j) = transformNode((boost::math::legendre_p(i, legendreMesh[j])));
+                }
+            }
+        }
     }
 
 
@@ -87,18 +103,9 @@ private:
 
 
 protected: 
-    matrix<double> calculateLegendrePolynomials()
+    inline double transformNode(double value) const
     {
-        matrix<double> legendreMatrix(2*k, 2*k);
-        for (size_t i = 0; i < 2*k; ++i)
-        {
-            for (size_t j = 0; j < legendreMesh.size(); ++j)
-            {
-                legendreMatrix(i, j) = transformNode((boost::math::legendre_p(i, legendreMesh[j])));
-            }
-        }
-
-        return legendreMatrix;
+        return ((this->upperBound - this->lowerBound) * value + (this->upperBound + this->lowerBound)) / 2;
     }
 
 
@@ -111,6 +118,12 @@ protected:
     std::vector<double> getTransformedMesh() const
     {
         return transformedMesh;
+    }
+
+
+    matrix<double> getLegendreMatrix()
+    {
+        return legendreMatrix;
     }
 };
 
