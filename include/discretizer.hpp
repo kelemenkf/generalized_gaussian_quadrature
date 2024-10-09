@@ -2,7 +2,11 @@
 #define DISCRETIZER_HPP
 
 #include <boost/math/special_functions/legendre.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/io.hpp>
+#include <cmath>
 #include "ggq.hpp"
+using namespace boost::numeric::ublas;
 
 
 template<typename InputClass>
@@ -12,6 +16,7 @@ private:
     int k;
     double precision;
     std::vector<double> legendreMesh;
+    std::vector<double> transformedMesh;
 
     using InputMethodType = double (InputClass::*)(const std::vector<double>&);
     using InputFunctionType = double(*)(const std::vector<double>&);
@@ -29,7 +34,13 @@ public:
     ~Discretizer() {};
 
 
-private: 
+private:     
+    inline double transformNode(double value) const
+    {
+        return ((this->upperBound - this->lowerBound) * value + (this->upperBound + this->lowerBound)) / 2;
+    }
+
+
     void calculateMesh()
     {
         legendreMesh.resize(2*k);
@@ -39,13 +50,16 @@ private:
         std::transform(positiveZeros.rbegin(), positiveZeros.rend(), legendreMesh.begin(), [](double value){ return -value; });
     }
 
+    
     void transformMesh()
     {
-        std::transform(legendreMesh.begin(), legendreMesh.end(), legendreMesh.begin(), [this](double value)
+        transformedMesh.resize(2*k);
+        std::transform(legendreMesh.begin(), legendreMesh.end(), transformedMesh.begin(), [this](double value)
         { 
-            return ((this->upperBound - this->lowerBound) * value + (this->upperBound + this->lowerBound)) / 2; 
+            return transformNode(value); 
         });
     }
+
 
     static int validateK(int inputK)
     {
@@ -73,9 +87,30 @@ private:
 
 
 protected: 
+    matrix<double> calculateLegendrePolynomials()
+    {
+        matrix<double> legendreMatrix(2*k, 2*k);
+        for (size_t i = 0; i < 2*k; ++i)
+        {
+            for (size_t j = 0; j < legendreMesh.size(); ++j)
+            {
+                legendreMatrix(i, j) = transformNode((boost::math::legendre_p(i, legendreMesh[j])));
+            }
+        }
+
+        return legendreMatrix;
+    }
+
+
     std::vector<double> getLegendreMesh() const
     {
         return legendreMesh;
+    }
+
+    
+    std::vector<double> getTransformedMesh() const
+    {
+        return transformedMesh;
     }
 };
 

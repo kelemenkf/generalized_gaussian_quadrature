@@ -34,9 +34,19 @@ struct DiscretizerFixture: public Discretizer<InputClass>
 
     ~DiscretizerFixture() {};
 
+    matrix<double> testCalculateLegendrePolynomials()
+    {
+        return this->calculateLegendrePolynomials();
+    }
+
     std::vector<double> testGetLegendreMesh() const
     {
         return this->getLegendreMesh();
+    }
+
+    std::vector<double> testGetTransformedMesh() const
+    {
+        return this->getTransformedMesh();
     }
 };
 
@@ -82,7 +92,7 @@ BOOST_AUTO_TEST_CASE( TestLegendreMeshTransformed ) {
     });
 
     DiscretizerFixture<TestClass> discretizer(k, 0.01, lowerBound, upperBound, testFunction, nullptr, nullptr);
-    std::vector<double> estimatedRoots = discretizer.testGetLegendreMesh();
+    std::vector<double> estimatedRoots = discretizer.testGetTransformedMesh();
 
     BOOST_CHECK_EQUAL(estimatedRoots.size(), 2*k);
 
@@ -90,6 +100,20 @@ BOOST_AUTO_TEST_CASE( TestLegendreMeshTransformed ) {
     {
         BOOST_CHECK_CLOSE_FRACTION(estimatedRoots[i], roots[i], 0.0001);
     }
+}
+
+
+BOOST_AUTO_TEST_CASE( TestLegendreMatrix ) {
+    double lowerBound = 1;
+    double upperBound = 2;
+    int k = 1;
+    matrix<double> legendreMatrix;
+
+    DiscretizerFixture<TestClass> discretizer(k, 0.01, lowerBound, upperBound, testFunction, nullptr, nullptr);
+    legendreMatrix = discretizer.testCalculateLegendrePolynomials();
+
+    BOOST_CHECK_EQUAL(legendreMatrix.size1(), 2*k);
+    BOOST_CHECK_EQUAL(legendreMatrix.size2(), 2*k);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
