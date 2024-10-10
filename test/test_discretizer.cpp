@@ -7,26 +7,24 @@
 class TestClass
 {
 public:
-    double testMethod(const std::vector<double>& input)
+    double testMethod(const double& x)
     {
-        std::cout << "Test method ran" << std::endl;
-        return input[0];
+        return (5*std::pow(x,3) + 3*x) / 2;
     }
 };
 
 
-double testFunction(const std::vector<double>& input)
+double testFunction(const double& x)
 {
-    std::cout << "Test function ran" << std::endl;
-    return input[0];
+    return (5*std::pow(x,3) + 3*x) / 2;
 }
 
 
 template<typename InputClass>
 struct DiscretizerFixture: public Discretizer<InputClass>
 {
-    using InputMethodType = double (InputClass::*)(const std::vector<double>&);
-    using InputFunctionType = double(*)(const std::vector<double>&);
+    using InputMethodType = double (InputClass::*)(const double&);
+    using InputFunctionType = double(*)(const double&);
 
     DiscretizerFixture(int kInput, double precisionInput, double lowerBoundInput, double upperBoundInput, InputFunctionType inputFunctionPtr = nullptr, 
     InputMethodType inputMethodPtr = nullptr, InputClass* objectPtr = nullptr) 
@@ -49,7 +47,7 @@ struct DiscretizerFixture: public Discretizer<InputClass>
         return this->getLegendreMatrix();
     }
 
-    inline double transformNode(double value) const
+    inline double testTransformNode(double value) const
     {
         return this->transformNode(value);
     }
@@ -103,7 +101,7 @@ BOOST_AUTO_TEST_CASE( TestLegendreMeshTransformed ) {
 
     for (size_t i = 0; i < estimatedRoots.size(); ++i)
     {
-        BOOST_CHECK_CLOSE_FRACTION(estimatedRoots[i], roots[i], 0.0001);
+        BOOST_CHECK_CLOSE_FRACTION(estimatedRoots[i], roots[i], 1e-6);
     }
 }
 
@@ -120,8 +118,8 @@ BOOST_AUTO_TEST_CASE( TestLegendreMatrix ) {
 
     expectedMatrix(0, 0) = 1;
     expectedMatrix(0, 1) = 1;
-    expectedMatrix(1, 0) = -0.57735;
-    expectedMatrix(1, 1) = 0.57735;
+    expectedMatrix(1, 0) = discretizer.testTransformNode(-0.57735);
+    expectedMatrix(1, 1) = discretizer.testTransformNode(0.57735);
 
 
     BOOST_CHECK_EQUAL(legendreMatrix.size1(), 2*k);
@@ -131,7 +129,7 @@ BOOST_AUTO_TEST_CASE( TestLegendreMatrix ) {
     {
         for (size_t j = 0; j < 2*k; ++j)
         {
-            BOOST_CHECK_EQUAL(legendreMatrix(i,j), expectedMatrix(i,j));
+            BOOST_CHECK_CLOSE_FRACTION(legendreMatrix(i,j), expectedMatrix(i,j), 1e-6);
         }
     }
 }

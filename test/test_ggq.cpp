@@ -7,26 +7,24 @@
 class TestClass
 {
 public:
-    double testMethod(const std::vector<double>& input)
+    double testMethod(const double& x)
     {
-        std::cout << "Test method ran" << std::endl;
-        return input[0];
+        return x;
     }
 };
 
 
-double testFunction(const std::vector<double>& input)
+double testFunction(const double& x)
 {
-    std::cout << "Test function ran" << std::endl;
-    return input[0];
+    return x;
 }
 
 
 template<typename InputClass>
 struct QuadratureRuleFixture: public QuadratureRule<InputClass>
 {
-    using InputMethodType = double (InputClass::*)(const std::vector<double>&);
-    using InputFunctionType = double (*)(const std::vector<double>&);
+    using InputMethodType = double (InputClass::*)(const double&);
+    using InputFunctionType = double (*)(const double&);
 
     QuadratureRuleFixture(double lowerBoundInput, double upperBoundInput, InputFunctionType function = nullptr, 
     InputMethodType method = nullptr, InputClass* inputObject = nullptr) : QuadratureRule<InputClass>(lowerBoundInput, upperBoundInput, function, method, 

@@ -14,11 +14,11 @@ protected:
     double lowerBound;
     double upperBound;
 
-    using InputMethodType = double (InputClass::*)(const std::vector<double>&);
+    using InputMethodType = double (InputClass::*)(const double&);
     InputClass* objectPtr;
     InputMethodType methodPtr;
 
-    using InputFunctionType = double(*)(const std::vector<double>&);
+    using InputFunctionType = double(*)(const double&);
     InputFunctionType functionPtr;
 
 

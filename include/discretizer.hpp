@@ -18,9 +18,11 @@ private:
     std::vector<double> legendreMesh;
     std::vector<double> transformedMesh;
     matrix<double> legendreMatrix;
+    std::vector<double> lagrangeVector;
+    std::vector<double> alphaVector;
 
-    using InputMethodType = double (InputClass::*)(const std::vector<double>&);
-    using InputFunctionType = double(*)(const std::vector<double>&);
+    using InputMethodType = double (InputClass::*)(const double&);
+    using InputFunctionType = double(*)(const double&);
 
 
 public:
@@ -35,8 +37,16 @@ public:
 
     ~Discretizer() {};
 
+    evaluateFunctionOnTranformedMesh()
+    {
+        lagrangeVector.resize(legendreMesh.size());
+        std::transform(lagrangVector.begin(), lagrangeVector.end(), lagrangeVector.begin(), [this](double value){
+            return this->functionPtr(value);
+        })
+    }
 
-private:    
+
+private: 
     void calculateLegendrePolynomials(matrix<double>& inputMatrix)
     {
         inputMatrix.resize(2*k, 2*k);
