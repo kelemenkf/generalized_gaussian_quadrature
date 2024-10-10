@@ -157,4 +157,22 @@ BOOST_AUTO_TEST_CASE( TestLagrangeVectorValues ) {
 }
 
 
+BOOST_AUTO_TEST_CASE( TestLagrangeVectorValuesWithPassedObject ) {
+    double lowerBound = -1;
+    double upperBound = 1;
+    int k = 1;
+    TestClass* testObjectPtr;
+
+    DiscretizerFixture<TestClass> discretizer(k, 0.01, lowerBound, upperBound, nullptr, &TestClass::testMethod, testObjectPtr);
+    std::vector<double> roots = {-0.57735, 0.57735};
+    std::vector<double> expectedInterpolationPoints = {testFunction(roots[0]), testFunction(roots[1])};
+    std::vector<double> interpolationPoints = discretizer.testGetLagrangeVector();
+
+    for (size_t i = 0; i < interpolationPoints.size(); ++i)
+    {
+        BOOST_CHECK_CLOSE_FRACTION(interpolationPoints[i], expectedInterpolationPoints[i], 1e-6);
+    }
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()
