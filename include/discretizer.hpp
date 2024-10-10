@@ -3,6 +3,7 @@
 
 #include <boost/math/special_functions/legendre.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/lu.hpp>
 #include <boost/numeric/ublas/io.hpp>
 #include <cmath>
 #include "ggq.hpp"
@@ -37,16 +38,43 @@ public:
 
     ~Discretizer() {};
 
-    evaluateFunctionOnTranformedMesh()
+    std::vector<double> discretizationRoutine()
+    {
+        evaluateFunctionOnTransformedMesh();
+        //After a single funciton is discretized the object should clear these, so this function can be called again, or recursivley
+        // lagrangeVector.clear();
+        // alphaVector.clear();
+    }
+
+private: 
+    void evaluateFunctionOnTransformedMesh()
     {
         lagrangeVector.resize(legendreMesh.size());
-        std::transform(lagrangVector.begin(), lagrangeVector.end(), lagrangeVector.begin(), [this](double value){
+        std::transform(lagrangeVector.begin(), lagrangeVector.end(), lagrangeVector.begin(), [this](double value){
             return this->functionPtr(value);
-        })
+        });
     }
 
 
-private: 
+    template<typename T>
+    bool invertMatrix(const matrix<T>& input, matrix<T>& inverse) {
+        matrix<T> copyOfInput(input);
+        
+        permutation_matrix<std::size_t> pm(copyOfInput.size1());
+
+        int res = lu_factorize(copyOfInput, pm);
+        if (res != 0) {
+            return false;  
+        }
+
+        inverse.assign(identity_matrix<T>(copyOfInput.size1()));
+
+        lu_substitute(copyOfInput, pm, inverse);
+
+        return true;
+    }
+
+
     void calculateLegendrePolynomials(matrix<double>& inputMatrix)
     {
         inputMatrix.resize(2*k, 2*k);
@@ -131,9 +159,15 @@ protected:
     }
 
 
-    matrix<double> getLegendreMatrix()
+    matrix<double> getLegendreMatrix() const
     {
         return legendreMatrix;
+    }
+
+
+    std::vector<double> getLagrangeVector() const
+    {
+        return lagrangeVector;
     }
 };
 

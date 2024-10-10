@@ -42,6 +42,11 @@ struct DiscretizerFixture: public Discretizer<InputClass>
         return this->getTransformedMesh();
     }
 
+    std::vector<double> testGetLagrangeVector() const
+    {
+        return this->getLagrangeVector();
+    }
+
     matrix<double> testGetLegendreMatrix()
     {
         return this->getLegendreMatrix();
@@ -131,6 +136,23 @@ BOOST_AUTO_TEST_CASE( TestLegendreMatrix ) {
         {
             BOOST_CHECK_CLOSE_FRACTION(legendreMatrix(i,j), expectedMatrix(i,j), 1e-6);
         }
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE( TestLagrangeVectorValues ) {
+    double lowerBound = -1;
+    double upperBound = 1;
+    int k = 1;
+
+    DiscretizerFixture<TestClass> discretizer(k, 0.01, lowerBound, upperBound, testFunction, nullptr, nullptr);
+    std::vector<double> roots = {-0.57735, 0.57735};
+    std::vector<double> expectedInterpolationPoints = {testFunction(roots[0]), testFunction(roots[1])};
+    std::vector<double> interpolationPoints = discretizer.testGetLagrangeVector();
+
+    for (size_t i = 0; i < interpolationPoints.size(); ++i)
+    {
+        BOOST_CHECK_CLOSE_FRACTION(interpolationPoints[i], expectedInterpolationPoints[i], 1e-6);
     }
 }
 
