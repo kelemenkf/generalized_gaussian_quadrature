@@ -53,6 +53,15 @@ public:
     }
 
 private: 
+    bool evaluateMeasure()
+    {
+        if (measure < precision)
+            return true;
+        else 
+            return false;
+    }
+    
+
     void calculateSquaredAlphas()
     {
         for (size_t i = k; i <= 2*k - 1; ++i)
