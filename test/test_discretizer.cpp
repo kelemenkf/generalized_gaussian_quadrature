@@ -9,14 +9,14 @@ class TestClass
 public:
     double testMethod(const double& x)
     {
-        return (5*std::pow(x,3) + 3*x) / 2;
+        return (5*std::pow(x,3) - 3*x) / 2;
     }
 };
 
 
 double testFunction(const double& x)
 {
-    return (5*std::pow(x,3) + 3*x) / 2;
+    return (5*std::pow(x,3) - 3*x) / 2;
 }
 
 
@@ -47,11 +47,6 @@ struct DiscretizerFixture: public Discretizer<InputClass>
         return this->getTransformedMesh();
     }
 
-    std::vector<double> testGetLagrangeVector() const
-    {
-        return this->getLagrangeVector();
-    }
-
     matrix<double> testGetLegendreMatrix()
     {
         return this->getLegendreMatrix();
@@ -60,6 +55,21 @@ struct DiscretizerFixture: public Discretizer<InputClass>
     matrix<double> testGetInvertedLegendreMatrix()
     {
         return this->getInvertedLegendreMatrix();
+    }
+
+    std::vector<double> testGetLagrangeVector() const
+    {
+        return this->getLagrangeVector();
+    }
+
+    vector<double> testGetAlphaVector() const
+    {
+        return this->getAlphaVector();
+    }
+
+    double testGetMeasure() const
+    {
+        return this->getMeasure();
     }
 
     inline double testTransformNode(double value) const
@@ -132,8 +142,8 @@ BOOST_AUTO_TEST_CASE( TestLegendreMatrix ) {
     legendreMatrix = discretizer.testGetLegendreMatrix();
 
     expectedMatrix(0, 0) = 1;
-    expectedMatrix(0, 1) = 1;
-    expectedMatrix(1, 0) = discretizer.testTransformNode(-0.57735);
+    expectedMatrix(1, 0) = 1;
+    expectedMatrix(0, 1) = discretizer.testTransformNode(-0.57735);
     expectedMatrix(1, 1) = discretizer.testTransformNode(0.57735);
 
 
@@ -242,9 +252,39 @@ BOOST_AUTO_TEST_CASE( TestMatrixInversion ) {
 BOOST_AUTO_TEST_CASE( TestAlphaVectorSolution ) {
     double lowerBound = -1;
     double upperBound = 1;
+    int k = 2;
+    DiscretizerFixture<TestClass> discretizer(k, 0.01, lowerBound, upperBound, testFunction, nullptr, nullptr);
+
+    discretizer.discretizationRoutine();
+
+    vector<double> alphaVector = discretizer.testGetAlphaVector();
+
+    BOOST_CHECK_EQUAL(alphaVector.size(), 2*k);
+
+    std::vector<double> expectedAlphaVector = {0, 0, 0, 1};
+
+    for (size_t i = 0; i < alphaVector.size(); ++i)
+    {
+        if (expectedAlphaVector[i] == 0)
+            BOOST_CHECK_SMALL(alphaVector[i], 1e-10);
+        else
+            BOOST_CHECK_CLOSE_FRACTION(alphaVector[i], 1, 1e-10);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE( TestMeasureCalculation ) {
+    double lowerBound = -1;
+    double upperBound = 1;
     int k = 30;
     DiscretizerFixture<TestClass> discretizer(k, 0.01, lowerBound, upperBound, testFunction, nullptr, nullptr);
 
     discretizer.discretizationRoutine();
+
+    double measure = discretizer.testGetMeasure();
+
+    BOOST_CHECK_GT(measure, 0);
 }
+
+
 BOOST_AUTO_TEST_SUITE_END()

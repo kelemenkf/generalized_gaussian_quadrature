@@ -1,6 +1,7 @@
 bin/
 build/
 notes/
+notebooks/
 
 *.o
 *.obj

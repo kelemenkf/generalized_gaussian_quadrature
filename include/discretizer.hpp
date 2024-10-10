@@ -23,6 +23,7 @@ private:
     matrix<double> invertedLegendreMatrix;
     std::vector<double> lagrangeVector;
     vector<double> alphaVector;
+    double measure;
 
     using InputMethodType = double (InputClass::*)(const double&);
     using InputFunctionType = double(*)(const double&);
@@ -45,12 +46,21 @@ public:
     {
         evaluateFunctionOnTransformedMesh();
         calculateAlphaCoefficients();
+        calculateSquaredAlphas();
         //After a single funciton is discretized the object should clear these, so this function can be called again, or recursivley
         // lagrangeVector.clear();
         // alphaVector.clear();
     }
 
 private: 
+    void calculateSquaredAlphas()
+    {
+        for (size_t i = k; i <= 2*k - 1; ++i)
+        {
+            measure += alphaVector[i] * alphaVector[i];
+        }
+    }
+
     void calculateAlphaCoefficients()
     {
         vector<double> lagrangeVectorUblas;
@@ -66,7 +76,7 @@ private:
     void evaluateFunctionOnTransformedMesh()
     {
         lagrangeVector.resize(legendreMesh.size());
-        std::transform(legendreMesh.begin(), legendreMesh.end(), lagrangeVector.begin(), [this](double value){
+        std::transform(transformedMesh.begin(), transformedMesh.end(), lagrangeVector.begin(), [this](double value){
             if (this->functionPtr)
                 return this->functionPtr(value);
             else
@@ -98,14 +108,14 @@ private:
         for (size_t i = 0; i < 2*k; ++i)
         {
             for (size_t j = 0; j < legendreMesh.size(); ++j)
-            {
-                if (i == 0)
+            {  
+                if (j == 0)
                 {
                     inputMatrix(i, j) = 1;
                 }
                 else
                 {
-                    inputMatrix(i, j) = transformNode((boost::math::legendre_p(i, legendreMesh[j])));
+                    inputMatrix(i, j) = transformNode((boost::math::legendre_p(j, legendreMesh[i])));
                 }
             }
         }
@@ -191,6 +201,17 @@ protected:
     std::vector<double> getLagrangeVector() const
     {
         return lagrangeVector;
+    }
+
+
+    vector<double> getAlphaVector() const
+    {
+        return alphaVector;
+    }
+
+    double getMeasure() const
+    {
+        return measure;
     }
 };
 
