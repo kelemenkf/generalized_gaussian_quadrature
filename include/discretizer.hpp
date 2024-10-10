@@ -5,6 +5,7 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/lu.hpp>
 #include <boost/numeric/ublas/io.hpp>
+#include <boost/numeric/ublas/operation.hpp>
 #include <cmath>
 #include "ggq.hpp"
 using namespace boost::numeric::ublas;
@@ -21,7 +22,7 @@ private:
     matrix<double> legendreMatrix;
     matrix<double> invertedLegendreMatrix;
     std::vector<double> lagrangeVector;
-    std::vector<double> alphaVector;
+    vector<double> alphaVector;
 
     using InputMethodType = double (InputClass::*)(const double&);
     using InputFunctionType = double(*)(const double&);
@@ -40,20 +41,36 @@ public:
 
     ~Discretizer() {};
 
-    std::vector<double> discretizationRoutine()
+    void discretizationRoutine()
     {
         evaluateFunctionOnTransformedMesh();
+        calculateAlphaCoefficients();
         //After a single funciton is discretized the object should clear these, so this function can be called again, or recursivley
         // lagrangeVector.clear();
         // alphaVector.clear();
     }
 
 private: 
+    void calculateAlphaCoefficients()
+    {
+        vector<double> lagrangeVectorUblas;
+        lagrangeVectorUblas.resize(lagrangeVector.size());
+        for (size_t i = 0; i < lagrangeVector.size(); ++i)
+        {
+            lagrangeVectorUblas(i) = lagrangeVector[i];
+        }
+        alphaVector = prod(invertedLegendreMatrix, lagrangeVectorUblas);
+    }
+
+
     void evaluateFunctionOnTransformedMesh()
     {
         lagrangeVector.resize(legendreMesh.size());
-        std::transform(lagrangeVector.begin(), lagrangeVector.end(), lagrangeVector.begin(), [this](double value){
-            return this->functionPtr(value);
+        std::transform(legendreMesh.begin(), legendreMesh.end(), lagrangeVector.begin(), [this](double value){
+            if (this->functionPtr)
+                return this->functionPtr(value);
+            else
+                return this->methodCaller(value);
         });
     }
 

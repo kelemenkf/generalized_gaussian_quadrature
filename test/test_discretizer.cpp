@@ -32,6 +32,11 @@ struct DiscretizerFixture: public Discretizer<InputClass>
 
     ~DiscretizerFixture() {};
 
+    void testDiscretizationRoutione() 
+    {
+        this->discretizationRoutine();
+    }
+
     std::vector<double> testGetLegendreMesh() const
     {
         return this->getLegendreMesh();
@@ -153,7 +158,10 @@ BOOST_AUTO_TEST_CASE( TestLagrangeVectorValues ) {
     DiscretizerFixture<TestClass> discretizer(k, 0.01, lowerBound, upperBound, testFunction, nullptr, nullptr);
     std::vector<double> roots = {-0.57735, 0.57735};
     std::vector<double> expectedInterpolationPoints = {testFunction(roots[0]), testFunction(roots[1])};
+    discretizer.testDiscretizationRoutione();
     std::vector<double> interpolationPoints = discretizer.testGetLagrangeVector();
+
+    BOOST_CHECK_EQUAL(interpolationPoints.size(), 2*k);
 
     for (size_t i = 0; i < interpolationPoints.size(); ++i)
     {
@@ -171,7 +179,10 @@ BOOST_AUTO_TEST_CASE( TestLagrangeVectorValuesWithPassedObject ) {
     DiscretizerFixture<TestClass> discretizer(k, 0.01, lowerBound, upperBound, nullptr, &TestClass::testMethod, testObjectPtr);
     std::vector<double> roots = {-0.57735, 0.57735};
     std::vector<double> expectedInterpolationPoints = {testFunction(roots[0]), testFunction(roots[1])};
+    discretizer.testDiscretizationRoutione();
     std::vector<double> interpolationPoints = discretizer.testGetLagrangeVector();
+
+    BOOST_CHECK_EQUAL(interpolationPoints.size(), 2*k);
 
     for (size_t i = 0; i < interpolationPoints.size(); ++i)
     {
@@ -196,6 +207,7 @@ BOOST_AUTO_TEST_CASE( TestLagrangeVectorValuesNonDefaultDomain ) {
 
     for (size_t i = 0; i < interpolationPoints.size(); ++i)
     {
+        std::cout << interpolationPoints[i] << " ";
         BOOST_CHECK_CLOSE_FRACTION(interpolationPoints[i], expectedInterpolationPoints[i], 1e-6);
     }
 }  
@@ -224,5 +236,15 @@ BOOST_AUTO_TEST_CASE( TestMatrixInversion ) {
                 BOOST_CHECK_SMALL(expectedIdentity(i, j), 1e-10);
         }
     }
+}
+
+
+BOOST_AUTO_TEST_CASE( TestAlphaVectorSolution ) {
+    double lowerBound = -1;
+    double upperBound = 1;
+    int k = 30;
+    DiscretizerFixture<TestClass> discretizer(k, 0.01, lowerBound, upperBound, testFunction, nullptr, nullptr);
+
+    discretizer.discretizationRoutine();
 }
 BOOST_AUTO_TEST_SUITE_END()
