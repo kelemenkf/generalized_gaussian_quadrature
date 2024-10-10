@@ -19,6 +19,7 @@ private:
     std::vector<double> legendreMesh;
     std::vector<double> transformedMesh;
     matrix<double> legendreMatrix;
+    matrix<double> invertedLegendreMatrix;
     std::vector<double> lagrangeVector;
     std::vector<double> alphaVector;
 
@@ -34,6 +35,7 @@ public:
         calculateMesh();
         transformMesh();
         calculateLegendrePolynomials(legendreMatrix);
+        invertMatrix();
     };
 
     ~Discretizer() {};
@@ -56,22 +58,20 @@ private:
     }
 
 
-    template<typename T>
-    bool invertMatrix(const matrix<T>& input, matrix<T>& inverse) {
-        matrix<T> copyOfInput(input);
+    void invertMatrix() {
+        matrix<double> copyOfLegendreMatrix(legendreMatrix);
         
-        permutation_matrix<std::size_t> pm(copyOfInput.size1());
+        permutation_matrix<std::size_t> pm(copyOfLegendreMatrix.size1());
 
-        int res = lu_factorize(copyOfInput, pm);
+        int res = lu_factorize(copyOfLegendreMatrix, pm);
         if (res != 0) {
-            return false;  
+            throw std::invalid_argument("Matrix is singular");
         }
 
-        inverse.assign(identity_matrix<T>(copyOfInput.size1()));
+        invertedLegendreMatrix.resize(2*k, 2*k);
+        invertedLegendreMatrix.assign(identity_matrix<double>(copyOfLegendreMatrix.size1()));
 
-        lu_substitute(copyOfInput, pm, inverse);
-
-        return true;
+        lu_substitute(copyOfLegendreMatrix, pm, invertedLegendreMatrix);
     }
 
 
@@ -162,6 +162,12 @@ protected:
     matrix<double> getLegendreMatrix() const
     {
         return legendreMatrix;
+    }
+
+
+    matrix<double> getInvertedLegendreMatrix() const
+    {
+        return invertedLegendreMatrix;
     }
 
 

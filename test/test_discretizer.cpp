@@ -52,6 +52,11 @@ struct DiscretizerFixture: public Discretizer<InputClass>
         return this->getLegendreMatrix();
     }
 
+    matrix<double> testGetInvertedLegendreMatrix()
+    {
+        return this->getInvertedLegendreMatrix();
+    }
+
     inline double testTransformNode(double value) const
     {
         return this->transformNode(value);
@@ -175,4 +180,49 @@ BOOST_AUTO_TEST_CASE( TestLagrangeVectorValuesWithPassedObject ) {
 }
 
 
+BOOST_AUTO_TEST_CASE( TestLagrangeVectorValuesNonDefaultDomain ) {
+    double lowerBound = 1;
+    double upperBound = 2;
+    int k = 1;
+    std::vector<double> roots = {-0.57735, 0.57735};
+    std::transform(roots.begin(), roots.end(), roots.begin(), [&lowerBound, &upperBound](double value)
+    { 
+        return ((upperBound - lowerBound) * value + (upperBound + lowerBound)) / 2;
+    });
+
+    DiscretizerFixture<TestClass> discretizer(k, 0.01, lowerBound, upperBound, testFunction, nullptr, nullptr);
+    std::vector<double> expectedInterpolationPoints = {testFunction(roots[0]), testFunction(roots[1])};
+    std::vector<double> interpolationPoints = discretizer.testGetLagrangeVector();
+
+    for (size_t i = 0; i < interpolationPoints.size(); ++i)
+    {
+        BOOST_CHECK_CLOSE_FRACTION(interpolationPoints[i], expectedInterpolationPoints[i], 1e-6);
+    }
+}  
+
+
+BOOST_AUTO_TEST_CASE( TestMatrixInversion ) {
+    double lowerBound = -1;
+    double upperBound = 1;
+    int k = 30;
+    DiscretizerFixture<TestClass> discretizer(k, 0.01, lowerBound, upperBound, testFunction, nullptr, nullptr);
+    matrix<double> legendreMatrix = discretizer.testGetLegendreMatrix();
+
+    BOOST_CHECK_NO_THROW(discretizer.testGetInvertedLegendreMatrix());
+
+    matrix<double> invertedLegendreMatrix = discretizer.testGetInvertedLegendreMatrix();
+
+    matrix<double> expectedIdentity = prod(legendreMatrix, invertedLegendreMatrix);
+
+    for (size_t i = 0; i < expectedIdentity.size1(); ++i)
+    {
+        for (size_t j = 0; j < expectedIdentity.size2(); ++j)
+        {   
+            if (i == j)
+                BOOST_CHECK_CLOSE_FRACTION(expectedIdentity(i, j), 1, 1e-10);
+            else
+                BOOST_CHECK_SMALL(expectedIdentity(i, j), 1e-10);
+        }
+    }
+}
 BOOST_AUTO_TEST_SUITE_END()
