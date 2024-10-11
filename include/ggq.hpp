@@ -5,7 +5,7 @@
 #include <functional>
 #include <iostream>
 #include <algorithm>
-
+#include "utils.hpp"
 
 template <typename InputClass>
 class QuadratureRule
@@ -39,6 +39,9 @@ public:
     }
 
 
+
+
+
 private: 
     void validateFunctionExistence()
     {
@@ -54,6 +57,5 @@ protected:
     {
         return method(value);
     }
-
 };
 #endif

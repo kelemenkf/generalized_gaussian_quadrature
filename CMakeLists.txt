@@ -11,5 +11,5 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 add_subdirectory(src)
 add_subdirectory(test)
 
-add_library(ggq_library src/ggq.cpp src/discretizer.cpp include/ggq.hpp include/discretizer.hpp)
+add_library(ggq_library src/ggq.cpp src/discretizer.cpp src/utils/utils.cpp include/ggq.hpp include/discretizer.hpp include/utils.hpp)
 

@@ -24,6 +24,7 @@ private:
     std::vector<double> lagrangeVector;
     vector<double> alphaVector;
     double measure;
+    std::vector<double> endpoints;
 
     using InputMethodType = double (InputClass::*)(const double&);
     using InputFunctionType = double(*)(const double&);
@@ -34,6 +35,7 @@ public:
     InputMethodType inputMethodPtr = nullptr, InputClass* objectPtr = nullptr) 
     : QuadratureRule<InputClass>(lowerBoundInput, upperBoundInput, inputFunctionPtr, inputMethodPtr, objectPtr), 
     k(validateK(kInput)), precision(validatePrecision(precisionInput)) {
+        endpoints = {this->lowerBound, this->upperBound};
         calculateMesh();
         transformMesh();
         calculateLegendrePolynomials(legendreMatrix);
@@ -48,19 +50,45 @@ public:
         calculateAlphaCoefficients();
         calculateSquaredAlphas();
         //After a single funciton is discretized the object should clear these, so this function can be called again, or recursivley
-        // lagrangeVector.clear();
-        // alphaVector.clear();
+
+        if (evaluateMeasure())
+            std::cout << "Fuck yeah" << std::endl;
+        else
+            std::cout << "Fuck me" << std::endl;
+        determineNewEndpoints();
+        displayVector(endpoints);
+        lagrangeVector.clear();
+        alphaVector.clear();
     }
 
 private: 
+void determineNewEndpoints()
+{
+    std::vector<double> newEndpoints;
+    newEndpoints.reserve(endpoints.size() * 2 - 1);  
+
+    for (auto element = endpoints.begin(); element != endpoints.end() - 1; ++element)
+    {
+        newEndpoints.push_back(*element);
+
+        double newPoint = (*element + *(element + 1)) / 2;
+        newEndpoints.push_back(newPoint);
+    }
+
+    newEndpoints.push_back(endpoints.back());
+
+    endpoints = std::move(newEndpoints);
+}
+
     bool evaluateMeasure()
     {
+        std::cout << measure << " " << precision << std::endl;
         if (measure < precision)
             return true;
         else 
             return false;
     }
-    
+
 
     void calculateSquaredAlphas()
     {
@@ -163,7 +191,7 @@ private:
         }
     }
 
-    static int validatePrecision(double inputPrecision)
+    static double validatePrecision(double inputPrecision)
     {
         if (inputPrecision > 0)
         {
@@ -221,6 +249,11 @@ protected:
     double getMeasure() const
     {
         return measure;
+    }
+
+    double getPrecision() const
+    {
+        return precision;
     }
 };
 
