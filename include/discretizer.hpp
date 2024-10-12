@@ -15,6 +15,9 @@ template<typename InputClass>
 class Discretizer: public QuadratureRule<InputClass>
 {
 private: 
+    static std::vector<double> measureVector;
+
+private: 
     int k;
     double precision;
     std::vector<double> legendreMesh;
@@ -36,57 +39,61 @@ public:
     : QuadratureRule<InputClass>(lowerBoundInput, upperBoundInput, inputFunctionPtr, inputMethodPtr, objectPtr), 
     k(validateK(kInput)), precision(validatePrecision(precisionInput)) {
         endpoints = {this->lowerBound, this->upperBound};
-        calculateMesh();
-        transformMesh();
-        calculateLegendrePolynomials(legendreMatrix);
-        invertMatrix();
     };
 
     ~Discretizer() {};
 
-    void discretizationRoutine()
+    std::vector<double> discretizationRoutine()
     {
+        calculateMesh();
+        transformMesh();
+        calculateLegendrePolynomials(legendreMatrix);
+        invertMatrix();
         evaluateFunctionOnTransformedMesh();
         calculateAlphaCoefficients();
         calculateSquaredAlphas();
-        //After a single funciton is discretized the object should clear these, so this function can be called again, or recursivley
 
-        if (evaluateMeasure())
-            std::cout << "Fuck yeah" << std::endl;
-        else
-            std::cout << "Fuck me" << std::endl;
-        determineNewEndpoints();
-        displayVector(endpoints);
-        lagrangeVector.clear();
-        alphaVector.clear();
+        if (evaluateStoppingCondition())
+        {
+            return endpoints;
+        }
     }
+
+
 
 private: 
-void determineNewEndpoints()
-{
-    std::vector<double> newEndpoints;
-    newEndpoints.reserve(endpoints.size() * 2 - 1);  
-
-    for (auto element = endpoints.begin(); element != endpoints.end() - 1; ++element)
+    bool evaluateStoppingCondition()
     {
-        newEndpoints.push_back(*element);
+        bool stop = true;
+        std::vector<int> impreciseSubintervalIndeces;
+        for (size_t i = 0; i < measureVector.size(), ++i)
+        {
+            if (measureVector[i] >= precision)
+            {
+                stop = false;
+                auto it = std::find(endpoints.begin(), endpoints.end(), endpoints[i+1]);
+                impreciseSubintervalIndeces.push_back(it);
+            }
+        }
+        determineNewEndpoints(impreciseSubintervalIndeces);
 
-        double newPoint = (*element + *(element + 1)) / 2;
-        newEndpoints.push_back(newPoint);
+        return stop;
     }
 
-    newEndpoints.push_back(endpoints.back());
 
-    endpoints = std::move(newEndpoints);
-}
-
-    bool evaluateMeasure()
+    void determineNewEndpoints()
     {
-        std::cout << measure << " " << precision << std::endl;
-        if (measure < precision)
-            return true;
-        else 
-            return false;
+        for (size_t i = impreciseSubintervalIndeces.size() - 1; i >= 0; --i)
+        {
+            double newPoint = calculateNewEndpoint(*(impreciseSubintervalIndeces[i] - 1), *(impreciseSubintervalIndeces[i]))
+            endpoints.insert(impreciseSubintervalIndeces[i], newPoint);
+        } 
+    }
+
+
+    double calculateNewEndpoint(double lower, double upper)
+    {
+        return (lower + upper) / 2;
     }
 
 
@@ -96,6 +103,8 @@ void determineNewEndpoints()
         {
             measure += alphaVector[i] * alphaVector[i];
         }
+
+        measureVector.push_back(measure);
     }
 
     void calculateAlphaCoefficients()
