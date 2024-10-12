@@ -1,14 +1,19 @@
-#Required packages
-find_package(Boost 1.76 REQUIRED COMPONENTS unit_test_framework)
-
 #Excutables
 add_executable(test_ggq test_ggq.cpp)
 add_executable(test_discretizer test_discretizer.cpp)
+add_executable(test_interval_divider test_interval_divider.cpp)
 
 #Link library
 target_link_libraries(test_ggq ggq_library)
 target_link_libraries(test_discretizer ggq_library)
+target_link_libraries(test_interval_divider ggq_library)
+
+# Specify the include directories for the test executables
+target_include_directories(test_ggq PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(test_discretizer PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(test_interval_divider PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
 #Link testing framework
 target_link_libraries(test_ggq Boost::unit_test_framework)
 target_link_libraries(test_discretizer Boost::unit_test_framework)
+target_link_libraries(test_interval_divider Boost::unit_test_framework)

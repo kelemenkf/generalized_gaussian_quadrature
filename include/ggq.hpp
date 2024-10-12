@@ -6,7 +6,6 @@
 #include <iostream>
 #include <algorithm>
 #include "utils.hpp"
-#include "discretizer.hpp"
 
 template <typename InputClass>
 class QuadratureRule
@@ -44,10 +43,6 @@ public:
     {
         int k = 30;
         double precision = 0.01;
-        Discretizer discretizer(k, precision, lowerBound, upperBound, functionPtr, nullptr, nullptr);
-
-        std::vector<double> endpoints;
-        endpoints = discrteizer.discretizationRoutine();
     }
 
 
