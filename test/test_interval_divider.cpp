@@ -42,12 +42,12 @@ struct IntervalDividerFixture: public IntervalDivider<InputClass>
         return this->getTransformedMesh();
     }
 
-    matrix<double> testGetLegendreMatrix()
+    matrix<double> testGetLegendreMatrix() const
     {
         return this->getLegendreMatrix();
     }
 
-    matrix<double> testGetInvertedLegendreMatrix()
+    matrix<double> testGetInvertedLegendreMatrix() const
     {
         return this->getInvertedLegendreMatrix();
     }
@@ -60,11 +60,6 @@ struct IntervalDividerFixture: public IntervalDivider<InputClass>
     vector<double> testGetAlphaVector() const
     {
         return this->getAlphaVector();
-    }
-
-    double testGetMeasure() const
-    {
-        return this->getMeasure();
     }
 
     double testGetPrecision() const
@@ -98,7 +93,7 @@ BOOST_AUTO_TEST_CASE( TestLegendreMeshEven ) {
 
     IntervalDividerFixture<TestClass> divider(k, lowerBound, upperBound, testFunction, nullptr, nullptr);
 
-    double measure = divider.determineAlphaOnSubinterval();
+    divider.processInterval();
 
     std::vector<double> estimatedRoots = divider.testGetLegendreMesh();
 
@@ -106,7 +101,7 @@ BOOST_AUTO_TEST_CASE( TestLegendreMeshEven ) {
 
     for (size_t i = 0; i < estimatedRoots.size(); ++i)
     {
-        BOOST_CHECK_CLOSE_FRACTION(estimatedRoots[i], roots[i], 0.0001);
+        BOOST_CHECK_CLOSE_FRACTION(estimatedRoots[i], roots[i], 1e-6);
     }
 }
 
@@ -123,7 +118,7 @@ BOOST_AUTO_TEST_CASE( TestLegendreMeshTransformed ) {
 
     IntervalDividerFixture<TestClass> divider(k, lowerBound, upperBound, testFunction, nullptr, nullptr);
 
-    double measure = divider.determineAlphaOnSubinterval();
+    divider.processInterval();
 
     std::vector<double> estimatedRoots = divider.testGetTransformedMesh();
 
@@ -145,7 +140,7 @@ BOOST_AUTO_TEST_CASE( TestLegendreMatrix ) {
 
     IntervalDividerFixture<TestClass> divider(k, lowerBound, upperBound, testFunction, nullptr, nullptr);
 
-    double measure = divider.determineAlphaOnSubinterval();
+    divider.processInterval();
 
     legendreMatrix = divider.testGetLegendreMatrix();
 
@@ -174,7 +169,7 @@ BOOST_AUTO_TEST_CASE( TestLagrangeVectorValues ) {
     int k = 1;
 
     IntervalDividerFixture<TestClass> divider(k, lowerBound, upperBound, testFunction, nullptr, nullptr);
-    double measure = divider.determineAlphaOnSubinterval();
+    divider.processInterval();
 
     std::vector<double> roots = {-0.57735, 0.57735};
     std::vector<double> expectedInterpolationPoints = {testFunction(roots[0]), testFunction(roots[1])};
@@ -197,7 +192,7 @@ BOOST_AUTO_TEST_CASE( TestLagrangeVectorValuesWithPassedObject ) {
     TestClass* testObjectPtr = &testObject;
 
     IntervalDividerFixture<TestClass> divider(k, lowerBound, upperBound, nullptr, &TestClass::testMethod, testObjectPtr);
-    double measure = divider.determineAlphaOnSubinterval();
+    divider.processInterval();
 
     std::vector<double> roots = {-0.57735, 0.57735};
     std::vector<double> expectedInterpolationPoints = {testFunction(roots[0]), testFunction(roots[1])};
@@ -223,7 +218,7 @@ BOOST_AUTO_TEST_CASE( TestLagrangeVectorValuesNonDefaultDomain ) {
     });
 
     IntervalDividerFixture<TestClass> divider(k, lowerBound, upperBound, testFunction, nullptr, nullptr);
-    double measure = divider.determineAlphaOnSubinterval();
+    divider.processInterval();
 
     std::vector<double> expectedInterpolationPoints = {testFunction(roots[0]), testFunction(roots[1])};
     std::vector<double> interpolationPoints = divider.testGetLagrangeVector();
@@ -240,7 +235,7 @@ BOOST_AUTO_TEST_CASE( TestMatrixInversion ) {
     double upperBound = 1;
     int k = 30;
     IntervalDividerFixture<TestClass> divider(k, lowerBound, upperBound, testFunction, nullptr, nullptr);
-    double measure = divider.determineAlphaOnSubinterval();
+    divider.processInterval();
 
     matrix<double> legendreMatrix = divider.testGetLegendreMatrix();
 
@@ -268,7 +263,7 @@ BOOST_AUTO_TEST_CASE( TestAlphaVectorSolution ) {
     double upperBound = 1;
     int k = 2;
     IntervalDividerFixture<TestClass> divider(k, lowerBound, upperBound, testFunction, nullptr, nullptr);
-    double measure = divider.determineAlphaOnSubinterval();
+    divider.processInterval();
 
     vector<double> alphaVector = divider.testGetAlphaVector();
 
@@ -291,7 +286,9 @@ BOOST_AUTO_TEST_CASE( TestMeasureCalculation ) {
     double upperBound = 1;
     int k = 30;
     IntervalDividerFixture<TestClass> divider(k, lowerBound, upperBound, testFunction, nullptr, nullptr);
-    double measure = divider.determineAlphaOnSubinterval();
+    divider.processInterval();
+
+    double measure = divider.getMeasure();
 
     BOOST_CHECK_GT(measure, 0);
 }

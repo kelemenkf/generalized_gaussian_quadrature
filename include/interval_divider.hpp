@@ -8,14 +8,13 @@
 #include <boost/numeric/ublas/operation.hpp>
 #include <cmath>
 #include "ggq.hpp"
+#include "utils.hpp"
 using namespace boost::numeric::ublas;
 
 template<typename InputClass>
 class IntervalDivider: private QuadratureRule<InputClass>
 {
 private: 
-    double lowerBound;
-    double upperBound;
     int k;
     std::vector<double> legendreMesh;
     std::vector<double> transformedMesh;
@@ -37,7 +36,7 @@ public:
 
     ~IntervalDivider() {};
 
-    double determineAlphaOnSubinterval()
+    void processInterval()
     {
         calculateMesh();
         transformMesh();
@@ -46,7 +45,11 @@ public:
         evaluateFunctionOnTransformedMesh();
         calculateAlphaCoefficients();
         calculateSquaredAlphas();
+    }
 
+
+    double getMeasure() const
+    {
         return measure;
     }
 
@@ -194,12 +197,6 @@ protected:
     vector<double> getAlphaVector() const
     {
         return alphaVector;
-    }
-
-
-    double getMeasure() const
-    {
-        return measure;
     }
 };
 
