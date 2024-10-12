@@ -41,8 +41,6 @@ public:
 
     void discretizeFunctions()
     {
-        int k = 30;
-        double precision = 0.01;
     }
 
 

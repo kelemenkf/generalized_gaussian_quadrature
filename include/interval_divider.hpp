@@ -33,7 +33,6 @@ public:
     InputMethodType inputMethodPtr = nullptr, InputClass* objectPtr = nullptr) 
     : QuadratureRule<InputClass>(lowerBoundInput, upperBoundInput, inputFunctionPtr, inputMethodPtr, objectPtr), k(validateK(kInput)) {};
 
-
     ~IntervalDivider() {};
 
     void processInterval()

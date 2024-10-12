@@ -1,7 +1,7 @@
 #Excutables
-add_executable(test_ggq test_ggq.cpp)
-add_executable(test_discretizer test_discretizer.cpp)
-add_executable(test_interval_divider test_interval_divider.cpp)
+add_executable(test_ggq unit_tests/test_ggq.cpp)
+add_executable(test_discretizer unit_tests/test_discretizer.cpp)
+add_executable(test_interval_divider unit_tests/test_interval_divider.cpp)
 
 #Link library
 target_link_libraries(test_ggq ggq_library)

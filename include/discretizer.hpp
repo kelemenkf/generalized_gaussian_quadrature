@@ -2,6 +2,7 @@
 #define DISCRETIZER_HPP
 
 #include "ggq.hpp"
+#include "interval_divider.hpp"
 
 template<typename InputClass>
 class Discretizer: public QuadratureRule<InputClass>
@@ -30,8 +31,34 @@ public:
     {
         while(!evaluateStoppingCondition())
         {
-            //Loop over endpoints, deteremine alpha with interval_divider, update measurevector
+            //Loop over endpoints, deteremine measure with interval_divider, update measurevector
+            measureVector.reserve(endpoints.size() - 1);
+            for (size_t i = 0; i < endpoints.size() - 1; ++i)
+            {
+                IntervalDivider<InputClass> divider;
+                if (this->functionPtr)
+                {
+                    divider = IntervalDivider<InputClass>(endpoints[i], endpoints[i+1], this->functionPtr, nullptr, nullptr);
+                }
+                else if (this->methodPtr)
+                {
+                    divider = IntervalDivider<InputClass>(endpoints[i], endpoints[i+1], nullptr, this->mehtodPtr, this->objectPtr);   
+                }
+                divider.processInterval();
+
+                double measure;
+                measure = divider.getMeasure();
+
+                //Smart update so only previously unused intervals use measures
+                measureVector.push_back(measure);
+            }
         }
+    }
+
+
+    std::vector<double> getFinalEndpoints()
+    {
+        return endpoints;
     }
 
 
@@ -65,6 +92,8 @@ private:
             double newPoint = calculateNewEndpoint(*std::prev(impreciseSubintervalIndeces[i]), *impreciseSubintervalIndeces[i]);
             endpoints.insert(impreciseSubintervalIndeces[i], newPoint);
         } 
+
+        measureVector.clear();
     }   
 
 
