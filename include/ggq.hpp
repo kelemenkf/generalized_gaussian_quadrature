@@ -7,25 +7,19 @@
 #include <algorithm>
 #include "utils.hpp"
 
-template <typename InputClass>
 class QuadratureRule
 {
 protected:
     double lowerBound;
     double upperBound;
 
-    using InputMethodType = double (InputClass::*)(const double&);
-    InputClass* objectPtr;
-    InputMethodType methodPtr;
-
-    using InputFunctionType = double(*)(const double&);
-    InputFunctionType functionPtr;
+    using InputFunctionType = std::function<double(const double&)>;
+    InputFunctionType function;
 
 
 public:
-    QuadratureRule(double lowerBoundInput = -1, double upperBoundInput = 1, InputFunctionType function = nullptr, 
-    InputMethodType inputMethod = nullptr, InputClass* inputObject = nullptr) : lowerBound(lowerBoundInput), upperBound(upperBoundInput),
-    functionPtr(function), methodPtr(inputMethod), objectPtr(inputObject)
+    QuadratureRule(double lowerBoundInput, double upperBoundInput, InputFunctionType functionInput) : lowerBound(lowerBoundInput), upperBound(upperBoundInput),
+    function(functionInput)
     {
         validateFunctionExistence();
     }
@@ -44,9 +38,8 @@ public:
 private: 
     void validateFunctionExistence()
     {
-        if (functionPtr == nullptr && methodPtr == nullptr && objectPtr == nullptr)
-        {
-            throw std::invalid_argument("No function was supplied");
+        if (!function) {
+            throw std::runtime_error("Function is not initialized.");
         }
     }
 };

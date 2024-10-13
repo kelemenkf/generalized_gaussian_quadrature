@@ -3,8 +3,7 @@
 
 #include "interval_divider.hpp"
 
-template<typename InputClass>
-class Discretizer: private QuadratureRule<InputClass>
+class Discretizer: private QuadratureRule
 {
 private: 
     int k;
@@ -12,14 +11,12 @@ private:
     std::vector<double> endpoints;
     std::vector<double> measureVector;
 
-    using InputMethodType = double (InputClass::*)(const double&);
-    using InputFunctionType = double(*)(const double&);
+    using InputFunctionType = std::function<double(const double&)>;
 
 
 public:
-    Discretizer(int kInput, double precisionInput, double lowerBoundInput, double upperBoundInput, InputFunctionType inputFunctionPtr = nullptr, 
-    InputMethodType inputMethodPtr = nullptr, InputClass* inputObjectPtr = nullptr) 
-    : QuadratureRule<InputClass>(lowerBoundInput, upperBoundInput, inputFunctionPtr, inputMethodPtr, inputObjectPtr), 
+    Discretizer(int kInput, double precisionInput, double lowerBoundInput, double upperBoundInput, InputFunctionType inputFunctionPtr) 
+    : QuadratureRule(lowerBoundInput, upperBoundInput, inputFunctionPtr), 
     k(validateK(kInput)), precision(validatePrecision(precisionInput))
     {
         endpoints = {this->lowerBound, this->upperBound};
@@ -42,7 +39,7 @@ public:
         measureVector.reserve(endpoints.size() - 1);
         for (size_t i = 0; i < endpoints.size() - 1; ++i)
         {
-            IntervalDivider<InputClass> divider(k, endpoints[i], endpoints[i+1], this->functionPtr, this->methodPtr, this->objectPtr);
+            IntervalDivider divider(k, endpoints[i], endpoints[i+1], this->function);
 
             divider.processInterval();
 
@@ -61,15 +58,15 @@ public:
     }
 
 
-    std::vector<double> determineFinalNodes()
+    std::vector<std::vector<double>> determineFinalNodes()
     {
         std::vector<std::vector<double>> nodes;
         for (size_t i = 0; i < endpoints.size(); ++i)
         {
-            IntervalDivider<InputClass> divider(k, endpoints[i], endpoints[i+1], this->functionPtr, this->methodPtr, this->objectPtr);
-            divider.calculateMesh();
-            divider.transformMehs();
-            nodes.push_back(divider.getTransformedMesh());
+            IntervalDivider divider(k, endpoints[i], endpoints[i+1], this->function);
+            // divider.calculateMesh();
+            // divider.transformMesh();
+            // nodes.push_back(divider.getTransformedMesh());
         }
 
         return nodes;

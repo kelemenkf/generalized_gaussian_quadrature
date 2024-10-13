@@ -20,15 +20,12 @@ double testFunction(const double& x)
 }
 
 
-template<typename InputClass>
-struct IntervalDividerFixture: public IntervalDivider<InputClass>
+struct IntervalDividerFixture: public IntervalDivider
 {
-    using InputMethodType = double (InputClass::*)(const double&);
-    using InputFunctionType = double(*)(const double&);
+    using InputFunctionType = std::function<double(const double&)>;
 
-    IntervalDividerFixture(int kInput, double lowerBoundInput, double upperBoundInput, InputFunctionType inputFunctionPtr = nullptr, 
-    InputMethodType inputMethodPtr = nullptr, InputClass* objectPtr = nullptr) 
-    : IntervalDivider<InputClass>(kInput, lowerBoundInput, upperBoundInput, inputFunctionPtr, inputMethodPtr, objectPtr) {};
+    IntervalDividerFixture(int kInput, double lowerBoundInput, double upperBoundInput, InputFunctionType inputFunctionPtr = nullptr) 
+    : IntervalDivider(kInput, lowerBoundInput, upperBoundInput, inputFunctionPtr) {};
 
     ~IntervalDividerFixture() {};
 
@@ -62,11 +59,6 @@ struct IntervalDividerFixture: public IntervalDivider<InputClass>
         return this->getAlphaVector();
     }
 
-    double testGetPrecision() const
-    {
-        return this->getPrecision();
-    }
-
     inline double testTransformNode(double value) const
     {
         return this->transformNode(value);
@@ -80,8 +72,8 @@ BOOST_AUTO_TEST_CASE( TestDividerValidation ) {
     double lowerBound = 1;
     double upperBound = 2;
 
-    BOOST_CHECK_THROW(IntervalDivider<TestClass> divider(-10, lowerBound, upperBound, testFunction, nullptr, nullptr), std::invalid_argument);
-    BOOST_CHECK_NO_THROW(IntervalDivider<TestClass> divider(30, lowerBound, upperBound, testFunction, nullptr, nullptr));
+    BOOST_CHECK_THROW(IntervalDivider divider(-10, lowerBound, upperBound, testFunction), std::invalid_argument);
+    BOOST_CHECK_NO_THROW(IntervalDivider divider(30, lowerBound, upperBound, testFunction));
 }
 
 
@@ -91,7 +83,7 @@ BOOST_AUTO_TEST_CASE( TestLegendreMeshEven ) {
     int k = 1;
     std::vector<double> roots = {-0.57735, 0.57735};
 
-    IntervalDividerFixture<TestClass> divider(k, lowerBound, upperBound, testFunction, nullptr, nullptr);
+    IntervalDividerFixture divider(k, lowerBound, upperBound, testFunction);
 
     divider.processInterval();
 
@@ -116,7 +108,7 @@ BOOST_AUTO_TEST_CASE( TestLegendreMeshTransformed ) {
         return ((upperBound - lowerBound) * value + (upperBound + lowerBound)) / 2;
     });
 
-    IntervalDividerFixture<TestClass> divider(k, lowerBound, upperBound, testFunction, nullptr, nullptr);
+    IntervalDividerFixture divider(k, lowerBound, upperBound, testFunction);
 
     divider.processInterval();
 
@@ -138,7 +130,7 @@ BOOST_AUTO_TEST_CASE( TestLegendreMatrix ) {
     matrix<double> legendreMatrix;
     matrix<double> expectedMatrix(2*k, 2*k);
 
-    IntervalDividerFixture<TestClass> divider(k, lowerBound, upperBound, testFunction, nullptr, nullptr);
+    IntervalDividerFixture divider(k, lowerBound, upperBound, testFunction);
 
     divider.processInterval();
 
@@ -168,7 +160,7 @@ BOOST_AUTO_TEST_CASE( TestLagrangeVectorValues ) {
     double upperBound = 1;
     int k = 1;
 
-    IntervalDividerFixture<TestClass> divider(k, lowerBound, upperBound, testFunction, nullptr, nullptr);
+    IntervalDividerFixture divider(k, lowerBound, upperBound, testFunction);
     divider.processInterval();
 
     std::vector<double> roots = {-0.57735, 0.57735};
@@ -191,7 +183,9 @@ BOOST_AUTO_TEST_CASE( TestLagrangeVectorValuesWithPassedObject ) {
     TestClass testObject;
     TestClass* testObjectPtr = &testObject;
 
-    IntervalDividerFixture<TestClass> divider(k, lowerBound, upperBound, nullptr, &TestClass::testMethod, testObjectPtr);
+    auto methodPtr = std::bind(&TestClass::testMethod, testObjectPtr, std::placeholders::_1);
+
+    IntervalDividerFixture divider(k, lowerBound, upperBound, methodPtr);
     divider.processInterval();
 
     std::vector<double> roots = {-0.57735, 0.57735};
@@ -217,7 +211,7 @@ BOOST_AUTO_TEST_CASE( TestLagrangeVectorValuesNonDefaultDomain ) {
         return ((upperBound - lowerBound) * value + (upperBound + lowerBound)) / 2;
     });
 
-    IntervalDividerFixture<TestClass> divider(k, lowerBound, upperBound, testFunction, nullptr, nullptr);
+    IntervalDividerFixture divider(k, lowerBound, upperBound, testFunction);
     divider.processInterval();
 
     std::vector<double> expectedInterpolationPoints = {testFunction(roots[0]), testFunction(roots[1])};
@@ -234,7 +228,7 @@ BOOST_AUTO_TEST_CASE( TestMatrixInversion ) {
     double lowerBound = -1;
     double upperBound = 1;
     int k = 30;
-    IntervalDividerFixture<TestClass> divider(k, lowerBound, upperBound, testFunction, nullptr, nullptr);
+    IntervalDividerFixture divider(k, lowerBound, upperBound, testFunction);
     divider.processInterval();
 
     matrix<double> legendreMatrix = divider.testGetLegendreMatrix();
@@ -262,7 +256,7 @@ BOOST_AUTO_TEST_CASE( TestAlphaVectorSolution ) {
     double lowerBound = -1;
     double upperBound = 1;
     int k = 2;
-    IntervalDividerFixture<TestClass> divider(k, lowerBound, upperBound, testFunction, nullptr, nullptr);
+    IntervalDividerFixture divider(k, lowerBound, upperBound, testFunction);
     divider.processInterval();
 
     vector<double> alphaVector = divider.testGetAlphaVector();
@@ -285,7 +279,7 @@ BOOST_AUTO_TEST_CASE( TestMeasureCalculation ) {
     double lowerBound = -1;
     double upperBound = 1;
     int k = 30;
-    IntervalDividerFixture<TestClass> divider(k, lowerBound, upperBound, testFunction, nullptr, nullptr);
+    IntervalDividerFixture divider(k, lowerBound, upperBound, testFunction);
     divider.processInterval();
 
     double measure = divider.getMeasure();

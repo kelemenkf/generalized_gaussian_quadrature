@@ -26,15 +26,12 @@ double singularTestFunction(const double& x)
 }
 
 
-template<typename InputClass>
-struct DiscretizerFixture: public Discretizer<InputClass>
+struct DiscretizerFixture: public Discretizer
 {
-    using InputMethodType = double (InputClass::*)(const double&);
-    using InputFunctionType = double(*)(const double&);
+    using InputFunctionType = std::function<double(const double&)>;
 
-    DiscretizerFixture(int kInput, double precisionInput, double lowerBoundInput, double upperBoundInput, InputFunctionType inputFunctionPtr = nullptr, 
-    InputMethodType inputMethodPtr = nullptr, InputClass* objectPtr = nullptr) 
-    : Discretizer<InputClass>(kInput, precisionInput, lowerBoundInput, upperBoundInput, inputFunctionPtr, inputMethodPtr, objectPtr) {};
+    DiscretizerFixture(int kInput, double precisionInput, double lowerBoundInput, double upperBoundInput, InputFunctionType inputFunctionPtr = nullptr) 
+    : Discretizer (kInput, precisionInput, lowerBoundInput, upperBoundInput, inputFunctionPtr) {};
 
     ~DiscretizerFixture() {};
 
@@ -43,10 +40,10 @@ struct DiscretizerFixture: public Discretizer<InputClass>
         return this->getPrecision();
     }
 
-    bool testEvaluateStoppingCondition()
-    {
-        return this->evaluateStoppingCondition();
-    }
+    // bool testEvaluateStoppingCondition()
+    // {
+    //     return this->evaluateStoppingCondition();
+    // }
 
     void testCalculateMeasures()
     {
@@ -66,9 +63,9 @@ BOOST_AUTO_TEST_CASE( TestDiscretizerValidation ) {
     double lowerBound = 1;
     double upperBound = 2;
 
-    BOOST_CHECK_THROW(Discretizer<TestClass> discretizer(-10, 0.01, lowerBound, upperBound, testFunction, nullptr, nullptr), std::invalid_argument);
-    BOOST_CHECK_THROW(Discretizer<TestClass> discretizer(30, -0.01, lowerBound, upperBound, testFunction, nullptr, nullptr), std::invalid_argument);
-    BOOST_CHECK_NO_THROW(Discretizer<TestClass> discretizer(30, 0.01, lowerBound, upperBound, testFunction, nullptr, nullptr));
+    BOOST_CHECK_THROW(Discretizer discretizer(-10, 0.01, lowerBound, upperBound, testFunction), std::invalid_argument);
+    BOOST_CHECK_THROW(Discretizer discretizer(30, -0.01, lowerBound, upperBound, testFunction), std::invalid_argument);
+    BOOST_CHECK_NO_THROW(Discretizer discretizer(30, 0.01, lowerBound, upperBound, testFunction));
 }
 
 
@@ -78,7 +75,7 @@ BOOST_AUTO_TEST_CASE( TestDiscretizerValidation ) {
 //     const int k = 30;
 //     const double precision = 1e-6;
 
-//     DiscretizerFixture<TestClass> discretizer(k, precision, lowerBound, upperBound, singularTestFunction);
+//     DiscretizerFixture discretizer(k, precision, lowerBound, upperBound, singularTestFunction);
 //     discretizer.discretizationRoutine();
 // }
 
@@ -89,7 +86,7 @@ BOOST_AUTO_TEST_CASE( TestDiscretizerCalculateMeasures ) {
     const int k = 30;
     const double precision = 1e-6;
 
-    DiscretizerFixture<TestClass> discretizer(k, precision, lowerBound, upperBound, testFunction);
+    DiscretizerFixture discretizer(k, precision, lowerBound, upperBound, testFunction);
     discretizer.testCalculateMeasures();
 
     std::vector<double> measures = discretizer.testGetMeasureVector();
@@ -104,7 +101,7 @@ BOOST_AUTO_TEST_CASE( TestDiscretizerFindEndpoints ) {
     const int k = 30;
     const double precision = 1e-6;
 
-    DiscretizerFixture<TestClass> discretizer(k, precision, lowerBound, upperBound, testFunction);
+    DiscretizerFixture discretizer(k, precision, lowerBound, upperBound, testFunction);
     discretizer.discretizationRoutine();
 
     std::vector<double> endpoints = discretizer.getFinalEndpoints();
@@ -125,7 +122,7 @@ BOOST_AUTO_TEST_CASE( TestDiscretizerFindEndpointsSingularFunction ) {
     const int k = 30;
     const double precision = 1e-6;
 
-    DiscretizerFixture<TestClass> discretizer(k, precision, lowerBound, upperBound, singularTestFunction);
+    DiscretizerFixture discretizer(k, precision, lowerBound, upperBound, singularTestFunction);
     discretizer.discretizationRoutine();
 
     std::vector<double> endpoints = discretizer.getFinalEndpoints();

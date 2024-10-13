@@ -10,8 +10,7 @@
 #include "ggq.hpp"
 using namespace boost::numeric::ublas;
 
-template<typename InputClass>
-class IntervalDivider: private QuadratureRule<InputClass>
+class IntervalDivider: private QuadratureRule
 {
 private: 
     int k;
@@ -23,20 +22,11 @@ private:
     std::vector<double> lagrangeVector;
     double measure;
 
-    using InputMethodType = double (InputClass::*)(const double&);
-    std::function<double(const double&)> method;
-
-    using InputFunctionType = double(*)(const double&);
-
 
 public: 
-    IntervalDivider(int kInput, double lowerBoundInput, double upperBoundInput, InputFunctionType inputFunctionPtr = nullptr, 
-    InputMethodType inputMethodPtr = nullptr, InputClass* inputObjectPtr = nullptr) 
-    : QuadratureRule<InputClass>(lowerBoundInput, upperBoundInput, inputFunctionPtr, inputMethodPtr, inputObjectPtr), k(validateK(kInput)) 
-    {
-        if (this->objectPtr && this->methodPtr)
-            method = std::bind(this->methodPtr, this->objectPtr, std::placeholders::_1);
-    };
+    IntervalDivider(int kInput, double lowerBoundInput, double upperBoundInput, InputFunctionType inputFunctionPtr) 
+    : QuadratureRule(lowerBoundInput, upperBoundInput, inputFunctionPtr), k(validateK(kInput)) 
+    {};
 
     ~IntervalDivider() {};
 
@@ -83,10 +73,7 @@ private:
     {
         lagrangeVector.resize(legendreMesh.size());
         std::transform(transformedMesh.begin(), transformedMesh.end(), lagrangeVector.begin(), [this](double value){
-            if (this->functionPtr)
-                return this->functionPtr(value);
-            else
-                return this->methodCaller(value);
+            return this->function(value);
         });
     }
 
@@ -164,7 +151,7 @@ private:
 protected: 
     double methodCaller(const double& value)
     {
-        return method(value);
+        return function(value);
     }
 
     inline double transformNode(double value) const

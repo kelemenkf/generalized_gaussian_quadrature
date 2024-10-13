@@ -10,6 +10,7 @@ set(Boost_DEBUG 1)
 
 # Find Boost with the required component
 find_package(Boost 1.86 REQUIRED COMPONENTS unit_test_framework)
+find_package(Python3 3.12 REQUIRED COMPONENTS Interpreter Development)
 
 # Include directories for Boost
 include_directories(${Boost_INCLUDE_DIRS})
@@ -25,7 +26,7 @@ add_library(ggq_library
     src/utils/utils.cpp 
 )
 
-target_include_directories(ggq_library PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(ggq_library PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 # Link Boost::unit_test_framework with the library
 target_link_libraries(ggq_library Boost::unit_test_framework)
