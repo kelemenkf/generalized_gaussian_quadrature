@@ -11,10 +11,10 @@ private:
     std::vector<double> endpoints;
     std::vector<double> measureVector;
 
-    using InputFunctionType = std::function<double(const double&)>;
-
 
 public:
+    using InputFunctionType = std::function<double(const double&)>;
+
     Discretizer(int kInput, double precisionInput, double lowerBoundInput, double upperBoundInput, InputFunctionType inputFunctionPtr) 
     : QuadratureRule(lowerBoundInput, upperBoundInput, inputFunctionPtr), 
     k(validateK(kInput)), precision(validatePrecision(precisionInput))
@@ -70,6 +70,12 @@ public:
         }
 
         return nodes;
+    }
+
+
+    double evaluateFunction(const double& value)
+    {
+        return function(value);
     }
 
 

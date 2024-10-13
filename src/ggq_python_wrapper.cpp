@@ -1,15 +1,15 @@
 #include "discretizer.hpp"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/functional.h> 
 
-// namespace py = pybind11;
+namespace py = pybind11;
 
-// template class Discretizer<double>;
+PYBIND11_MODULE(ggq, m) {
+    using InputFunctionType = std::function<double(const double&)>;
 
-// PYBIND11_MODULE(ggq, m) {
-//     using InputMethodType = double (InputClass::*)(const double&);
-//     using InputFunctionType = double(*)(const double&);
-//     py::class_<Discretizer<InputClass>>(m, "Discretizer")
-//         .def(py::init<int, double, double, double, double, double>())
-//     ;
-// }
+    py::class_<Discretizer>(m, "Discretizer")
+        .def(py::init<int, double, double, double, Discretizer::InputFunctionType>())
+        .def("evaluate", &Discretizer::evaluateFunction)
+    ;
+}
