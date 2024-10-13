@@ -38,11 +38,11 @@ public:
                 IntervalDivider<InputClass> divider;
                 if (this->functionPtr)
                 {
-                    divider = IntervalDivider<InputClass>(endpoints[i], endpoints[i+1], this->functionPtr, nullptr, nullptr);
+                    divider = IntervalDivider<InputClass>(k, endpoints[i], endpoints[i+1], this->functionPtr, nullptr, nullptr);
                 }
                 else if (this->methodPtr)
                 {
-                    divider = IntervalDivider<InputClass>(endpoints[i], endpoints[i+1], nullptr, this->mehtodPtr, this->objectPtr);   
+                    divider = IntervalDivider<InputClass>(k, endpoints[i], endpoints[i+1], nullptr, this->methodPtr, this->objectPtr);   
                 }
                 divider.processInterval();
 

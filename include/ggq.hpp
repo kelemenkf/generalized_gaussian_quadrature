@@ -24,7 +24,7 @@ protected:
 
 
 public:
-    QuadratureRule(double lowerBoundInput, double upperBoundInput, InputFunctionType function = nullptr, 
+    QuadratureRule(double lowerBoundInput = -1, double upperBoundInput = 1, InputFunctionType function = nullptr, 
     InputMethodType inputMethod = nullptr, InputClass* inputObject = nullptr) : lowerBound(lowerBoundInput), upperBound(upperBoundInput),
     functionPtr(function), methodPtr(inputMethod), objectPtr(inputObject)
     {

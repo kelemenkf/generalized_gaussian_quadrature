@@ -29,6 +29,8 @@ private:
 
 
 public: 
+    IntervalDivider() {};
+    
     IntervalDivider(int kInput, double lowerBoundInput, double upperBoundInput, InputFunctionType inputFunctionPtr = nullptr, 
     InputMethodType inputMethodPtr = nullptr, InputClass* objectPtr = nullptr) 
     : QuadratureRule<InputClass>(lowerBoundInput, upperBoundInput, inputFunctionPtr, inputMethodPtr, objectPtr), k(validateK(kInput)) {};
