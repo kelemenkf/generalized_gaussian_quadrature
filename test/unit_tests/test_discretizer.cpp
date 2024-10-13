@@ -42,6 +42,21 @@ struct DiscretizerFixture: public Discretizer<InputClass>
     {
         return this->getPrecision();
     }
+
+    bool testEvaluateStoppingCondition()
+    {
+        return this->evaluateStoppingCondition();
+    }
+
+    void testCalculateMeasures()
+    {
+        this->calculateMeasures();
+    }
+
+    std::vector<double> testGetMeasureVector() const
+    {
+        return this->getMeasureVector();
+    }
 };
 
 
@@ -56,6 +71,32 @@ BOOST_AUTO_TEST_CASE( TestDiscretizerValidation ) {
     BOOST_CHECK_NO_THROW(Discretizer<TestClass> discretizer(30, 0.01, lowerBound, upperBound, testFunction, nullptr, nullptr));
 }
 
+
+// BOOST_AUTO_TEST_CASE( TestEvaluateStoppingCondition ) {
+//     double lowerBound = 1;
+//     double upperBound = 2;
+//     const int k = 30;
+//     const double precision = 1e-6;
+
+//     DiscretizerFixture<TestClass> discretizer(k, precision, lowerBound, upperBound, singularTestFunction);
+//     discretizer.discretizationRoutine();
+// }
+
+
+BOOST_AUTO_TEST_CASE( TestDiscretizerCalculateMeasures ) {
+    double lowerBound = 1;
+    double upperBound = 2;
+    const int k = 30;
+    const double precision = 1e-6;
+
+    DiscretizerFixture<TestClass> discretizer(k, precision, lowerBound, upperBound, testFunction);
+    discretizer.testCalculateMeasures();
+
+    std::vector<double> measures = discretizer.testGetMeasureVector();
+
+    BOOST_CHECK_EQUAL(measures.size(), 1);
+}
+ 
 
 BOOST_AUTO_TEST_CASE( TestDiscretizerFindEndpoints ) {
     double lowerBound = 1;

@@ -17,7 +17,6 @@ protected:
     using InputMethodType = double (InputClass::*)(const double&);
     InputClass* objectPtr;
     InputMethodType methodPtr;
-    std::function<double(const double&)> method;
 
     using InputFunctionType = double(*)(const double&);
     InputFunctionType functionPtr;
@@ -29,8 +28,6 @@ public:
     functionPtr(function), methodPtr(inputMethod), objectPtr(inputObject)
     {
         validateFunctionExistence();
-        if (objectPtr && methodPtr)
-            method = std::bind(methodPtr, objectPtr, std::placeholders::_1);
     }
 
     ~QuadratureRule() 
@@ -52,12 +49,6 @@ private:
             throw std::invalid_argument("No function was supplied");
         }
     }
-
-
-protected:
-    double methodCaller(const double& value)
-    {
-        return method(value);
-    }
 };
+
 #endif

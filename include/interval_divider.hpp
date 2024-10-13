@@ -8,7 +8,6 @@
 #include <boost/numeric/ublas/operation.hpp>
 #include <cmath>
 #include "ggq.hpp"
-#include "utils.hpp"
 using namespace boost::numeric::ublas;
 
 template<typename InputClass>
@@ -25,15 +24,19 @@ private:
     double measure;
 
     using InputMethodType = double (InputClass::*)(const double&);
+    std::function<double(const double&)> method;
+
     using InputFunctionType = double(*)(const double&);
 
 
 public: 
-    IntervalDivider() {};
-    
     IntervalDivider(int kInput, double lowerBoundInput, double upperBoundInput, InputFunctionType inputFunctionPtr = nullptr, 
-    InputMethodType inputMethodPtr = nullptr, InputClass* objectPtr = nullptr) 
-    : QuadratureRule<InputClass>(lowerBoundInput, upperBoundInput, inputFunctionPtr, inputMethodPtr, objectPtr), k(validateK(kInput)) {};
+    InputMethodType inputMethodPtr = nullptr, InputClass* inputObjectPtr = nullptr) 
+    : QuadratureRule<InputClass>(lowerBoundInput, upperBoundInput, inputFunctionPtr, inputMethodPtr, inputObjectPtr), k(validateK(kInput)) 
+    {
+        if (this->objectPtr && this->methodPtr)
+            method = std::bind(this->methodPtr, this->objectPtr, std::placeholders::_1);
+    };
 
     ~IntervalDivider() {};
 
@@ -159,6 +162,11 @@ private:
 
 
 protected: 
+    double methodCaller(const double& value)
+    {
+        return method(value);
+    }
+
     inline double transformNode(double value) const
     {
         return ((this->upperBound - this->lowerBound) * value + (this->upperBound + this->lowerBound)) / 2;

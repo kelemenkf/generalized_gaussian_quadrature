@@ -1,11 +1,10 @@
 #ifndef DISCRETIZER_HPP
 #define DISCRETIZER_HPP
 
-#include "ggq.hpp"
 #include "interval_divider.hpp"
 
 template<typename InputClass>
-class Discretizer: public QuadratureRule<InputClass>
+class Discretizer: private QuadratureRule<InputClass>
 {
 private: 
     int k;
@@ -19,9 +18,10 @@ private:
 
 public:
     Discretizer(int kInput, double precisionInput, double lowerBoundInput, double upperBoundInput, InputFunctionType inputFunctionPtr = nullptr, 
-    InputMethodType inputMethodPtr = nullptr, InputClass* objectPtr = nullptr) 
-    : QuadratureRule<InputClass>(lowerBoundInput, upperBoundInput, inputFunctionPtr, inputMethodPtr, objectPtr), 
-    k(validateK(kInput)), precision(validatePrecision(precisionInput)) {
+    InputMethodType inputMethodPtr = nullptr, InputClass* inputObjectPtr = nullptr) 
+    : QuadratureRule<InputClass>(lowerBoundInput, upperBoundInput, inputFunctionPtr, inputMethodPtr, inputObjectPtr), 
+    k(validateK(kInput)), precision(validatePrecision(precisionInput))
+    {
         endpoints = {this->lowerBound, this->upperBound};
     };
 
@@ -29,29 +29,28 @@ public:
 
     void discretizationRoutine()
     {
+        calculateMeasures();
         while(!evaluateStoppingCondition())
         {
-            //Loop over endpoints, deteremine measure with interval_divider, update measurevector
-            measureVector.reserve(endpoints.size() - 1);
-            for (size_t i = 0; i < endpoints.size() - 1; ++i)
-            {
-                IntervalDivider<InputClass> divider;
-                if (this->functionPtr)
-                {
-                    divider = IntervalDivider<InputClass>(k, endpoints[i], endpoints[i+1], this->functionPtr, nullptr, nullptr);
-                }
-                else if (this->methodPtr)
-                {
-                    divider = IntervalDivider<InputClass>(k, endpoints[i], endpoints[i+1], nullptr, this->methodPtr, this->objectPtr);   
-                }
-                divider.processInterval();
+            calculateMeasures();
+        }
+    }
 
-                double measure;
-                measure = divider.getMeasure();
 
-                //Smart update so only previously unused intervals use measures
-                measureVector.push_back(measure);
-            }
+    void calculateMeasures()
+    {
+        measureVector.reserve(endpoints.size() - 1);
+        for (size_t i = 0; i < endpoints.size() - 1; ++i)
+        {
+            IntervalDivider<InputClass> divider(k, endpoints[i], endpoints[i+1], this->functionPtr, this->methodPtr, this->objectPtr);
+
+            divider.processInterval();
+
+            double measure;
+            measure = divider.getMeasure();
+
+            //Smart update so only previously unused intervals use measures
+            measureVector.push_back(measure);
         }
     }
 
@@ -62,6 +61,20 @@ public:
     }
 
 
+    std::vector<double> determineFinalNodes()
+    {
+        std::vector<std::vector<double>> nodes;
+        for (size_t i = 0; i < endpoints.size(); ++i)
+        {
+            IntervalDivider<InputClass> divider(k, endpoints[i], endpoints[i+1], this->functionPtr, this->methodPtr, this->objectPtr);
+            divider.calculateMesh();
+            divider.transformMehs();
+            nodes.push_back(divider.getTransformedMesh());
+        }
+
+        return nodes;
+    }
+
 
 private: 
     bool evaluateStoppingCondition()
@@ -70,6 +83,7 @@ private:
         std::vector<std::vector<double>::iterator> impreciseSubintervalIndeces;
         for (size_t i = 0; i < measureVector.size(); ++i)
         {
+            std::cout << measureVector[i] << " " << precision << std::endl;
             if (measureVector[i] >= precision)
             {
                 stop = false;
@@ -132,6 +146,12 @@ protected:
     double getPrecision() const
     {
         return precision;
+    }
+
+
+    std::vector<double> getMeasureVector() const
+    {
+        return measureVector;
     }
 };
 
