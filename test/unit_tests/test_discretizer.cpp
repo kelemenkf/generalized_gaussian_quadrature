@@ -39,6 +39,12 @@ double piecewiseSmoothFunction(const double& x)
 }
 
 
+double highlyOscillatoryFunction(const double& x)
+{
+    return sin(50 * x);
+}
+
+
 struct DiscretizerFixture: public Discretizer
 {
     using InputFunctionType = std::function<double(const double&)>;
@@ -129,7 +135,7 @@ BOOST_AUTO_TEST_CASE( TestDiscretizerValidation ) {
 // }
 
 
-BOOST_AUTO_TEST_CASE( TestDiscretizerFindEndpointsSingularFunction ) {
+BOOST_AUTO_TEST_CASE( TestDiscretizerFindEndpointsPiecewiseSmoothFunction ) {
     double lowerBound = 0;
     double upperBound = 2;
     const int k = 30;
@@ -147,6 +153,29 @@ BOOST_AUTO_TEST_CASE( TestDiscretizerFindEndpointsSingularFunction ) {
     {
         BOOST_CHECK_CLOSE_FRACTION(endpoints[i], expectedEndpoints[i], 1e-6);
     }
+}
+
+
+BOOST_AUTO_TEST_CASE( TestDiscretizerFindEndpointsHighlyOscillatoryFunction ) {
+    double lowerBound = 0;
+    double upperBound = 2;
+    const int k = 30;
+    const double precision = 1e-6;
+
+    DiscretizerFixture discretizer(k, precision, lowerBound, upperBound, highlyOscillatoryFunction);
+    discretizer.determineFinalEndpoints();
+
+    std::vector<double> endpoints = discretizer.getFinalEndpoints();
+    // std::vector<double> expectedEndpoints = {lowerBound, 1, upperBound};
+
+    // BOOST_CHECK_EQUAL(endpoints.size(), expectedEndpoints.size());
+
+    // for (size_t i = 0; i < endpoints.size(); ++i)
+    // {
+    //     BOOST_CHECK_CLOSE_FRACTION(endpoints[i], expectedEndpoints[i], 1e-6);
+    // }
+
+    displayVector(endpoints);
 }
 
 

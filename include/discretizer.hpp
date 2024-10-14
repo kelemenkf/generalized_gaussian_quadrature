@@ -76,6 +76,7 @@ public:
 
     std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>> determineFinalNodes()
     {
+        determineFinalEndpoints();
         std::vector<std::vector<double>> nodes;
         std::vector<std::vector<double>> values;
         for (size_t i = 0; i < endpoints.size() - 1; ++i)

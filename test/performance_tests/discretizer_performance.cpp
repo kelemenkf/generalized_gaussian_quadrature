@@ -28,6 +28,25 @@ double testFunction(const double& x)
 }
 
 
+double piecewiseSmoothFunction(const double& x)
+{
+    if (x <= 1)
+    {
+        return x * x;
+    }
+    else 
+    {
+        return 2 - x;
+    }
+}
+
+
+double highlyOscillatoryFunction(const double& x)
+{
+    return sin(50 * x);
+}
+
+
 void timeSingleFunctionDetermineFinalNodes()
 {
     auto start = high_resolution_clock::now();
@@ -50,9 +69,57 @@ void timeSingleFunctionDetermineFinalNodes()
 }
 
 
+void timePiecewiseSmoothFunctionDetermineFinalNodes()
+{
+    auto start = high_resolution_clock::now();
+
+    const int k = 30; 
+    const double lowerBound = 1; 
+    const double upperBound = 2;
+    const double precision = 1e-6;
+
+    Discretizer discretizer(k, precision, lowerBound, upperBound, piecewiseSmoothFunction);
+
+    std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>> result;
+    result = discretizer.determineFinalNodes();
+
+    auto end = high_resolution_clock::now();
+
+    auto duration = duration_cast<microseconds>(end - start);
+
+    std::cout << "Discretizes second order polynomial in " << duration.count() << std::endl;
+}
+
+
+void timeHighlyOsicllatoryFunctionDetermineFinalNodes()
+{
+    auto start = high_resolution_clock::now();
+
+    const int k = 30; 
+    const double lowerBound = 1; 
+    const double upperBound = 2;
+    const double precision = 1e-6;
+
+    Discretizer discretizer(k, precision, lowerBound, upperBound, highlyOscillatoryFunction);
+
+    std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>> result;
+    result = discretizer.determineFinalNodes();
+
+    auto end = high_resolution_clock::now();
+
+    auto duration = duration_cast<microseconds>(end - start);
+
+    std::cout << "Discretizes second order polynomial in " << duration.count() << std::endl;
+}
+
+
 int main()
 {
     timeSingleFunctionDetermineFinalNodes();
+
+    timePiecewiseSmoothFunctionDetermineFinalNodes();
+
+    timeHighlyOsicllatoryFunctionDetermineFinalNodes();
 
     return 0;
 }
