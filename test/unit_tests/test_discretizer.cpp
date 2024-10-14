@@ -136,4 +136,17 @@ BOOST_AUTO_TEST_CASE( TestDiscretizerFindEndpointsSingularFunction ) {
     }
 }
 
+
+BOOST_AUTO_TEST_CASE( TestDiscretizerGetFinalNodes ) {
+    double lowerBound = 1;
+    double upperBound = 2;
+    const int k = 30;
+    const double precision = 1e-6;
+
+    DiscretizerFixture discretizer(k, precision, lowerBound, upperBound, singularTestFunction);
+    discretizer.determineFinalEndpoints();
+
+    //TODO get final nodes, check size
+}
+
 BOOST_AUTO_TEST_SUITE_END()
