@@ -22,6 +22,7 @@ private:
     std::vector<double> lagrangeVector;
     double measure;
 
+    friend class Discretizer;
 
 public: 
     IntervalDivider(int kInput, double lowerBoundInput, double upperBoundInput, InputFunctionType inputFunctionPtr) 

@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE( TestDiscretizerFindEndpoints ) {
     const double precision = 1e-6;
 
     DiscretizerFixture discretizer(k, precision, lowerBound, upperBound, testFunction);
-    discretizer.discretizationRoutine();
+    discretizer.determineFinalEndpoints();
 
     std::vector<double> endpoints = discretizer.getFinalEndpoints();
     std::vector<double> expectedEndpoints = {lowerBound, upperBound};
@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE( TestDiscretizerFindEndpointsSingularFunction ) {
     const double precision = 1e-6;
 
     DiscretizerFixture discretizer(k, precision, lowerBound, upperBound, singularTestFunction);
-    discretizer.discretizationRoutine();
+    discretizer.determineFinalEndpoints();
 
     std::vector<double> endpoints = discretizer.getFinalEndpoints();
     std::vector<double> expectedEndpoints = {lowerBound, 0, upperBound};

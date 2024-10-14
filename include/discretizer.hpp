@@ -2,6 +2,7 @@
 #define DISCRETIZER_HPP
 
 #include "interval_divider.hpp"
+#include <tuple>
 
 class Discretizer: private QuadratureRule
 {
@@ -24,7 +25,19 @@ public:
 
     ~Discretizer() {};
 
-    void discretizationRoutine()
+
+    double getLowerBound() const
+    {
+        return lowerBound;
+    }
+
+    double getUpperBound() const 
+    {
+        return upperBound;
+    }
+
+
+    void determineFinalEndpoints()
     {
         calculateMeasures();
         while(!evaluateStoppingCondition())
@@ -58,18 +71,21 @@ public:
     }
 
 
-    std::vector<std::vector<double>> determineFinalNodes()
+    std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>> determineFinalNodes()
     {
         std::vector<std::vector<double>> nodes;
-        for (size_t i = 0; i < endpoints.size(); ++i)
+        std::vector<std::vector<double>> values;
+        for (size_t i = 0; i < endpoints.size() - 1; ++i)
         {
-            IntervalDivider divider(k, endpoints[i], endpoints[i+1], this->function);
-            // divider.calculateMesh();
-            // divider.transformMesh();
-            // nodes.push_back(divider.getTransformedMesh());
+            IntervalDivider divider(k / 2, endpoints[i], endpoints[i+1], this->function);
+            divider.calculateMesh();
+            divider.transformMesh();
+            divider.evaluateFunctionOnTransformedMesh();
+            nodes.push_back(divider.getTransformedMesh());
+            values.push_back(divider.getLagrangeVector());
         }
 
-        return nodes;
+        return {nodes, values};
     }
 
 
@@ -86,7 +102,6 @@ private:
         std::vector<std::vector<double>::iterator> impreciseSubintervalIndeces;
         for (size_t i = 0; i < measureVector.size(); ++i)
         {
-            std::cout << measureVector[i] << " " << precision << std::endl;
             if (measureVector[i] >= precision)
             {
                 stop = false;
