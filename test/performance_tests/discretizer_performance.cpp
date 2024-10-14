@@ -1,6 +1,24 @@
 #include <chrono>
+#include <numbers>
 #include "discretizer.hpp"
 using namespace std::chrono;
+using namespace std::numbers;
+
+double IFTReCh(const double& t, const double& x, const double& alpha, const double& beta)
+{
+    return cos(h(t, x, alpha, beta)) * pow(e, -alpha);
+}
+
+
+double h(const double& t, const double& x, const double& alpha, const double& beta)
+{
+    return (x-zeta(alpha, beta)) * t + zeta(alpha, beta)*pow(t,alpha);
+}
+
+double zeta(const double& alpha, const double& beta)
+{
+    return - beta * tan((alpha*pi) / 2);
+}
 
 
 double testFunction(const double& x)
@@ -27,7 +45,7 @@ void timeSingleFunctionDetermineFinalNodes()
 
     auto duration = duration_cast<microseconds>(end - start);
 
-    std::cout << "Discretizes x^2 in " << duration.count() << std::endl;
+    std::cout << "Discretizes second order polynomial in " << duration.count() << std::endl;
 }
 
 
