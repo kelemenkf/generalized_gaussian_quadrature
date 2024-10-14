@@ -4,9 +4,9 @@
 using namespace std::chrono;
 using namespace std::numbers;
 
-double IFTReCh(const double& t, const double& x, const double& alpha, const double& beta)
+double zeta(const double& alpha, const double& beta)
 {
-    return cos(h(t, x, alpha, beta)) * pow(e, -alpha);
+    return - beta * tan((alpha*pi) / 2);
 }
 
 
@@ -15,9 +15,10 @@ double h(const double& t, const double& x, const double& alpha, const double& be
     return (x-zeta(alpha, beta)) * t + zeta(alpha, beta)*pow(t,alpha);
 }
 
-double zeta(const double& alpha, const double& beta)
+
+double IFTReCh(const double& t, const double& x, const double& alpha, const double& beta)
 {
-    return - beta * tan((alpha*pi) / 2);
+    return cos(h(t, x, alpha, beta)) * pow(e, -alpha);
 }
 
 

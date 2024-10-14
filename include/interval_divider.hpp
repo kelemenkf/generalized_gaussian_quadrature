@@ -26,8 +26,7 @@ private:
 
 public: 
     IntervalDivider(int kInput, double lowerBoundInput, double upperBoundInput, InputFunctionType inputFunctionPtr) 
-    : QuadratureRule(lowerBoundInput, upperBoundInput, inputFunctionPtr), k(validateK(kInput)) 
-    {};
+    : QuadratureRule(lowerBoundInput, upperBoundInput, inputFunctionPtr), k(validateK(kInput)) {};
 
     ~IntervalDivider() {};
 
@@ -54,7 +53,7 @@ private:
     {
         for (size_t i = k; i <= 2*k - 1; ++i)
         {
-            measure += alphaVector[i] * alphaVector[i];
+            measure += (alphaVector[i] * alphaVector[i]);
         }
     }
 

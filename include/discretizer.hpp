@@ -40,6 +40,7 @@ public:
     void determineFinalEndpoints()
     {
         calculateMeasures();
+
         while(!evaluateStoppingCondition())
         {
             calculateMeasures();
@@ -61,7 +62,9 @@ public:
 
             //Smart update so only previously unused intervals use measures
             measureVector.push_back(measure);
+            std::cout << "Measure for interval [" << endpoints[i] << ", " << endpoints[i + 1] << "] is " << measure << std::endl;
         }
+        displayVector(measureVector);
     }
 
 
@@ -119,7 +122,7 @@ private:
 
     void determineNewEndpoints(const std::vector<std::vector<double>::iterator>& impreciseSubintervalIndeces)
     {
-        for (size_t i = impreciseSubintervalIndeces.size() - 1; i >= 0; --i)
+        for (size_t i = impreciseSubintervalIndeces.size(); i-- > 0;)
         {
             double newPoint = calculateNewEndpoint(*std::prev(impreciseSubintervalIndeces[i]), *impreciseSubintervalIndeces[i]);
             endpoints.insert(impreciseSubintervalIndeces[i], newPoint);
