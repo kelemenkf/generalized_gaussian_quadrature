@@ -26,7 +26,8 @@ private:
 
 public: 
     IntervalDivider(int kInput, double lowerBoundInput, double upperBoundInput, InputFunctionType inputFunctionPtr) 
-    : QuadratureRule(lowerBoundInput, upperBoundInput, inputFunctionPtr), k(validateK(kInput)) {};
+    : QuadratureRule(lowerBoundInput, upperBoundInput, inputFunctionPtr), k(validateK(kInput)) 
+    {};
 
     ~IntervalDivider() {};
 
