@@ -27,8 +27,6 @@ private:
     double upperBound;
     T handler;
 
-    friend class Discretizer;
-
 public: 
     IntervalDivider(int kInput, double lowerBoundInput, double upperBoundInput, const T& handlerInput) 
     : k(kInput), lowerBound(lowerBoundInput), upperBound(upperBoundInput), handler(handlerInput)
@@ -82,7 +80,7 @@ private:
             return this->handler.callFunction(value);
         });
     }
-    
+
 
     void invertMatrix() 
     {

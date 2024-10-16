@@ -20,6 +20,9 @@ double testFunction(const double& x)
 }
 
 
+FunctionHandler<> handler(testFunction);
+
+
 template<typename T>
 struct IntervalDividerFixture: public IntervalDivider<T>
 {
@@ -71,8 +74,7 @@ BOOST_AUTO_TEST_CASE( TestDividerValidation ) {
     double lowerBound = 1;
     double upperBound = 2;
 
-    BOOST_CHECK_THROW(IntervalDivider divider(-10, lowerBound, upperBound, testFunction), std::invalid_argument);
-    BOOST_CHECK_NO_THROW(IntervalDivider divider(30, lowerBound, upperBound, testFunction));
+    BOOST_CHECK_NO_THROW(IntervalDivider divider(30, lowerBound, upperBound, handler));
 }
 
 
@@ -82,7 +84,7 @@ BOOST_AUTO_TEST_CASE( TestLegendreMeshEven ) {
     int k = 1;
     std::vector<double> roots = {-0.57735, 0.57735};
 
-    IntervalDividerFixture divider(k, lowerBound, upperBound, testFunction);
+    IntervalDividerFixture divider(k, lowerBound, upperBound, handler);
 
     divider.processInterval();
 
@@ -107,7 +109,7 @@ BOOST_AUTO_TEST_CASE( TestLegendreMeshTransformed ) {
         return ((upperBound - lowerBound) * value + (upperBound + lowerBound)) / 2;
     });
 
-    IntervalDividerFixture divider(k, lowerBound, upperBound, testFunction);
+    IntervalDividerFixture divider(k, lowerBound, upperBound, handler);
 
     divider.processInterval();
 
@@ -129,7 +131,7 @@ BOOST_AUTO_TEST_CASE( TestLegendreMatrix ) {
     matrix<double> legendreMatrix;
     matrix<double> expectedMatrix(2*k, 2*k);
 
-    IntervalDividerFixture divider(k, lowerBound, upperBound, testFunction);
+    IntervalDividerFixture divider(k, lowerBound, upperBound, handler);
 
     divider.processInterval();
 
@@ -159,7 +161,7 @@ BOOST_AUTO_TEST_CASE( TestLagrangeVectorValues ) {
     double upperBound = 1;
     int k = 1;
 
-    IntervalDividerFixture divider(k, lowerBound, upperBound, testFunction);
+    IntervalDividerFixture divider(k, lowerBound, upperBound, handler);
     divider.processInterval();
 
     std::vector<double> roots = {-0.57735, 0.57735};
@@ -182,9 +184,11 @@ BOOST_AUTO_TEST_CASE( TestLagrangeVectorValuesWithPassedObject ) {
     TestClass testObject;
     TestClass* testObjectPtr = &testObject;
 
-    auto methodPtr = std::bind(&TestClass::testMethod, testObjectPtr, std::placeholders::_1);
+    auto method = std::bind(&TestClass::testMethod, testObjectPtr, std::placeholders::_1);
+    std::function<double(const double&)> methodPtr = method;
+    FunctionHandler<> handler(methodPtr);
 
-    IntervalDividerFixture divider(k, lowerBound, upperBound, methodPtr);
+    IntervalDividerFixture divider(k, lowerBound, upperBound, handler);
     divider.processInterval();
 
     std::vector<double> roots = {-0.57735, 0.57735};
@@ -210,7 +214,7 @@ BOOST_AUTO_TEST_CASE( TestLagrangeVectorValuesNonDefaultDomain ) {
         return ((upperBound - lowerBound) * value + (upperBound + lowerBound)) / 2;
     });
 
-    IntervalDividerFixture divider(k, lowerBound, upperBound, testFunction);
+    IntervalDividerFixture divider(k, lowerBound, upperBound, handler);
     divider.processInterval();
 
     std::vector<double> expectedInterpolationPoints = {testFunction(roots[0]), testFunction(roots[1])};
@@ -227,7 +231,7 @@ BOOST_AUTO_TEST_CASE( TestMatrixInversion ) {
     double lowerBound = -1;
     double upperBound = 1;
     int k = 30;
-    IntervalDividerFixture divider(k, lowerBound, upperBound, testFunction);
+    IntervalDividerFixture divider(k, lowerBound, upperBound, handler);
     divider.processInterval();
 
     matrix<double> legendreMatrix = divider.testGetLegendreMatrix();
@@ -255,7 +259,7 @@ BOOST_AUTO_TEST_CASE( TestAlphaVectorSolution ) {
     double lowerBound = -1;
     double upperBound = 1;
     int k = 2;
-    IntervalDividerFixture divider(k, lowerBound, upperBound, testFunction);
+    IntervalDividerFixture divider(k, lowerBound, upperBound, handler);
     divider.processInterval();
 
     vector<double> alphaVector = divider.testGetAlphaVector();
@@ -278,7 +282,7 @@ BOOST_AUTO_TEST_CASE( TestMeasureCalculation ) {
     double lowerBound = -1;
     double upperBound = 1;
     int k = 30;
-    IntervalDividerFixture divider(k, lowerBound, upperBound, testFunction);
+    IntervalDividerFixture divider(k, lowerBound, upperBound, handler);
     divider.processInterval();
 
     double measure = divider.getMeasure();
