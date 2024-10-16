@@ -46,9 +46,52 @@ public:
     }
 
 
+    void calculateLegendreNodes()
+    {
+        calculateMesh();
+        transformMesh();
+        evaluateFunctionOnTransformedMesh();
+    }
+
+
     double getMeasure() const
     {
         return measure;
+    }
+
+        std::vector<double> getLegendreMesh() const
+    {
+        return legendreMesh;
+    }
+
+    
+    std::vector<double> getTransformedMesh() const
+    {
+        return transformedMesh;
+    }
+
+
+    matrix<double> getLegendreMatrix() const
+    {
+        return legendreMatrix;
+    }
+
+
+    matrix<double> getInvertedLegendreMatrix() const
+    {
+        return invertedLegendreMatrix;
+    }
+
+
+    std::vector<double> getLagrangeVector() const
+    {
+        return lagrangeVector;
+    }
+
+
+    vector<double> getAlphaVector() const
+    {
+        return alphaVector;
     }
 
 
@@ -157,42 +200,6 @@ protected:
     inline double transformNode(double value) const
     {
         return ((this->upperBound - this->lowerBound) * value + (this->upperBound + this->lowerBound)) / 2;
-    }
-
-
-    std::vector<double> getLegendreMesh() const
-    {
-        return legendreMesh;
-    }
-
-    
-    std::vector<double> getTransformedMesh() const
-    {
-        return transformedMesh;
-    }
-
-
-    matrix<double> getLegendreMatrix() const
-    {
-        return legendreMatrix;
-    }
-
-
-    matrix<double> getInvertedLegendreMatrix() const
-    {
-        return invertedLegendreMatrix;
-    }
-
-
-    std::vector<double> getLagrangeVector() const
-    {
-        return lagrangeVector;
-    }
-
-
-    vector<double> getAlphaVector() const
-    {
-        return alphaVector;
     }
 };
 

@@ -47,6 +47,11 @@ double highlyOscillatoryFunction(const double& x)
 }
 
 
+FunctionHandler<> handlerPolynomial(testFunction);
+FunctionHandler<> handlerPiecewiseSmooth(piecewiseSmoothFunction);
+FunctionHandler<> handlerHighlyOscillatory(highlyOscillatoryFunction);
+
+
 void timeSingleFunctionDetermineFinalNodes()
 {
     auto start = high_resolution_clock::now();
@@ -56,7 +61,7 @@ void timeSingleFunctionDetermineFinalNodes()
     const double upperBound = 2;
     const double precision = 1e-6;
 
-    Discretizer discretizer(k, precision, lowerBound, upperBound, testFunction);
+    Discretizer discretizer(k, precision, lowerBound, upperBound, handlerPolynomial);
 
     std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>> result;
     result = discretizer.determineFinalNodes();
@@ -78,7 +83,7 @@ void timePiecewiseSmoothFunctionDetermineFinalNodes()
     const double upperBound = 2;
     const double precision = 1e-6;
 
-    Discretizer discretizer(k, precision, lowerBound, upperBound, piecewiseSmoothFunction);
+    Discretizer discretizer(k, precision, lowerBound, upperBound, handlerPiecewiseSmooth);
 
     std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>> result;
     result = discretizer.determineFinalNodes();
@@ -87,7 +92,7 @@ void timePiecewiseSmoothFunctionDetermineFinalNodes()
 
     auto duration = duration_cast<microseconds>(end - start);
 
-    std::cout << "Discretizes second order polynomial in " << duration.count() << std::endl;
+    std::cout << "Discretizes piecewise smooth in " << duration.count() << std::endl;
 }
 
 
@@ -100,7 +105,7 @@ void timeHighlyOsicllatoryFunctionDetermineFinalNodes()
     const double upperBound = 2;
     const double precision = 1e-6;
 
-    Discretizer discretizer(k, precision, lowerBound, upperBound, highlyOscillatoryFunction);
+    Discretizer discretizer(k, precision, lowerBound, upperBound, handlerHighlyOscillatory);
 
     std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>> result;
     result = discretizer.determineFinalNodes();
@@ -109,7 +114,7 @@ void timeHighlyOsicllatoryFunctionDetermineFinalNodes()
 
     auto duration = duration_cast<microseconds>(end - start);
 
-    std::cout << "Discretizes second order polynomial in " << duration.count() << std::endl;
+    std::cout << "Discretizes highly oscillatory in " << duration.count() << std::endl;
 }
 
 

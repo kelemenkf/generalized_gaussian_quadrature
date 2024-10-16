@@ -92,51 +92,40 @@ BOOST_AUTO_TEST_CASE( TestDiscretizerValidation ) {
 }
 
 
-// BOOST_AUTO_TEST_CASE( TestEvaluateStoppingCondition ) {
-//     double lowerBound = 1;
-//     double upperBound = 2;
-//     const int k = 30;
-//     const double precision = 1e-6;
+BOOST_AUTO_TEST_CASE( TestDiscretizerCalculateMeasures ) {
+    double lowerBound = 1;
+    double upperBound = 2;
+    const int k = 30;
+    const double precision = 1e-6;
 
-//     DiscretizerFixture discretizer(k, precision, lowerBound, upperBound, singularTestFunction);
-//     discretizer.discretizationRoutine();
-// }
+    DiscretizerFixture discretizer(k, precision, lowerBound, upperBound, handlerPolynomial);
+    discretizer.testCalculateMeasures();
 
+    std::vector<double> measures = discretizer.testGetMeasureVector();
 
-// BOOST_AUTO_TEST_CASE( TestDiscretizerCalculateMeasures ) {
-//     double lowerBound = 1;
-//     double upperBound = 2;
-//     const int k = 30;
-//     const double precision = 1e-6;
-
-//     DiscretizerFixture discretizer(k, precision, lowerBound, upperBound, testFunction);
-//     discretizer.testCalculateMeasures();
-
-//     std::vector<double> measures = discretizer.testGetMeasureVector();
-
-//     BOOST_CHECK_EQUAL(measures.size(), 1);
-// }
+    BOOST_CHECK_EQUAL(measures.size(), 1);
+}
  
 
-// BOOST_AUTO_TEST_CASE( TestDiscretizerFindEndpoints ) {
-//     double lowerBound = 1;
-//     double upperBound = 2;
-//     const int k = 30;
-//     const double precision = 1e-6;
+BOOST_AUTO_TEST_CASE( TestDiscretizerFindEndpoints ) {
+    double lowerBound = 1;
+    double upperBound = 2;
+    const int k = 30;
+    const double precision = 1e-6;
 
-//     DiscretizerFixture discretizer(k, precision, lowerBound, upperBound, testFunction);
-//     discretizer.determineFinalEndpoints();
+    DiscretizerFixture discretizer(k, precision, lowerBound, upperBound, handlerPolynomial);
+    discretizer.determineFinalEndpoints();
 
-//     std::vector<double> endpoints = discretizer.getFinalEndpoints();
-//     std::vector<double> expectedEndpoints = {lowerBound, upperBound};
+    std::vector<double> endpoints = discretizer.getFinalEndpoints();
+    std::vector<double> expectedEndpoints = {lowerBound, upperBound};
 
-//     BOOST_CHECK_EQUAL(endpoints.size(), expectedEndpoints.size());
+    BOOST_CHECK_EQUAL(endpoints.size(), expectedEndpoints.size());
 
-//     for (size_t i = 0; i < endpoints.size(); ++i)
-//     {
-//         BOOST_CHECK_CLOSE_FRACTION(endpoints[i], expectedEndpoints[i], 1e-6);
-//     }
-// }
+    for (size_t i = 0; i < endpoints.size(); ++i)
+    {
+        BOOST_CHECK_CLOSE_FRACTION(endpoints[i], expectedEndpoints[i], 1e-6);
+    }
+}
 
 
 BOOST_AUTO_TEST_CASE( TestDiscretizerFindEndpointsPiecewiseSmoothFunction ) {
@@ -159,40 +148,5 @@ BOOST_AUTO_TEST_CASE( TestDiscretizerFindEndpointsPiecewiseSmoothFunction ) {
     }
 }
 
-
-BOOST_AUTO_TEST_CASE( TestDiscretizerFindEndpointsHighlyOscillatoryFunction ) {
-    double lowerBound = 0;
-    double upperBound = 2;
-    const int k = 30;
-    const double precision = 1e-6;
-
-    DiscretizerFixture discretizer(k, precision, lowerBound, upperBound, handlerHighlyOscillatory);
-    discretizer.determineFinalEndpoints();
-
-    std::vector<double> endpoints = discretizer.getFinalEndpoints();
-    // std::vector<double> expectedEndpoints = {lowerBound, 1, upperBound};
-
-    // BOOST_CHECK_EQUAL(endpoints.size(), expectedEndpoints.size());
-
-    // for (size_t i = 0; i < endpoints.size(); ++i)
-    // {
-    //     BOOST_CHECK_CLOSE_FRACTION(endpoints[i], expectedEndpoints[i], 1e-6);
-    // }
-
-    displayVector(endpoints);
-}
-
-
-// BOOST_AUTO_TEST_CASE( TestDiscretizerGetFinalNodes ) {
-//     double lowerBound = 1;
-//     double upperBound = 2;
-//     const int k = 30;
-//     const double precision = 1e-6;
-
-//     DiscretizerFixture discretizer(k, precision, lowerBound, upperBound, singularTestFunction);
-//     discretizer.determineFinalEndpoints();
-
-//     //TODO get final nodes, check size
-// }
 
 BOOST_AUTO_TEST_SUITE_END()

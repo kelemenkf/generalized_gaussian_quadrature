@@ -2,25 +2,25 @@
 add_executable(test_ggq unit_tests/test_ggq.cpp)
 add_executable(test_discretizer unit_tests/test_discretizer.cpp)
 add_executable(test_interval_divider unit_tests/test_interval_divider.cpp)
-# add_executable(discretizer_performance performance_tests/discretizer_performance.cpp)
+add_executable(discretizer_performance performance_tests/discretizer_performance.cpp)
 add_executable(test_function_handler unit_tests/test_function_handler.cpp)
 
 #Link library
 target_link_libraries(test_ggq ggq_library)
 target_link_libraries(test_discretizer ggq_library)
 target_link_libraries(test_interval_divider ggq_library)
-# target_link_libraries(discretizer_performance ggq_library)
+target_link_libraries(discretizer_performance ggq_library)
 
 # Specify the include directories for the test executables
 target_include_directories(test_ggq PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(test_discretizer PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(test_interval_divider PRIVATE ${PROJECT_SOURCE_DIR}/include)
-# target_include_directories(discretizer_performance PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(discretizer_performance PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(test_function_handler PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
 #Link testing framework
 target_link_libraries(test_ggq Boost::unit_test_framework)
 target_link_libraries(test_discretizer Boost::unit_test_framework)
 target_link_libraries(test_interval_divider Boost::unit_test_framework)
-# target_link_libraries(discretizer_performance Boost::unit_test_framework)
+target_link_libraries(discretizer_performance Boost::unit_test_framework)
 target_link_libraries(test_function_handler Boost::unit_test_framework)

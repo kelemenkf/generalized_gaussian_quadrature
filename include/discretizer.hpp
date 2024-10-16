@@ -16,7 +16,6 @@ private:
     std::vector<double> measureVector;
     T handler;
 
-
 public:
     Discretizer(int kInput, double precisionInput, double lowerBoundInput, double upperBoundInput, const T& handlerInput) 
     : k(validateK(kInput)), precision(validatePrecision(precisionInput)), lowerBound(lowerBoundInput), upperBound(upperBoundInput), handler(handlerInput)
@@ -82,10 +81,8 @@ public:
         std::vector<std::vector<double>> values;
         for (size_t i = 0; i < endpoints.size() - 1; ++i)
         {
-            IntervalDivider divider(k / 2, endpoints[i], endpoints[i+1], this->function);
-            divider.calculateMesh();
-            divider.transformMesh();
-            divider.evaluateFunctionOnTransformedMesh();
+            IntervalDivider divider(k / 2, endpoints[i], endpoints[i+1], handler);
+            divider.calculateLegendreNodes();
             nodes.push_back(divider.getTransformedMesh());
             values.push_back(divider.getLagrangeVector());
         }
