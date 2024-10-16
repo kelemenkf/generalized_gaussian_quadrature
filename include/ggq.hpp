@@ -9,21 +9,19 @@
 #include "function_handler.hpp"
 
 
+template<typename T>
 class QuadratureRule
 {
 protected:
     double lowerBound;
     double upperBound;
-
-    using InputFunctionType = std::function<double(const double&)>;
-    InputFunctionType function;
-
+    T handler;
 
 public:
-    QuadratureRule(double lowerBoundInput, double upperBoundInput, InputFunctionType functionInput) : lowerBound(lowerBoundInput), upperBound(upperBoundInput),
-    function(functionInput)
+    QuadratureRule(double lowerBoundInput, double upperBoundInput, const T& handler) 
+    : lowerBound(lowerBoundInput), upperBound(upperBoundInput), handler(handler)
     {
-        validateFunctionExistence();
+        
     }
 
     ~QuadratureRule() 
@@ -33,15 +31,6 @@ public:
 
     void discretizeFunctions()
     {
-    }
-
-
-private: 
-    void validateFunctionExistence()
-    {
-        if (!function) {
-            throw std::runtime_error("Function is not initialized.");
-        }
     }
 };
 

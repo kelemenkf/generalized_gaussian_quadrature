@@ -20,12 +20,11 @@ double testFunction(const double& x)
 }
 
 
-struct IntervalDividerFixture: public IntervalDivider
+template<typename T>
+struct IntervalDividerFixture: public IntervalDivider<T>
 {
-    using InputFunctionType = std::function<double(const double&)>;
-
-    IntervalDividerFixture(int kInput, double lowerBoundInput, double upperBoundInput, InputFunctionType inputFunctionPtr = nullptr) 
-    : IntervalDivider(kInput, lowerBoundInput, upperBoundInput, inputFunctionPtr) {};
+    IntervalDividerFixture(int kInput, double lowerBoundInput, double upperBoundInput, const T& handlerInput) 
+    : IntervalDivider<T>(kInput, lowerBoundInput, upperBoundInput, handlerInput) {};
 
     ~IntervalDividerFixture() {};
 

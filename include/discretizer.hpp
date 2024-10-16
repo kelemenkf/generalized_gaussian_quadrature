@@ -4,21 +4,22 @@
 #include "interval_divider.hpp"
 #include <tuple>
 
-class Discretizer: private QuadratureRule
+template<typename T>
+class Discretizer
 {
 private: 
     int k;
     double precision;
+    double lowerBound;
+    double upperBound;
     std::vector<double> endpoints;
     std::vector<double> measureVector;
+    T handler
 
 
 public:
-    using InputFunctionType = std::function<double(const double&)>;
-
-    Discretizer(int kInput, double precisionInput, double lowerBoundInput, double upperBoundInput, InputFunctionType inputFunctionPtr) 
-    : QuadratureRule(lowerBoundInput, upperBoundInput, inputFunctionPtr), 
-    k(validateK(kInput)), precision(validatePrecision(precisionInput))
+    Discretizer(int kInput, double precisionInput, double lowerBoundInput, double upperBoundInput, const T& handlerInput) 
+    : k(validateK(kInput)), precision(validatePrecision(precisionInput)), lowerBound(lowerBoundInput), upperBound(upperBoundInput), handler(handlerInput)
     {
         endpoints = {this->lowerBound, this->upperBound};
     };
@@ -53,7 +54,7 @@ public:
         measureVector.reserve(endpoints.size() - 1);
         for (size_t i = 0; i < endpoints.size() - 1; ++i)
         {
-            IntervalDivider divider(k, endpoints[i], endpoints[i+1], this->function);
+            IntervalDivider divider(k, endpoints[i], endpoints[i+1], handler);
 
             divider.processInterval();
 
@@ -90,12 +91,6 @@ public:
         }
 
         return {nodes, values};
-    }
-
-
-    double evaluateFunction(const double& value)
-    {
-        return function(value);
     }
 
 

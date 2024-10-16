@@ -41,10 +41,10 @@ BOOST_AUTO_TEST_CASE( TestParamSpaceConstruction ) {
 }
 
 
-BOOST_AUTO_TEST_CASE( TestFunctionProcessing1Param ) {
+BOOST_AUTO_TEST_CASE( TestFunctionProcessing0Param ) {
     std::vector<double> param1 = {2, 3, 5, 6, 7, 0};
 
-    FunctionHandler<std::vector<double>> handler(testFunction, param1);
+    FunctionHandler<> handler(testFunction);
 
     double testValue;
     testValue = handler.callFunction(5);

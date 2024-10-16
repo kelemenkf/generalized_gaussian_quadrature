@@ -10,7 +10,9 @@
 #include "ggq.hpp"
 using namespace boost::numeric::ublas;
 
-class IntervalDivider: private QuadratureRule
+
+template<typename T>
+class IntervalDivider
 {
 private: 
     int k;
@@ -21,12 +23,15 @@ private:
     vector<double> alphaVector;
     std::vector<double> lagrangeVector;
     double measure;
+    double lowerBound;
+    double upperBound;
+    T handler;
 
     friend class Discretizer;
 
 public: 
-    IntervalDivider(int kInput, double lowerBoundInput, double upperBoundInput, InputFunctionType inputFunctionPtr) 
-    : QuadratureRule(lowerBoundInput, upperBoundInput, inputFunctionPtr), k(validateK(kInput)) 
+    IntervalDivider(int kInput, double lowerBoundInput, double upperBoundInput, const T& handlerInput) 
+    : k(kInput), lowerBound(lowerBoundInput), upperBound(upperBoundInput), handler(handlerInput)
     {};
 
     ~IntervalDivider() {};
@@ -74,9 +79,10 @@ private:
     {
         lagrangeVector.resize(legendreMesh.size());
         std::transform(transformedMesh.begin(), transformedMesh.end(), lagrangeVector.begin(), [this](double value){
-            return this->function(value);
+            return this->handler.callFunction(value);
         });
     }
+    
 
     void invertMatrix() 
     {
@@ -150,11 +156,6 @@ private:
 
 
 protected: 
-    double methodCaller(const double& value)
-    {
-        return function(value);
-    }
-
     inline double transformNode(double value) const
     {
         return ((this->upperBound - this->lowerBound) * value + (this->upperBound + this->lowerBound)) / 2;
