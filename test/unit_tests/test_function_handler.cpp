@@ -31,22 +31,20 @@ BOOST_AUTO_TEST_SUITE( FunctionHandlerTestSuite )
 
 BOOST_AUTO_TEST_CASE( TestParamSpaceConstruction ) {
     std::vector<double> param1 = {2, 3, 5, 6, 7, 0};
-    std::vector<double> param2 = {1, 25, 7, 3, 6, 2};
 
-    FunctionHandler<std::vector<double>, std::vector<double>> handler(testFunction, param1, param2);
+    FunctionHandler<std::vector<double>> handler(testFunction, param1);
 
     std::vector<std::vector<double>> paramSpace = handler.getParamSpace();
 
-    BOOST_CHECK_EQUAL(paramSpace.size(), 2);
+    BOOST_CHECK_EQUAL(paramSpace.size(), 1);
     BOOST_CHECK_EQUAL(paramSpace[0].size(), 6);
 }
 
 
 BOOST_AUTO_TEST_CASE( TestFunctionProcessing1Param ) {
     std::vector<double> param1 = {2, 3, 5, 6, 7, 0};
-    std::vector<double> param2 = {1, 25, 7, 3, 6, 2};
 
-    FunctionHandler<std::vector<double>, std::vector<double>> handler(testFunction, param1, param2);
+    FunctionHandler<std::vector<double>> handler(testFunction, param1);
 
     double testValue;
     testValue = handler.callFunction(5);
@@ -58,8 +56,9 @@ BOOST_AUTO_TEST_CASE( TestFunctionProcessing1Param ) {
 BOOST_AUTO_TEST_CASE( TestFunctionProcessing3Param ) {
     std::vector<double> param1 = {2, 3, 5, 6, 7, 0};
     std::vector<double> param2 = {1, 25, 7, 3, 6, 2};
+    std::vector<double> param3 = {1, 4, 6, 43, 56, 90};
 
-    FunctionHandler<std::vector<double>, std::vector<double>> handler(testFunction3Params, param1, param2);
+    FunctionHandler<std::vector<double>, std::vector<double>, std::vector<double>> handler(testFunction3Params, param1, param2, param3);
 
     double testValue;
     testValue = handler.callFunction(5, 2, 4, -6);

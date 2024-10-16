@@ -16,11 +16,14 @@ private:
 
     InputFunction functionVariant;
     std::vector<std::vector<double>> paramSpace; 
+    size_t numberOfParameters;
+
 
 public:
     FunctionHandler(InputFunction inputFunction, Args... args) : functionVariant(inputFunction) 
     {
         (paramSpace.push_back(args),...);
+        numberOfParameters = sizeof...(args);
     }
 
 
@@ -32,26 +35,22 @@ public:
 
     double callFunction(double x, double param1 = 0, double param2 = 0, double param3 = 0) 
     {
-        std::vector<size_t> typeIndex = {0, 1};
-        for (size_t index: typeIndex)
+        if (numberOfParameters == 1) 
         {
-            if (index == 0) 
+            if (auto functionPtr = std::get_if<std::function<double(const double&)>>(&functionVariant)) 
             {
-                if (auto functionPtr = std::get_if<std::function<double(const double&)>>(&functionVariant)) 
-                {
-                    return (*functionPtr)(x);
-                }
-            } 
-            else if (index == 1)
+                return (*functionPtr)(x);
+            }
+        } 
+        else if (numberOfParameters == 3)
+        {
+            if (auto functionPtr = std::get_if<std::function<double(const double&, const double&, const double&, const double&)>>(&functionVariant))
             {
-                if (auto functionPtr = std::get_if<std::function<double(const double&, const double&, const double&, const double&)>>(&functionVariant))
-                {
-                    return (*functionPtr)(x, param1, param2, param3);
-                }
+                return (*functionPtr)(x, param1, param2, param3);
             }
         }
     }
 
- 
+
 private:
 };
