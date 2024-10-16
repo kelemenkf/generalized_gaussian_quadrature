@@ -6,6 +6,8 @@
 #include <iostream>
 #include <algorithm>
 #include "utils.hpp"
+#include "function_handler.hpp"
+
 
 class QuadratureRule
 {

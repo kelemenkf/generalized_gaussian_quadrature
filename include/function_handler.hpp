@@ -4,7 +4,7 @@
 #include <cstdarg> 
 #include <vector>
 
-template<typename... Args>
+template<typename... Parameter>
 class FunctionHandler
 {
 private:
@@ -20,10 +20,10 @@ private:
 
 
 public:
-    FunctionHandler(InputFunction inputFunction, Args... args) : functionVariant(inputFunction) 
+    FunctionHandler(InputFunction inputFunction, Parameter... parameters) : functionVariant(inputFunction) 
     {
-        (paramSpace.push_back(args),...);
-        numberOfParameters = sizeof...(args);
+        (paramSpace.push_back(parameters),...);
+        numberOfParameters = sizeof...(parameters);
     }
 
 
@@ -48,6 +48,10 @@ public:
             {
                 return (*functionPtr)(x, param1, param2, param3);
             }
+        }
+        else
+        {
+            throw std::runtime_error("Number of parameters is not consistent with passed function");
         }
     }
 
