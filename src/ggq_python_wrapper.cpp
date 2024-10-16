@@ -7,10 +7,10 @@ namespace py = pybind11;
 
 using InputFunction = std::variant
 <
-    std::function<double(const double&)>,
-    std::function<double(const double&, const double&)>,
-    std::function<double(const double&, const double&, const double&)>,
-    std::function<double(const double&, const double&, const double&, const double&)>
+    std::function<double(double&)>,
+    std::function<double(double&, double&)>,
+    std::function<double(double&, double&, double&)>,
+    std::function<double(double&, double&, double&, double&)>
 >;
 
 
@@ -21,7 +21,8 @@ void declare_function_handler(py::module& m, const std::string& suffix) {
 
     py::class_<Class>(m, class_name.c_str())
         .def(py::init<InputFunction, Parameters...>())
-        // Bind other methods here
+        .def("get_params", &Class::getNumberOfParameters)
+        .def("call_function", &Class::callFunction)
         ;
 }
 
@@ -39,7 +40,7 @@ void declare_discretizer(py::module& m, const std::string& suffix) {
         .def("determine_final_nodes", &Discretizer::determineFinalNodes)
         .def("get_lower_bound", &Discretizer::getLowerBound)
         .def("get_upper_bound", &Discretizer::getUpperBound)
-        ;
+    ;
 }
 
 
