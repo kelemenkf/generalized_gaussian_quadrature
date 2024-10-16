@@ -45,12 +45,16 @@ double highlyOscillatoryFunction(const double& x)
 }
 
 
-struct DiscretizerFixture: public Discretizer
-{
-    using InputFunctionType = std::function<double(const double&)>;
+FunctionHandler<> handlerPolynomial(testFunction);
+FunctionHandler<> handlerPiecewiseSmooth(piecewiseSmoothFunction);
+FunctionHandler<> handlerHighlyOscillatory(highlyOscillatoryFunction);
 
-    DiscretizerFixture(int kInput, double precisionInput, double lowerBoundInput, double upperBoundInput, InputFunctionType inputFunctionPtr = nullptr) 
-    : Discretizer (kInput, precisionInput, lowerBoundInput, upperBoundInput, inputFunctionPtr) {};
+
+template<typename T>
+struct DiscretizerFixture: public Discretizer<T>
+{
+    DiscretizerFixture(int kInput, double precisionInput, double lowerBoundInput, double upperBoundInput, const T& handlerInput) 
+    : Discretizer<T> (kInput, precisionInput, lowerBoundInput, upperBoundInput, handlerInput) {};
 
     ~DiscretizerFixture() {};
 
@@ -82,9 +86,9 @@ BOOST_AUTO_TEST_CASE( TestDiscretizerValidation ) {
     double lowerBound = 1;
     double upperBound = 2;
 
-    BOOST_CHECK_THROW(Discretizer discretizer(-10, 0.01, lowerBound, upperBound, testFunction), std::invalid_argument);
-    BOOST_CHECK_THROW(Discretizer discretizer(30, -0.01, lowerBound, upperBound, testFunction), std::invalid_argument);
-    BOOST_CHECK_NO_THROW(Discretizer discretizer(30, 0.01, lowerBound, upperBound, testFunction));
+    BOOST_CHECK_THROW(DiscretizerFixture discretizer(-10, 0.01, lowerBound, upperBound, handlerPolynomial), std::invalid_argument);
+    BOOST_CHECK_THROW(DiscretizerFixture discretizer(30, -0.01, lowerBound, upperBound, handlerPolynomial), std::invalid_argument);
+    BOOST_CHECK_NO_THROW(DiscretizerFixture discretizer(30, 0.01, lowerBound, upperBound, handlerPolynomial));
 }
 
 
@@ -141,7 +145,7 @@ BOOST_AUTO_TEST_CASE( TestDiscretizerFindEndpointsPiecewiseSmoothFunction ) {
     const int k = 30;
     const double precision = 1e-6;
 
-    DiscretizerFixture discretizer(k, precision, lowerBound, upperBound, piecewiseSmoothFunction);
+    DiscretizerFixture discretizer(k, precision, lowerBound, upperBound, handlerPiecewiseSmooth);
     discretizer.determineFinalEndpoints();
 
     std::vector<double> endpoints = discretizer.getFinalEndpoints();
@@ -162,7 +166,7 @@ BOOST_AUTO_TEST_CASE( TestDiscretizerFindEndpointsHighlyOscillatoryFunction ) {
     const int k = 30;
     const double precision = 1e-6;
 
-    DiscretizerFixture discretizer(k, precision, lowerBound, upperBound, highlyOscillatoryFunction);
+    DiscretizerFixture discretizer(k, precision, lowerBound, upperBound, handlerHighlyOscillatory);
     discretizer.determineFinalEndpoints();
 
     std::vector<double> endpoints = discretizer.getFinalEndpoints();

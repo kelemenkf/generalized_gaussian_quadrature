@@ -14,7 +14,7 @@ private:
     double upperBound;
     std::vector<double> endpoints;
     std::vector<double> measureVector;
-    T handler
+    T handler;
 
 
 public:
