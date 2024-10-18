@@ -2,6 +2,7 @@
 #define DISCRETIZER_HPP
 
 #include "interval_divider.hpp"
+#include "utils.hpp"
 #include <tuple>
 
 template<typename T>
@@ -51,6 +52,8 @@ public:
     void calculateMeasures()
     {
         measureVector.reserve(endpoints.size() - 1);
+        displayVector(endpoints);
+        std::cout << k << std::endl;
         for (size_t i = 0; i < endpoints.size() - 1; ++i)
         {
             IntervalDivider divider(k, endpoints[i], endpoints[i+1], handler);
@@ -64,7 +67,6 @@ public:
             measureVector.push_back(measure);
             std::cout << "Measure for interval [" << endpoints[i] << ", " << endpoints[i + 1] << "] is " << measure << std::endl;
         }
-        displayVector(measureVector);
     }
 
 

@@ -73,8 +73,7 @@ BOOST_AUTO_TEST_CASE( TestFunctionProcessingInvalidParam ) {
 
     FunctionHandler<std::vector<double>, std::vector<double>> handler(testFunction3Params, param1, param2);
 
-    double testValue;
-    BOOST_CHECK_THROW(testValue = handler.callFunction(5, 2, 4, -6), std::runtime_error);
+    BOOST_CHECK_THROW(handler.callFunction(5, 2, 4, -6), std::runtime_error);
 }
 
 

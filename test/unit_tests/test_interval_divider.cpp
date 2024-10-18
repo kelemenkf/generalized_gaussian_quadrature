@@ -2,6 +2,7 @@
 #include <iostream>
 #include <boost/test/included/unit_test.hpp>
 #include "interval_divider.hpp"
+#include "function_handler.hpp"
 
 
 class TestClass
@@ -281,6 +282,19 @@ BOOST_AUTO_TEST_CASE( TestAlphaVectorSolution ) {
 BOOST_AUTO_TEST_CASE( TestMeasureCalculation ) {
     double lowerBound = -1;
     double upperBound = 1;
+    int k = 30;
+    IntervalDividerFixture divider(k, lowerBound, upperBound, handler);
+    divider.processInterval();
+
+    double measure = divider.getMeasure();
+
+    BOOST_CHECK_GT(measure, 0);
+}
+
+
+BOOST_AUTO_TEST_CASE( TestMeasureCalculationNonStandardInterval ) {
+    double lowerBound = 1;
+    double upperBound = 2;
     int k = 30;
     IntervalDividerFixture divider(k, lowerBound, upperBound, handler);
     divider.processInterval();

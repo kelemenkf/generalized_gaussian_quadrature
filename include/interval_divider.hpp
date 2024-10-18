@@ -7,7 +7,6 @@
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/numeric/ublas/operation.hpp>
 #include <cmath>
-#include "ggq.hpp"
 using namespace boost::numeric::ublas;
 
 
@@ -59,7 +58,8 @@ public:
         return measure;
     }
 
-        std::vector<double> getLegendreMesh() const
+    
+    std::vector<double> getLegendreMesh() const
     {
         return legendreMesh;
     }
@@ -98,6 +98,7 @@ public:
 private: 
     void calculateSquaredAlphas()
     {
+        measure = 0;
         for (size_t i = k; i <= 2*k - 1; ++i)
         {
             measure += (alphaVector[i] * alphaVector[i]);
@@ -120,7 +121,14 @@ private:
     {
         lagrangeVector.resize(legendreMesh.size());
         std::transform(transformedMesh.begin(), transformedMesh.end(), lagrangeVector.begin(), [this](double value){
-            return this->handler.callFunction(value);
+            if (handler.pythonFlag)
+            {
+                return this->handler.callFunctionPython(value);
+            }
+            else 
+            {
+                return this->handler.callFunction(value);
+            }
         });
     }
 

@@ -9,6 +9,7 @@ add_executable(test_function_handler unit_tests/test_function_handler.cpp)
 target_link_libraries(test_ggq ggq_library)
 target_link_libraries(test_discretizer ggq_library)
 target_link_libraries(test_interval_divider ggq_library)
+target_link_libraries(test_function_handler ggq_library)
 target_link_libraries(discretizer_performance ggq_library)
 
 # Specify the include directories for the test executables

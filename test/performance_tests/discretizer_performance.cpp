@@ -1,6 +1,7 @@
 #include <chrono>
 #include <numbers>
 #include "discretizer.hpp"
+#include "function_handler.hpp"
 using namespace std::chrono;
 using namespace std::numbers;
 
@@ -18,7 +19,7 @@ double h(const double& t, const double& x, const double& alpha, const double& be
 
 double IFTReCh(const double& t, const double& x, const double& alpha, const double& beta)
 {
-    return cos(h(t, x, alpha, beta)) * pow(e, -alpha);
+    return cos(h(t, x, alpha, beta)) * exp(-pow(t, alpha));
 }
 
 
@@ -47,9 +48,15 @@ double highlyOscillatoryFunction(const double& x)
 }
 
 
+
 FunctionHandler<> handlerPolynomial(testFunction);
 FunctionHandler<> handlerPiecewiseSmooth(piecewiseSmoothFunction);
 FunctionHandler<> handlerHighlyOscillatory(highlyOscillatoryFunction);
+std::vector<double> x = {10};
+std::vector<double> alpha = {0.5};
+std::vector<double> beta = {0};
+FunctionHandler<std::vector<double>, std::vector<double>, std::vector<double>> handlerStable(IFTReCh, x, alpha, beta);
+
 
 
 void timeSingleFunctionDetermineFinalNodes()
@@ -117,6 +124,27 @@ void timeHighlyOsicllatoryFunctionDetermineFinalNodes()
     std::cout << "Discretizes highly oscillatory in " << duration.count() << std::endl;
 }
 
+void timeStableDetermineFinalNodes()
+{
+    auto start = high_resolution_clock::now();
+
+    const int k = 30; 
+    const double lowerBound = 0; 
+    const double upperBound = 20;
+    const double precision = 1e-5;
+
+    Discretizer discretizer(k, precision, lowerBound, upperBound, handlerStable);
+
+    std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>> result;
+    result = discretizer.determineFinalNodes();
+
+    auto end = high_resolution_clock::now();
+
+    auto duration = duration_cast<seconds>(end - start);
+
+    std::cout << "Discretizes stable in " << duration.count() << std::endl;
+}
+
 
 int main()
 {
@@ -124,7 +152,9 @@ int main()
 
     timePiecewiseSmoothFunctionDetermineFinalNodes();
 
-    timeHighlyOsicllatoryFunctionDetermineFinalNodes();
+    // timeHighlyOsicllatoryFunctionDetermineFinalNodes();
+
+    timeStableDetermineFinalNodes();
 
     return 0;
 }
