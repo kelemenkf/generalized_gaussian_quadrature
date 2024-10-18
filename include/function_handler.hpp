@@ -32,14 +32,6 @@ public:
 
 
 public:
-    // FunctionHandler(py::function inputFunction, Parameter... parameters) : function(inputFunction)
-    // {
-    //     (paramSpace.push_back(parameters),...);
-    //     numberOfParameters = sizeof...(parameters);
-    //     pythonFlag = true;
-    // }
-    
-    
     FunctionHandler(InputFunction inputFunction, Parameter... parameters) : functionVariant(inputFunction) 
     {
         (paramSpace.push_back(parameters),...);

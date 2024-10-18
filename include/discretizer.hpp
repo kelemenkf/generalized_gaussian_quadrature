@@ -52,7 +52,6 @@ public:
     void calculateMeasures()
     {
         measureVector.reserve(endpoints.size() - 1);
-        std::cout << k << std::endl;
         for (size_t i = 0; i < endpoints.size() - 1; ++i)
         {
             IntervalDivider divider(k, endpoints[i], endpoints[i+1], handler);
@@ -64,7 +63,6 @@ public:
 
             //Smart update so only previously unused intervals use measures
             measureVector.push_back(measure);
-            std::cout << "Measure for interval [" << endpoints[i] << ", " << endpoints[i + 1] << "] is " << measure << std::endl;
         }
     }
 

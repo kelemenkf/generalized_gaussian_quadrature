@@ -40,20 +40,15 @@ void declare_quadrature(py::module& m, const std::string& suffix) {
 
 
 PYBIND11_MODULE(ggq, m) {
-    std::cout << "A" << std::endl;
     declare_function_handler<>(m, "0Param");
     declare_function_handler<std::vector<double>>(m, "1Param");
     declare_function_handler<std::vector<double>, std::vector<double>>(m, "2Param");
     declare_function_handler<std::vector<double>, std::vector<double>, std::vector<double>>(m, "3Param");
-    std::cout << "b" << std::endl;
-
 
     declare_quadrature<>(m, "0Param");
     declare_quadrature<std::vector<double>>(m, "1Param");
     declare_quadrature<std::vector<double>, std::vector<double>>(m, "2Param");
     declare_quadrature<std::vector<double>, std::vector<double>, std::vector<double>>(m, "3Param");
-
-    std::cout << "c" << std::endl;
 
     m.def("test_function", [](){ return "Carey nem mariah"; });
 }
