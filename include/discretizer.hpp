@@ -52,7 +52,6 @@ public:
     void calculateMeasures()
     {
         measureVector.reserve(endpoints.size() - 1);
-        displayVector(endpoints);
         std::cout << k << std::endl;
         for (size_t i = 0; i < endpoints.size() - 1; ++i)
         {

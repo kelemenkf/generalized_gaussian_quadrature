@@ -98,7 +98,7 @@ public:
 private: 
     void calculateSquaredAlphas()
     {
-        measure = 0;
+        std::cout << measure << std::endl;
         for (size_t i = k; i <= 2*k - 1; ++i)
         {
             measure += (alphaVector[i] * alphaVector[i]);
@@ -114,6 +114,7 @@ private:
             lagrangeVectorUblas(i) = lagrangeVector[i];
         }
         alphaVector = prod(invertedLegendreMatrix, lagrangeVectorUblas);
+        std::cout << alphaVector << std::endl;
     }
 
 
@@ -121,6 +122,7 @@ private:
     {
         lagrangeVector.resize(legendreMesh.size());
         std::transform(transformedMesh.begin(), transformedMesh.end(), lagrangeVector.begin(), [this](double value){
+            std::cout << this->handler.callFunction(value) << " ";
             return this->handler.callFunction(value);
         });
     }

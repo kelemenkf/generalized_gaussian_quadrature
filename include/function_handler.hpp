@@ -89,7 +89,7 @@ public:
         }
         else if (index == 0)
         {
-            callFunctionPython(x, param1, param2, param3);
+            return callFunctionPython(x, param1, param2, param3);
         }
         else
         {
