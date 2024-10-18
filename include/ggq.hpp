@@ -6,7 +6,6 @@
 #include <iostream>
 #include <algorithm>
 #include <numbers>
-#include "utils.hpp"
 #include "function_handler.hpp"
 #include "discretizer.hpp"
 using namespace std::numbers;
