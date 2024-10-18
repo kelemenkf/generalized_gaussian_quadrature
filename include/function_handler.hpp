@@ -33,7 +33,7 @@ public:
 
 
 public:
-    FunctionHandler(py::function inputFunction, Parameter... parameters) : function(inputFunction) 
+    FunctionHandler(py::function inputFunction, Parameter... parameters) : function(inputFunction)
     {
         (paramSpace.push_back(parameters),...);
         numberOfParameters = sizeof...(parameters);
