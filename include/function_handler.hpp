@@ -47,7 +47,6 @@ public:
         numberOfParameters = sizeof...(parameters);
         index = functionVariant.index();
         pythonFlag = false;
-        std::cout << "Index " << index << " nop " << numberOfParameters << std::endl;
     }
 
 
@@ -92,6 +91,7 @@ public:
             throw std::runtime_error("Number of parameters is not consistent with passed function");
         }
     }
+
 
     double callFunctionPython(double x, double param1 = 10, double param2 = 0.5, double param3 = 0) 
     {
