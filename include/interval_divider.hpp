@@ -120,7 +120,6 @@ private:
     {
         lagrangeVector.resize(legendreMesh.size());
         std::transform(transformedMesh.begin(), transformedMesh.end(), lagrangeVector.begin(), [this](double value){
-            std::cout << this->handler.callFunction(value) << " ";
             return this->handler.callFunction(value);
         });
     }

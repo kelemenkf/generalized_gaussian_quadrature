@@ -140,7 +140,7 @@ void timeStableDetermineFinalNodes()
 
     auto end = high_resolution_clock::now();
 
-    auto duration = duration_cast<seconds>(end - start);
+    auto duration = duration_cast<microseconds>(end - start);
 
     std::cout << "Discretizes stable in " << duration.count() << std::endl;
 }
@@ -152,7 +152,7 @@ int main()
 
     timePiecewiseSmoothFunctionDetermineFinalNodes();
 
-    // timeHighlyOsicllatoryFunctionDetermineFinalNodes();
+    timeHighlyOsicllatoryFunctionDetermineFinalNodes();
 
     timeStableDetermineFinalNodes();
 

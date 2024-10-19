@@ -25,6 +25,7 @@ private:
     InputFunction functionVariant;
     std::vector<std::vector<double>> paramSpace; 
     size_t numberOfParameters;
+    size_t index; 
 
 
 public:
@@ -34,6 +35,7 @@ public:
 public:
     FunctionHandler(InputFunction inputFunction, Parameter... parameters) : functionVariant(inputFunction) 
     {
+        index = functionVariant.index();
         (paramSpace.push_back(parameters),...);
         numberOfParameters = sizeof...(parameters);
         pythonFlag = false;
@@ -42,15 +44,8 @@ public:
     }
 
 
-    std::vector<std::vector<double>> getParamSpace() const
-    {
-        return paramSpace;
-    }
-
-
     double callFunction(double x, double param1 = 10, double param2 = 0.5, double param3 = 0) 
     {
-        size_t index = functionVariant.index(); 
         if (index == 1 && numberOfParameters == 0) 
         {
             if (auto functionPtr = std::get_if<std::function<double(const double&)>>(&functionVariant)) 
@@ -121,5 +116,11 @@ public:
     double getNumberOfParameters()
     {
         return numberOfParameters;
+    }
+
+
+    std::vector<std::vector<double>> getParamSpace() const
+    {
+        return paramSpace;
     }
 };
