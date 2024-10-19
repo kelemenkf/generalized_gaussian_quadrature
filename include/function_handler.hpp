@@ -22,10 +22,19 @@ private:
     >;
 
 
+    using ParameterSpace = std::variant
+    <
+        std::tuple<double>,
+        std::tuple<double, double>,
+        std::tuple<double, double, double>
+    >;
+
+
     InputFunction functionVariant;
     std::vector<std::vector<double>> paramSpace; 
     size_t numberOfParameters;
     size_t index; 
+    std::vector<ParameterSpace> parameterCombinations;
 
 
 public:
@@ -41,6 +50,50 @@ public:
         pythonFlag = false;
         if (functionVariant.index() == 0)
             pythonFlag = true;
+    }
+
+
+    void buildParameterCombinations()
+    {
+        parameterCombinations.clear();
+
+        if (numberOfParameters == 0)
+        {
+            parameterCombinations = {};
+        }
+        else if (numberOfParameters == 1)
+        {
+            for (size_t i = 0; i < paramSpace[0].size(); ++i)
+            {
+                ParameterSpace combination = std::make_tuple(paramSpace[0][i]);
+                parameterCombinations.push_back(combination);
+            }
+        }
+        else if (numberOfParameters == 2)
+        {
+            for (size_t i = 0; i < paramSpace[0].size(); ++i)
+            {
+                for (size_t j = 0; j < paramSpace[1].size(); ++j)
+                {
+                    ParameterSpace combination = std::make_tuple(paramSpace[0][i], paramSpace[1][j]);
+                    parameterCombinations.push_back(combination);
+                }
+            }
+        }
+        else if (numberOfParameters == 3)
+        {
+            for (size_t i = 0; i < paramSpace[0].size(); ++i)
+            {
+                for (size_t j = 0; j < paramSpace[1].size(); ++j)
+                {
+                    for (size_t k = 0; k < paramSpace[2].size(); ++k)
+                    {
+                        ParameterSpace combination = std::make_tuple(paramSpace[0][i], paramSpace[1][j], paramSpace[2][k]);
+                        parameterCombinations.push_back(combination);
+                    }
+                }
+            }
+        }
     }
 
 
@@ -107,12 +160,6 @@ public:
     }
 
 
-    double evaluateFunctionOnParameterSpace()
-    {
-
-    }
-
-
     double getNumberOfParameters()
     {
         return numberOfParameters;
@@ -122,5 +169,10 @@ public:
     std::vector<std::vector<double>> getParamSpace() const
     {
         return paramSpace;
+    }
+
+    std::vector<ParameterSpace> getParameterCombinations()
+    {
+        return parameterCombinations;
     }
 };

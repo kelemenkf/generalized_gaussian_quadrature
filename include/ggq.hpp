@@ -42,6 +42,12 @@ public:
     }
 
 
+    double evaluateFunctionOnParameterSpace()
+    {
+        
+    }
+
+
     double getLowerBound() const 
     {
         return lowerBound;
