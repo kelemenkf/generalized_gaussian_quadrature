@@ -33,18 +33,12 @@ public:
 
     }
 
-    void calculateConsolidatedEndpoints()
-    {
-        int k = 30;
-        double precision = 1e-5;
-        size_t sizeOfParameterCombinations = handler.getParameterCombinationsSize();
 
-        for (size_t i = 0; i < sizeOfParameterCombinations; ++i)
-        {
-            Discretizer<T> discretizer(k, precision, lowerBound, upperBound, handler);
-            std::vector<double> endpoints = discretizer.getFinalEndpoints();
-            consolidatedEndpoints.insert(consolidatedEndpoints.end(), endpoints.begin(), endpoints.end());
-        }
+    void calculateFinalEndpointsOfQuadrature()
+    {
+        calculateConsolidatedEndpoints();
+        sortConsolidatedEndpoints();
+        removeDuplicateEndpoits();
     }
 
 
@@ -57,6 +51,37 @@ public:
     std::vector<double> getConsolidatedEndpoints() const
     {
         return consolidatedEndpoints;
+    }
+
+
+protected:
+    void calculateConsolidatedEndpoints()
+    {
+        int k = 30;
+        double precision = 1e-5;
+        size_t sizeOfParameterCombinations = handler.getParameterCombinationsSize();
+
+        for (size_t i = 0; i < sizeOfParameterCombinations; ++i)
+        {
+            Discretizer<T> discretizer(k, precision, lowerBound, upperBound, handler);
+            std::vector<double> endpoints = discretizer.getFinalEndpoints();
+            consolidatedEndpoints.insert(consolidatedEndpoints.end(), endpoints.begin(), endpoints.end());
+            std::cout << "Discretize function number " << i + 1 << std::endl;
+        }
+    }
+
+
+    void sortConsolidatedEndpoints()
+    {
+        std::sort(consolidatedEndpoints.begin(), consolidatedEndpoints.end());
+    }
+
+
+    void removeDuplicateEndpoits()
+    {
+        auto last = std::unique(consolidatedEndpoints.begin(), consolidatedEndpoints.end());
+
+        consolidatedEndpoints.erase(last, consolidatedEndpoints.end());
     }
 };
 

@@ -35,6 +35,8 @@ void declare_quadrature(py::module& m, const std::string& suffix) {
 
     py::class_<Quadrature>(m, class_name.c_str())
         .def(py::init<double, double, FHClass>())
+        .def("calculate_endpoints", &Quadrature::calculateFinalEndpointsOfQuadrature)
+        .def("get_endpoints", &Quadrature::getConsolidatedEndpoints)
     ;
 }
 

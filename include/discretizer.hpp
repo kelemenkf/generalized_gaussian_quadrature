@@ -64,7 +64,6 @@ public:
 
             //Smart update so only previously unused intervals use measures
             measureVector.push_back(measure);
-            std::cout << "Measure on interval " << endpoints[i] << " " << endpoints[i+1] << " " << measure << std::endl;
         }
     }
 
