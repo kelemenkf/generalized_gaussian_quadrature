@@ -44,6 +44,18 @@ public:
     }
 
 
+    static void incrementCombinationIndex()
+    {
+        ++combinationIndex;
+    }
+
+
+    static size_t getCombinationIndex()
+    {
+        return combinationIndex;   
+    }
+
+
     void buildParameterCombinations()
     {
         if (numberOfParameters == 0)
@@ -182,7 +194,6 @@ public:
     {
         return parameterCombinations;
     }
-
 
     std::vector<double> getParameterCombinationByIndex(size_t index) const 
     {
