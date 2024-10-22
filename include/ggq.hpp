@@ -37,16 +37,13 @@ public:
     {
         int k = 30;
         double precision = 1e-5;
-        size_t sizeOfParameterCombinations = T::getParameterCombinationsSize();
+        size_t sizeOfParameterCombinations = handler.getParameterCombinationsSize();
 
         for (size_t i = 0; i < sizeOfParameterCombinations; ++i)
         {
-            std::cout << T::getParameterCombinationsIndex() << std::endl;
             Discretizer<T> discretizer(k, precision, lowerBound, upperBound, handler);
             std::vector<double> endpoints = discretizer.getFinalEndpoints();
-            consolidatedEndpoints.resize(consolidatedEndpoints.size() + endpoints.size());
             consolidatedEndpoints.insert(consolidatedEndpoints.end(), endpoints.begin(), endpoints.end());
-            T::incrementCombinationIndex();
         }
     }
 
@@ -57,10 +54,10 @@ public:
     }
 
 
-    // std::vector<double> getConsolidatedEndpoints() const
-    // {
-    //     return consolidatedEndpoints;
-    // }
+    std::vector<double> getConsolidatedEndpoints() const
+    {
+        return consolidatedEndpoints;
+    }
 };
 
 #endif

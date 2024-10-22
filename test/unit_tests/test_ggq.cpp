@@ -19,6 +19,20 @@ double testFunction(const double& x)
     return x;
 }
 
+
+double testFunction2ParamPC(const double& x, const double& param1, const double& param2)
+{
+    if (x <= 1)
+    {
+        return param1 * x * x;
+    }
+    else 
+    {
+        return param2 - x;
+    }
+}
+
+
 template<typename T>
 struct QuadratureRuleFixture: public QuadratureRule<T>
 {
@@ -48,6 +62,44 @@ BOOST_AUTO_TEST_CASE( TestConstructorValidation ) {
     BOOST_CHECK_NO_THROW(QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerFunction));
 
     BOOST_CHECK_NO_THROW(QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerMethod));
+}
+
+
+BOOST_AUTO_TEST_CASE( TestCalculateConsolidatedEndpoints ) {
+   double lowerBound = 0;
+   double upperBound = 2; 
+   int k = 30;
+    std::vector<double> param1 = {5};
+    std::vector<double> param2 = {6};
+    FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
+
+   QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
+   quadrature.calculateConsolidatedEndpoints();
+
+   std::vector<double> consolidatedEndpoints = quadrature.getConsolidatedEndpoints();
+   std::vector<double> expectedConsolidatedEndpoints = {0, 1, 2};
+
+    BOOST_CHECK_EQUAL(consolidatedEndpoints.size(), 3);
+    BOOST_CHECK_EQUAL_COLLECTIONS(consolidatedEndpoints.begin(), consolidatedEndpoints.end(), expectedConsolidatedEndpoints.begin(), expectedConsolidatedEndpoints.end());
+}
+
+
+BOOST_AUTO_TEST_CASE( TestCalculateConsolidatedEndpointsMoreParameters ) {
+   double lowerBound = 0;
+   double upperBound = 2; 
+   int k = 30;
+    std::vector<double> param1 = {5, 4};
+    std::vector<double> param2 = {6, 3};
+    FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
+    
+   QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
+   quadrature.calculateConsolidatedEndpoints();
+
+   std::vector<double> consolidatedEndpoints = quadrature.getConsolidatedEndpoints();
+   std::vector<double> expectedConsolidatedEndpoints = {0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2};
+
+    BOOST_CHECK_EQUAL(consolidatedEndpoints.size(), 12);
+    BOOST_CHECK_EQUAL_COLLECTIONS(consolidatedEndpoints.begin(), consolidatedEndpoints.end(), expectedConsolidatedEndpoints.begin(), expectedConsolidatedEndpoints.end());
 }
 
 
