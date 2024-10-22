@@ -38,6 +38,7 @@ void declare_quadrature(py::module& m, const std::string& suffix) {
         .def("calculate_quadrature", &Quadrature::calculateQuadratureNodes)
         .def("get_endpoints", &Quadrature::getConsolidatedEndpoints)
         .def("get_nodes", &Quadrature::getNodes)
+        .def("get_values", &Quadrature::getValues)
     ;
 }
 
