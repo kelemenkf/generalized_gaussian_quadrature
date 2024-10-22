@@ -32,7 +32,9 @@ public:
     : k(kInput), lowerBound(lowerBoundInput), upperBound(upperBoundInput), handler(handlerInput)
     {};
 
+
     ~IntervalDivider() {};
+
 
     void processInterval()
     {

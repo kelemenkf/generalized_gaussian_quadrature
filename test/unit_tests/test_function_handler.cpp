@@ -53,9 +53,7 @@ BOOST_AUTO_TEST_CASE( TestParamSpaceConstruction ) {
 }
 
 
-BOOST_AUTO_TEST_CASE( TestFunctionProcessing0Param ) {
-    std::vector<double> param1 = {2, 3, 5, 6, 7, 0};
-
+BOOST_AUTO_TEST_CASE( TestFunctionProcessing0Param ) {;
     FunctionHandler<> handler(testFunction);
 
     double testValue;
@@ -73,9 +71,9 @@ BOOST_AUTO_TEST_CASE( TestFunctionProcessing3Param ) {
     FunctionHandler<std::vector<double>, std::vector<double>, std::vector<double>> handler(testFunction3Params, param1, param2, param3);
 
     double testValue;
-    testValue = handler.callFunction(5, 2, 4, -6);
+    testValue = handler.callFunction(5);
 
-    BOOST_CHECK_EQUAL(testValue, 64.0);
+    BOOST_CHECK_EQUAL(testValue, 56.0);
 }
 
 
@@ -85,7 +83,7 @@ BOOST_AUTO_TEST_CASE( TestFunctionProcessingInvalidParam ) {
 
     FunctionHandler<std::vector<double>, std::vector<double>> handler(testFunction3Params, param1, param2);
 
-    BOOST_CHECK_THROW(handler.callFunction(5, 2, 4, -6), std::runtime_error);
+    BOOST_CHECK_THROW(handler.callFunction(5), std::runtime_error);
 }
 
 
@@ -119,10 +117,6 @@ BOOST_AUTO_TEST_CASE( TestParameterCombinationBuilder ) {
     FunctionHandler<std::vector<double>, std::vector<double>> handler2(testFunction2Param, param1, param2);
     FunctionHandler<std::vector<double>, std::vector<double>, std::vector<double>> handler3(testFunction2Param, param1, param2, param3);
    
-
-    handler1.buildParameterCombinations();
-    handler2.buildParameterCombinations();
-    handler3.buildParameterCombinations();
     std::vector<std::vector<double>> combo1 = handler1.getParameterCombinations();
     std::vector<std::vector<double>> combo2 = handler2.getParameterCombinations();
     std::vector<std::vector<double>> combo3 = handler3.getParameterCombinations();

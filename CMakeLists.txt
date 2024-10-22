@@ -30,6 +30,7 @@ add_library(ggq_library
     src/ggq.cpp 
     src/discretizer.cpp 
     src/utils/utils.cpp 
+    src/function_handler.cpp
 )
 
 target_include_directories(ggq_library PUBLIC 

@@ -78,7 +78,6 @@ public:
                     for (size_t k = 0; k < paramSpace[2].size(); ++k)
                     {
                         std::vector<double> params = {paramSpace[0][i], paramSpace[1][j], paramSpace[2][k]};
-                        displayVector(params);
                         parameterCombinations.push_back(params);
                     }
                 }
@@ -89,6 +88,11 @@ public:
 
     double callFunction(double x, double param1 = 10, double param2 = 0.5, double param3 = 0) 
     {  
+        std::vector<double> params;
+        if (numberOfParameters != 0)
+        {
+            params = getParameterCombinationByIndex(combinationIndex);
+        }
         if (index == 1 && numberOfParameters == 0) 
         {
             if (auto functionPtr = std::get_if<std::function<double(const double&)>>(&functionVariant)) 
@@ -98,6 +102,7 @@ public:
         } 
         else if (index == 2 && numberOfParameters == 1)
         {
+            param1 = params[0];
             if (auto functionPtr = std::get_if<std::function<double(const double&, const double&)>>(&functionVariant))
             {
                 return (*functionPtr)(x, param1);
@@ -105,6 +110,8 @@ public:
         }
         else if (index == 3 && numberOfParameters == 2)
         {
+            param1 = params[0];
+            param2 = params[1];
             if (auto functionPtr = std::get_if<std::function<double(const double&, const double&, const double&)>>(&functionVariant))
             {
                 return (*functionPtr)(x, param1, param2);
@@ -112,6 +119,9 @@ public:
         }
         else if (index == 4 && numberOfParameters == 3)
         {
+            param1 = params[0];
+            param2 = params[1];
+            param3 = params[2];
             if (auto functionPtr = std::get_if<std::function<double(const double&, const double&, const double& , const double&)>>(&functionVariant))
             {
                 return (*functionPtr)(x, param1, param2, param3);
@@ -119,7 +129,7 @@ public:
         }
         else if (index == 0)
         {
-            return callFunctionPython(x, param1, param2, param3);
+            return callFunctionPython(x, params);
         }
         else
         {
@@ -128,7 +138,7 @@ public:
     }
 
 
-    double callFunctionPython(double x, double param1 = 10, double param2 = 0.5, double param3 = 0) 
+    double callFunctionPython(double x, const std::vector<double>& params) 
     {
         auto function = std::get_if<py::function>(&functionVariant);
         if (numberOfParameters == 0) 
@@ -137,14 +147,20 @@ public:
         } 
         else if (numberOfParameters == 1)
         {
+            double param1 = params[0];
             return (*function)(x, param1).template cast<double>();
         }
         else if (numberOfParameters == 2)
         {
+            double param1 = params[0];
+            double param2 = params[1];
             return (*function)(x, param1, param2).template cast<double>();
         }
         else if (numberOfParameters == 3)
         {
+            double param1 = params[0];
+            double param2 = params[1];
+            double param3 = params[2];
             return (*function)(x, param1, param2, param3).template cast<double>();
         }
     }
@@ -162,8 +178,14 @@ public:
     }
 
 
-    std::vector<std::vector<double>> getParameterCombinations()
+    std::vector<std::vector<double>> getParameterCombinations()  
     {
         return parameterCombinations;
+    }
+
+
+    std::vector<double> getParameterCombinationByIndex(size_t index) const 
+    {
+        return parameterCombinations[index];
     }
 };

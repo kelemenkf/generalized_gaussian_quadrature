@@ -18,6 +18,8 @@ protected:
     double lowerBound;
     double upperBound;
     T handler;
+    std::vector<double> consolidatedEndpoints;
+
 
 public:
     QuadratureRule(double lowerBoundInput, double upperBoundInput, T handler) 
