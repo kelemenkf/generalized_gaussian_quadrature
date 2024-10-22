@@ -22,6 +22,7 @@ public:
     : k(validateK(kInput)), precision(validatePrecision(precisionInput)), lowerBound(lowerBoundInput), upperBound(upperBoundInput), handler(handlerInput)
     {
         endpoints = {this->lowerBound, this->upperBound};
+        determineFinalEndpoints();
     };
 
     ~Discretizer() {};
@@ -76,7 +77,6 @@ public:
 
     std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>, std::vector<std::vector<double>>> determineFinalNodes()
     {
-        determineFinalEndpoints();
         std::vector<std::vector<double>> nodes;
         std::vector<std::vector<double>> values;
         std::vector<std::vector<double>> weights;

@@ -95,8 +95,7 @@ BOOST_AUTO_TEST_CASE( TestDiscretizerCalculateMeasures ) {
     const double precision = 1e-6;
 
     DiscretizerFixture discretizer(k, precision, lowerBound, upperBound, handlerPolynomial);
-    discretizer.testCalculateMeasures();
-
+    
     std::vector<double> measures = discretizer.testGetMeasureVector();
 
     BOOST_CHECK_EQUAL(measures.size(), 1);
@@ -110,7 +109,6 @@ BOOST_AUTO_TEST_CASE( TestDiscretizerFindEndpoints ) {
     const double precision = 1e-6;
 
     DiscretizerFixture discretizer(k, precision, lowerBound, upperBound, handlerPolynomial);
-    discretizer.determineFinalEndpoints();
 
     std::vector<double> endpoints = discretizer.getFinalEndpoints();
     std::vector<double> expectedEndpoints = {lowerBound, upperBound};
@@ -131,7 +129,6 @@ BOOST_AUTO_TEST_CASE( TestDiscretizerFindEndpointsPiecewiseSmoothFunction ) {
     const double precision = 1e-6;
 
     DiscretizerFixture discretizer(k, precision, lowerBound, upperBound, handlerPiecewiseSmooth);
-    discretizer.determineFinalEndpoints();
 
     std::vector<double> endpoints = discretizer.getFinalEndpoints();
     std::vector<double> expectedEndpoints = {lowerBound, 1, upperBound};

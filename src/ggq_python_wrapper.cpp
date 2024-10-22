@@ -35,7 +35,6 @@ void declare_quadrature(py::module& m, const std::string& suffix) {
 
     py::class_<Quadrature>(m, class_name.c_str())
         .def(py::init<double, double, FHClass>())
-        .def("discretize", &Quadrature::discretizeFunctions)
     ;
 }
 

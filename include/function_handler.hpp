@@ -98,7 +98,7 @@ public:
     }
 
 
-    double callFunction(double x, double param1 = 10, double param2 = 0.5, double param3 = 0) 
+    double callFunction(double x) 
     {  
         std::vector<double> params;
         if (numberOfParameters != 0)
@@ -114,29 +114,23 @@ public:
         } 
         else if (index == 2 && numberOfParameters == 1)
         {
-            param1 = params[0];
             if (auto functionPtr = std::get_if<std::function<double(const double&, const double&)>>(&functionVariant))
             {
-                return (*functionPtr)(x, param1);
+                return (*functionPtr)(x, params[0]);
             }
         }
         else if (index == 3 && numberOfParameters == 2)
         {
-            param1 = params[0];
-            param2 = params[1];
             if (auto functionPtr = std::get_if<std::function<double(const double&, const double&, const double&)>>(&functionVariant))
             {
-                return (*functionPtr)(x, param1, param2);
+                return (*functionPtr)(x, params[0], params[1]);
             }
         }
         else if (index == 4 && numberOfParameters == 3)
         {
-            param1 = params[0];
-            param2 = params[1];
-            param3 = params[2];
             if (auto functionPtr = std::get_if<std::function<double(const double&, const double&, const double& , const double&)>>(&functionVariant))
             {
-                return (*functionPtr)(x, param1, param2, param3);
+                return (*functionPtr)(x, params[0], params[1], params[2]);
             }
         }
         else if (index == 0)
@@ -190,10 +184,17 @@ public:
     }
 
 
-    std::vector<std::vector<double>> getParameterCombinations()  
+    std::vector<std::vector<double>> getParameterCombinations() const
     {
         return parameterCombinations;
     }
+
+
+    size_t getParameterCombinationsSize() const
+    {
+        return parameterCombinations.size();
+    } 
+
 
     std::vector<double> getParameterCombinationByIndex(size_t index) const 
     {
