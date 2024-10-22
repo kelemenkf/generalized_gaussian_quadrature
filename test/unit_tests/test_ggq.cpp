@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE( TestCalculateFinalConsolidatedEndpointsMoreParameters ) {
     FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
     
    QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
-   quadrature.calculateFinalEndpointsOfQuadrature();
+   quadrature.calculateQuadratureNodes();
 
    std::vector<double> consolidatedEndpoints = quadrature.getConsolidatedEndpoints();
    std::vector<double> expectedConsolidatedEndpoints = {0, 1, 2};

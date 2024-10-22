@@ -19,6 +19,9 @@ protected:
     double upperBound;
     T handler;
     std::vector<double> consolidatedEndpoints;
+    std::vector<double> nodes;
+    std::vector<double> weights;
+    std::vector<double> values;
 
 
 public:
@@ -34,11 +37,12 @@ public:
     }
 
 
-    void calculateFinalEndpointsOfQuadrature()
+    void calculateQuadratureNodes()
     {
         calculateConsolidatedEndpoints();
         sortConsolidatedEndpoints();
         removeDuplicateEndpoits();
+        determineFinalNodes();
     }
 
 
@@ -51,6 +55,24 @@ public:
     std::vector<double> getConsolidatedEndpoints() const
     {
         return consolidatedEndpoints;
+    }
+
+
+    std::vector<double> getNodes() const
+    {
+        return nodes;
+    }
+
+
+    std::vector<double> getValues() const
+    {
+        return values;
+    }
+
+
+    std::vector<double> getWeights() const
+    {
+        return weights;
     }
 
 
@@ -82,6 +104,21 @@ protected:
         auto last = std::unique(consolidatedEndpoints.begin(), consolidatedEndpoints.end());
 
         consolidatedEndpoints.erase(last, consolidatedEndpoints.end());
+    }
+
+
+    void determineFinalNodes()
+    {
+        int k = 30;
+        for (size_t i = 0; i < consolidatedEndpoints.size() - 1; ++i)
+        {
+            IntervalDivider divider(k / 2, consolidatedEndpoints[i], consolidatedEndpoints[i+1], handler);
+            divider.calculateLegendreNodes();
+            std::vector<double> transformedNodes = divider.getTransformedMesh();
+            nodes.insert(nodes.end(), transformedNodes.begin(), transformedNodes.end());
+            std::vector<double> intervalWeights = divider.getQuadratureWeights();
+            weights.insert(weights.end(), intervalWeights.begin(), intervalWeights.end());
+        }
     }
 };
 

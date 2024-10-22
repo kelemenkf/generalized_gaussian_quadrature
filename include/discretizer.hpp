@@ -72,25 +72,7 @@ public:
     {
         return endpoints;
     }
-
-
-    std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>, std::vector<std::vector<double>>> determineFinalNodes()
-    {
-        std::vector<std::vector<double>> nodes;
-        std::vector<std::vector<double>> values;
-        std::vector<std::vector<double>> weights;
-        for (size_t i = 0; i < endpoints.size() - 1; ++i)
-        {
-            IntervalDivider divider(k / 2, endpoints[i], endpoints[i+1], handler);
-            divider.calculateLegendreNodes();
-            nodes.push_back(divider.getTransformedMesh());
-            values.push_back(divider.getLagrangeVector());
-            weights.push_back(divider.getQuadratureWeights());
-        }
-
-        return {nodes, values, weights};
-    }
-
+    
 
 private: 
     bool evaluateStoppingCondition()
