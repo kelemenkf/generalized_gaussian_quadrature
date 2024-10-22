@@ -5,12 +5,17 @@
 #include <vector>
 #include <pybind11/pybind11.h>
 #include <pybind11/functional.h>
+#include "utils.hpp"
 
 namespace py = pybind11;
 
 template<typename... Parameter>
 class FunctionHandler
 {
+public: 
+    static size_t combinationIndex;
+
+
 private:
     using InputFunction = std::variant
     <
@@ -22,23 +27,11 @@ private:
     >;
 
 
-    using ParameterSpace = std::variant
-    <
-        std::tuple<double>,
-        std::tuple<double, double>,
-        std::tuple<double, double, double>
-    >;
-
-
     InputFunction functionVariant;
     std::vector<std::vector<double>> paramSpace; 
     size_t numberOfParameters;
     size_t index; 
-    std::vector<ParameterSpace> parameterCombinations;
-
-
-public:
-    bool pythonFlag;
+    std::vector<std::vector<double>> parameterCombinations;
 
 
 public:
@@ -47,16 +40,12 @@ public:
         index = functionVariant.index();
         (paramSpace.push_back(parameters),...);
         numberOfParameters = sizeof...(parameters);
-        pythonFlag = false;
-        if (functionVariant.index() == 0)
-            pythonFlag = true;
+        buildParameterCombinations();
     }
 
 
     void buildParameterCombinations()
     {
-        parameterCombinations.clear();
-
         if (numberOfParameters == 0)
         {
             parameterCombinations = {};
@@ -65,8 +54,8 @@ public:
         {
             for (size_t i = 0; i < paramSpace[0].size(); ++i)
             {
-                ParameterSpace combination = std::make_tuple(paramSpace[0][i]);
-                parameterCombinations.push_back(combination);
+                std::vector<double> params = {paramSpace[0][i]};
+                parameterCombinations.push_back(params);
             }
         }
         else if (numberOfParameters == 2)
@@ -75,8 +64,8 @@ public:
             {
                 for (size_t j = 0; j < paramSpace[1].size(); ++j)
                 {
-                    ParameterSpace combination = std::make_tuple(paramSpace[0][i], paramSpace[1][j]);
-                    parameterCombinations.push_back(combination);
+                    std::vector<double> params = {paramSpace[0][i], paramSpace[1][j]};
+                    parameterCombinations.push_back(params);
                 }
             }
         }
@@ -88,8 +77,9 @@ public:
                 {
                     for (size_t k = 0; k < paramSpace[2].size(); ++k)
                     {
-                        ParameterSpace combination = std::make_tuple(paramSpace[0][i], paramSpace[1][j], paramSpace[2][k]);
-                        parameterCombinations.push_back(combination);
+                        std::vector<double> params = {paramSpace[0][i], paramSpace[1][j], paramSpace[2][k]};
+                        displayVector(params);
+                        parameterCombinations.push_back(params);
                     }
                 }
             }
@@ -98,7 +88,7 @@ public:
 
 
     double callFunction(double x, double param1 = 10, double param2 = 0.5, double param3 = 0) 
-    {
+    {  
         if (index == 1 && numberOfParameters == 0) 
         {
             if (auto functionPtr = std::get_if<std::function<double(const double&)>>(&functionVariant)) 
@@ -171,7 +161,8 @@ public:
         return paramSpace;
     }
 
-    std::vector<ParameterSpace> getParameterCombinations()
+
+    std::vector<std::vector<double>> getParameterCombinations()
     {
         return parameterCombinations;
     }

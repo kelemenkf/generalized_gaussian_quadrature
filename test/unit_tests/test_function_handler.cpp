@@ -4,14 +4,6 @@
 #include "function_handler.hpp"
 
 
-using ParameterSpace = std::variant
-<
-    std::tuple<double>,
-    std::tuple<double, double>,
-    std::tuple<double, double, double>
->;
-
-
 class TestClass
 {
 public:
@@ -102,27 +94,24 @@ BOOST_AUTO_TEST_CASE( TestParameterCombinationBuilder ) {
     std::vector<double> param2 = {1, 25};
     std::vector<double> param3 = {1, 4};
 
-    std::vector<ParameterSpace> expectedCombos1Param = {
-        ParameterSpace(std::make_tuple(2)),
-        ParameterSpace(std::make_tuple(3))
+    std::vector<std::vector<double>> expectedCombos1Param = {{2},{3}};
+
+    std::vector<std::vector<double>> expectedCombos2Param = {
+        {2, 1},
+        {2, 25},
+        {3, 1},
+        {3, 25}
     };
 
-    std::vector<ParameterSpace> expectedCombos2Param = {
-        ParameterSpace(std::make_tuple(2, 1)),
-        ParameterSpace(std::make_tuple(2, 25)),
-        ParameterSpace(std::make_tuple(3, 1)),
-        ParameterSpace(std::make_tuple(3, 25))
-    };
-
-    std::vector<ParameterSpace> expectedCombos3Param = {
-        ParameterSpace(std::make_tuple(2, 1, 1)),
-        ParameterSpace(std::make_tuple(2, 1, 4)),
-        ParameterSpace(std::make_tuple(2, 25, 1)),
-        ParameterSpace(std::make_tuple(2, 25, 4)),
-        ParameterSpace(std::make_tuple(3, 1, 1)),
-        ParameterSpace(std::make_tuple(3, 1, 4)),
-        ParameterSpace(std::make_tuple(3, 25, 1)),
-        ParameterSpace(std::make_tuple(3, 25, 4))
+    std::vector<std::vector<double>> expectedCombos3Param = {
+        {2, 1, 1},
+        {2, 1, 4},
+        {2, 25, 1},
+        {2, 25, 4},
+        {3, 1, 1},
+        {3, 1, 4},
+        {3, 25, 1},
+        {3, 25, 4}
     };
 
     FunctionHandler<> handler0(testFunction);
@@ -134,9 +123,9 @@ BOOST_AUTO_TEST_CASE( TestParameterCombinationBuilder ) {
     handler1.buildParameterCombinations();
     handler2.buildParameterCombinations();
     handler3.buildParameterCombinations();
-    std::vector<ParameterSpace> combo1 = handler1.getParameterCombinations();
-    std::vector<ParameterSpace> combo2 = handler2.getParameterCombinations();
-    std::vector<ParameterSpace> combo3 = handler3.getParameterCombinations();
+    std::vector<std::vector<double>> combo1 = handler1.getParameterCombinations();
+    std::vector<std::vector<double>> combo2 = handler2.getParameterCombinations();
+    std::vector<std::vector<double>> combo3 = handler3.getParameterCombinations();
     BOOST_CHECK_EQUAL(combo1.size(), 2);
     BOOST_CHECK_EQUAL(combo2.size(), 4);
     BOOST_CHECK_EQUAL(combo3.size(), 8);
@@ -144,15 +133,16 @@ BOOST_AUTO_TEST_CASE( TestParameterCombinationBuilder ) {
 
     for (size_t i = 0; i < combo1.size(); ++i)
     {
-        const auto& expected = expectedCombos1Param[i];
-        const auto& computed = combo1[i];
-
-        std::visit([](auto&& expected, auto&& computed) {
-            BOOST_CHECK_EQUAL(std::get<0>(expected), std::get<0>(computed));
-        }, expected, computed);
+        BOOST_CHECK_EQUAL_COLLECTIONS(combo1[i].begin(), combo1[i].end(), expectedCombos1Param[i].begin(), expectedCombos1Param[i].end());
     }
-
-
+    for (size_t i = 0; i < combo2.size(); ++i)
+    {
+        BOOST_CHECK_EQUAL_COLLECTIONS(combo2[i].begin(), combo2[i].end(), expectedCombos2Param[i].begin(), expectedCombos2Param[i].end());
+    }
+    for (size_t i = 0; i < combo2.size(); ++i)
+    {
+        BOOST_CHECK_EQUAL_COLLECTIONS(combo3[i].begin(), combo3[i].end(), expectedCombos3Param[i].begin(), expectedCombos3Param[i].end());
+    }
 }   
 
 
