@@ -140,6 +140,19 @@ BOOST_AUTO_TEST_CASE( TestParameterCombinationBuilder ) {
     BOOST_CHECK_EQUAL(combo1.size(), 2);
     BOOST_CHECK_EQUAL(combo2.size(), 4);
     BOOST_CHECK_EQUAL(combo3.size(), 8);
+
+
+    for (size_t i = 0; i < combo1.size(); ++i)
+    {
+        const auto& expected = expectedCombos1Param[i];
+        const auto& computed = combo1[i];
+
+        std::visit([](auto&& expected, auto&& computed) {
+            BOOST_CHECK_EQUAL(std::get<0>(expected), std::get<0>(computed));
+        }, expected, computed);
+    }
+
+
 }   
 
 

@@ -17,6 +17,7 @@ private:
     int k;
     std::vector<double> legendreMesh;
     std::vector<double> transformedMesh;
+    std::vector<double> quadratureWeights;
     matrix<double> legendreMatrix;
     matrix<double> invertedLegendreMatrix;
     vector<double> alphaVector;
@@ -86,6 +87,12 @@ public:
     std::vector<double> getLagrangeVector() const
     {
         return lagrangeVector;
+    }
+
+
+    std::vector<double> getQuadratureWeights() const 
+    {
+        return quadratureWeights;
     }
 
 
@@ -159,6 +166,17 @@ private:
                     inputMatrix(i, j) = transformNode((boost::math::legendre_p(j, legendreMesh[i])));
                 }
             }
+        }
+    }
+
+
+    void calculateWeight()
+    {
+        quadratureWeights.resize(2*k);
+
+        for (size_t i = 0; i < 2*k; ++i)
+        {
+            quadratureWeights[i] = 2.0 / ((1 - transformedMesh[i]*transformedMesh[i]) * legendreMatrix(2*k, i) * legendreMatrix(2*k, i));         
         }
     }
 

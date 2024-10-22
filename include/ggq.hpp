@@ -31,7 +31,7 @@ public:
 
     }
 
-    std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>> discretizeFunctions()
+    std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>, std::vector<std::vector<double>>> discretizeFunctions()
     {
         int k = 30;
         double precision = 1e-5;

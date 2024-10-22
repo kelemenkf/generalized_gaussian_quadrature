@@ -70,7 +70,7 @@ void timeSingleFunctionDetermineFinalNodes()
 
     Discretizer discretizer(k, precision, lowerBound, upperBound, handlerPolynomial);
 
-    std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>> result;
+    std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>, std::vector<std::vector<double>>> result;
     result = discretizer.determineFinalNodes();
 
     auto end = high_resolution_clock::now();
@@ -92,7 +92,7 @@ void timePiecewiseSmoothFunctionDetermineFinalNodes()
 
     Discretizer discretizer(k, precision, lowerBound, upperBound, handlerPiecewiseSmooth);
 
-    std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>> result;
+    std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>, std::vector<std::vector<double>>> result;
     result = discretizer.determineFinalNodes();
 
     auto end = high_resolution_clock::now();
@@ -114,7 +114,7 @@ void timeHighlyOsicllatoryFunctionDetermineFinalNodes()
 
     Discretizer discretizer(k, precision, lowerBound, upperBound, handlerHighlyOscillatory);
 
-    std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>> result;
+    std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>, std::vector<std::vector<double>>> result;
     result = discretizer.determineFinalNodes();
 
     auto end = high_resolution_clock::now();
@@ -135,7 +135,7 @@ void timeStableDetermineFinalNodes()
 
     Discretizer discretizer(k, precision, lowerBound, upperBound, handlerStable);
 
-    std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>> result;
+    std::tuple<std::vector<std::vector<double>>, std::vector<std::vector<double>>, std::vector<std::vector<double>>> result;
     result = discretizer.determineFinalNodes();
 
     auto end = high_resolution_clock::now();
