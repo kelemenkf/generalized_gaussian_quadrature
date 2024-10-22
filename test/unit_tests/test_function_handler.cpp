@@ -152,4 +152,17 @@ BOOST_AUTO_TEST_CASE( TestCombinationIndexIncrementer ) {
 }
 
 
+BOOST_AUTO_TEST_CASE( TestResetCombinationIndex ) {
+    FunctionHandler<> handler(testFunction);
+
+    handler.incrementCombinationIndex();
+    handler.resetCombinationIndex();
+
+    size_t index = handler.getCombinationIndex();
+    size_t expectedIndex = 0;
+
+    BOOST_CHECK_EQUAL(index, expectedIndex);
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()

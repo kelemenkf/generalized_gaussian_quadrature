@@ -21,7 +21,7 @@ protected:
     std::vector<double> consolidatedEndpoints;
     std::vector<double> nodes;
     std::vector<double> weights;
-    std::vector<double> values;
+    std::vector<std::vector<double>> values;
 
 
 public:
@@ -119,6 +119,12 @@ protected:
             std::vector<double> intervalWeights = divider.getQuadratureWeights();
             weights.insert(weights.end(), intervalWeights.begin(), intervalWeights.end());
         }
+    }
+
+
+    void determineValues()
+    {
+        
     }
 };
 
