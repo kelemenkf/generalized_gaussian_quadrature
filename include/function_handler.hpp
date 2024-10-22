@@ -44,15 +44,15 @@ public:
     }
 
 
-    static void resetCombinationIndex()
-    {
-        combinationIndex = 0;
-    }
-    
-
     static void incrementCombinationIndex()
     {
         ++combinationIndex;
+    }
+
+
+    static void resetCombinationIndex()
+    {
+        combinationIndex = 0;
     }
 
 

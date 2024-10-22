@@ -43,6 +43,7 @@ public:
         sortConsolidatedEndpoints();
         removeDuplicateEndpoits();
         determineFinalNodes();
+        determineValues();
     }
 
 
@@ -64,7 +65,7 @@ public:
     }
 
 
-    std::vector<double> getValues() const
+    std::vector<std::vector<double>> getValues() const
     {
         return values;
     }
@@ -89,7 +90,10 @@ protected:
             std::vector<double> endpoints = discretizer.getFinalEndpoints();
             consolidatedEndpoints.insert(consolidatedEndpoints.end(), endpoints.begin(), endpoints.end());
             std::cout << "Discretize function number " << i + 1 << std::endl;
+            T::incrementCombinationIndex();
         }
+
+        T::resetCombinationIndex();
     }
 
 
@@ -124,7 +128,19 @@ protected:
 
     void determineValues()
     {
-        
+        size_t sizeOfParameterCombinations = handler.getParameterCombinationsSize();
+
+        for (size_t j = 0; j < sizeOfParameterCombinations; ++j)
+        {
+            std::vector<double> functionValues(nodes.size());
+            std::transform(nodes.begin(), nodes.end(), functionValues.begin(), [this](double value){
+                return this->handler.callFunction(value);
+            });
+            values.push_back(functionValues);
+            T::incrementCombinationIndex();
+        }
+
+        T::resetCombinationIndex();
     }
 };
 
