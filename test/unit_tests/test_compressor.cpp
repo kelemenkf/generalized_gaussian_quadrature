@@ -81,4 +81,28 @@ BOOST_AUTO_TEST_CASE( TestQRDecompositon ) {
 }
 
 
+BOOST_AUTO_TEST_CASE( TestUSacling ) {
+    quadrature.calculateQuadratureNodes();
+    CompressorFixture compressor(quadrature);
+
+    MatrixXd scaledU = compressor.getScaledU();
+    MatrixXd originalU = compressor.getU();
+    std::vector<double> weights = quadrature.getWeights();
+
+    MatrixXd U = scaledU;
+    for (size_t row = 0; row < U.rows(); ++row)
+    {
+        U.row(row) *= sqrt(weights[row]);
+    }
+
+    for (size_t row = 0; row < U.rows(); ++row)
+    {
+        for (size_t column = 0; column < U.cols(); ++column)
+        {
+            BOOST_CHECK_CLOSE_FRACTION(originalU(row, column), U(row, column), 1e-6);
+        }
+    }
+
+}
+
 BOOST_AUTO_TEST_SUITE_END()

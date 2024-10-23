@@ -13,6 +13,7 @@ private:
     T quadrature;
     MatrixXd A;
     MatrixXd U;
+    MatrixXd scaledU;
     MatrixXd R;
     std::vector<double> nodes;
     std::vector<double> weights;
@@ -47,6 +48,12 @@ public:
     }
 
 
+    MatrixXd getScaledU() const
+    {
+        return scaledU;
+    }
+
+
 private:
     void constructA()
     {
@@ -75,8 +82,13 @@ private:
 
     void scaleU()
     {
-
+        scaledU = U;
+        for (size_t column = 0; column < values.size(); ++column)
+        {
+            scaledU.col(column) /= sqrt(weights[column]);
+        }
     }
+
 
 protected:
 };
