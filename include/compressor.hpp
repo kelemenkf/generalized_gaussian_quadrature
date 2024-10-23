@@ -27,6 +27,8 @@ public:
         weights = quadrature.getWeights();
         values = quadrature.getValues();
         constructA();
+        decomposeIntoQR();
+        scaleU();
     }
 
 
@@ -58,11 +60,12 @@ private:
     void constructA()
     {
         A.resize(nodes.size(), values.size());
+        displayVector(weights);
         for (size_t column = 0; column < values.size(); ++column)
         {
             for (size_t row = 0; row < nodes.size(); ++row)
             {
-                A(row, column) = values[column][row] * sqrt(weights[column]);
+                A(row, column) = values[column][row] * sqrt(weights[row]);
             }
         }
     }
@@ -74,18 +77,15 @@ private:
 
         U = qr.householderQ();
         R = qr.matrixQR().triangularView<Eigen::Upper>();
-
-        std::cout << U << std::endl;
-        std::cout << R << std::endl;
     }
 
 
     void scaleU()
     {
         scaledU = U;
-        for (size_t column = 0; column < values.size(); ++column)
+        for (size_t row = 0; row < weights.size(); ++row)
         {
-            scaledU.col(column) /= sqrt(weights[column]);
+            scaledU.row(row) /= sqrt(weights[row]);
         }
     }
 

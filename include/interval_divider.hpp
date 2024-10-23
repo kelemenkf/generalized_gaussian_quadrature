@@ -52,9 +52,7 @@ public:
     {
         calculateMesh();
         transformMesh();
-        calculateLegendrePolynomials(legendreMatrix);
         calculateWeights();
-        evaluateFunctionOnTransformedMesh();
     }
 
 
@@ -180,7 +178,7 @@ private:
 
         for (size_t i = 0; i < 2*k; ++i)
         {
-            quadratureWeights[i] = 2.0 / ((1 - transformedMesh[i]*transformedMesh[i]) * legendreMatrix(2*k - 1, i) * legendreMatrix(2*k - 1, i));         
+            quadratureWeights[i] = (upperBound - lowerBound) / ((1 - legendreMesh[i]*legendreMesh[i]) * boost::math::legendre_p(2*k, legendreMesh[i]) * boost::math::legendre_p(2*k, legendreMesh[i]));         
         }
     }
 

@@ -72,7 +72,6 @@ BOOST_AUTO_TEST_CASE( TestConstructA ) {
 
 
 BOOST_AUTO_TEST_CASE( TestQRDecompositon ) {
-    quadrature.calculateQuadratureNodes();
     CompressorFixture compressor(quadrature);
 
     MatrixXd U = compressor.getU();
@@ -81,19 +80,23 @@ BOOST_AUTO_TEST_CASE( TestQRDecompositon ) {
 }
 
 
-BOOST_AUTO_TEST_CASE( TestUSacling ) {
-    quadrature.calculateQuadratureNodes();
+BOOST_AUTO_TEST_CASE( TestUScaling ) {
     CompressorFixture compressor(quadrature);
 
     MatrixXd scaledU = compressor.getScaledU();
     MatrixXd originalU = compressor.getU();
     std::vector<double> weights = quadrature.getWeights();
+    std::vector<double> nodes = quadrature.getNodes();
 
     MatrixXd U = scaledU;
     for (size_t row = 0; row < U.rows(); ++row)
     {
         U.row(row) *= sqrt(weights[row]);
     }
+
+    BOOST_CHECK_EQUAL(U.rows(), originalU.rows());
+    BOOST_CHECK_EQUAL(U.cols(), originalU.cols());
+
 
     for (size_t row = 0; row < U.rows(); ++row)
     {
@@ -102,7 +105,8 @@ BOOST_AUTO_TEST_CASE( TestUSacling ) {
             BOOST_CHECK_CLOSE_FRACTION(originalU(row, column), U(row, column), 1e-6);
         }
     }
-
 }
+
+
 
 BOOST_AUTO_TEST_SUITE_END()

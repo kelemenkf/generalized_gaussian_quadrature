@@ -10,12 +10,12 @@ set(Boost_DEBUG 1)
 
 # Find Boost with the required component
 find_package(Boost 1.86 REQUIRED COMPONENTS unit_test_framework)
-find_package(Python3 3.12 REQUIRED COMPONENTS Interpreter Development)
 find_package(pybind11 REQUIRED)
 find_package(Eigen3 REQUIRED)
 set(Python3_ROOT_DIR "/Users/kelemenkf/.pyenv/versions/3.12.6")
 set(Python3_INCLUDE_DIR "/Users/kelemenkf/.pyenv/versions/3.12.6/include/python3.12")
 set(Python3_LIBRARY "/Users/kelemenkf/.pyenv/versions/3.12.6/lib/libpython3.12.dylib")
+find_package(Python3 3.12 REQUIRED COMPONENTS Interpreter Development)
 
 # Include directories for Boost
 include_directories(${Boost_INCLUDE_DIRS})
