@@ -1,28 +1,42 @@
-#include "function_handler.hpp"
-#include "interval_divider.hpp"
+#ifndef COMPRESSOR_HPP
+#define COMPRESSOR_HPP
+
+#include "ggq.hpp"
+
 
 template<typename T>
 class Compressor
 {
 private:
-    T handler;
-    std::vector<double> weights;
-    std::vector<double> nodes;
-    std::vector<std::vector<double>> values;
+    T quadrature;
     matrix<double> A;
     matrix<double> U;
+    std::vector<double> nodes;
+    std::vector<double> weights;
+    std::vector<std::vector<double>> values;
 
 
 public:
-    Compressor() 
+    Compressor(const T& quadratureInput) : quadrature(quadratureInput)
     {
-
+        nodes = quadrature.getNodes();
+        weights = quadrature.getWeights();
+        values = quadrature.getValues();
+        constructA();
     }
+
 
     ~Compressor() 
     {
 
     }
+
+
+    matrix<double> getA() const
+    {
+        return A;
+    }
+
 
 private:
     void constructA()
@@ -51,3 +65,5 @@ private:
 
 protected:
 };
+
+#endif
