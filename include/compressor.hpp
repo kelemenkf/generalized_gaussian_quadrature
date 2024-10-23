@@ -12,7 +12,8 @@ class Compressor
 private:
     T quadrature;
     MatrixXd A;
-    matrix<double> U;
+    MatrixXd U;
+    MatrixXd R;
     std::vector<double> nodes;
     std::vector<double> weights;
     std::vector<std::vector<double>> values;
@@ -40,12 +41,16 @@ public:
     }
 
 
+    MatrixXd getU() const
+    {
+        return U;
+    }
+
+
 private:
     void constructA()
     {
         A.resize(nodes.size(), values.size());
-        std::cout << nodes.size() << std::endl;
-        std::cout << values.size() << std::endl;
         for (size_t column = 0; column < values.size(); ++column)
         {
             for (size_t row = 0; row < nodes.size(); ++row)
@@ -58,7 +63,13 @@ private:
 
     void decomposeIntoQR()
     {
+        HouseholderQR<MatrixXd> qr(A);
 
+        U = qr.householderQ();
+        R = qr.matrixQR().triangularView<Eigen::Upper>();
+
+        std::cout << U << std::endl;
+        std::cout << R << std::endl;
     }
 
 

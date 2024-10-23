@@ -18,6 +18,18 @@ double testFunction2ParamPC(const double& x, const double& param1, const double&
 }
 
 
+bool isOrthonormal(const Eigen::MatrixXd& matrix, double tolerance = 1e-9) {
+    if (matrix.rows() != matrix.cols()) {
+        return false;
+    }
+
+    Eigen::MatrixXd identity_check = matrix.transpose() * matrix;
+
+    Eigen::MatrixXd identity = Eigen::MatrixXd::Identity(matrix.rows(), matrix.cols());
+    return (identity_check.isApprox(identity, tolerance));
+}
+
+
 double lowerBound = 0;
 double upperBound = 2; 
 std::vector<double> param1 = {5, 4};
@@ -57,5 +69,16 @@ BOOST_AUTO_TEST_CASE( TestConstructA ) {
     BOOST_CHECK_EQUAL(A.rows(), 60);
     BOOST_CHECK_EQUAL(A.cols(), 4);
 }
+
+
+BOOST_AUTO_TEST_CASE( TestQRDecompositon ) {
+    quadrature.calculateQuadratureNodes();
+    CompressorFixture compressor(quadrature);
+
+    MatrixXd U = compressor.getU();
+
+    BOOST_CHECK_EQUAL(isOrthonormal(U), true);
+}
+
 
 BOOST_AUTO_TEST_SUITE_END()
