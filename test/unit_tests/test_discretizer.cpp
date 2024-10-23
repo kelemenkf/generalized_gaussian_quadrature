@@ -55,9 +55,9 @@ template<typename T>
 struct DiscretizerFixture: public Discretizer<T>
 {
     DiscretizerFixture(int kInput, double precisionInput, double lowerBoundInput, double upperBoundInput, const T& handlerInput) 
-    : Discretizer<T> (kInput, precisionInput, lowerBoundInput, upperBoundInput, handlerInput) {};
+    : Discretizer<T> (kInput, precisionInput, lowerBoundInput, upperBoundInput, handlerInput) {}
 
-    ~DiscretizerFixture() {};
+    ~DiscretizerFixture() {}
 
     double testGetPrecision() const
     {

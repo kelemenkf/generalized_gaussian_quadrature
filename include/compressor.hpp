@@ -27,7 +27,14 @@ public:
 private:
     void constructA()
     {
-
+        A.resize(nodes.size(), values.size());
+        for (size_t column = 0; column < values.size(); ++column)
+        {
+            for (size_t row = 0; row < nodes.size(); ++row)
+            {
+                A(row, column) = values[column][row];
+            }
+        }
     }
 
 
