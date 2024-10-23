@@ -146,4 +146,38 @@ BOOST_AUTO_TEST_CASE( TestCalculateFinalValues ) {
 }
 
 
+BOOST_AUTO_TEST_CASE( TestCalculateFinalWeights) {
+    double lowerBound = 0;
+    double upperBound = 2; 
+    int k = 30;
+    std::vector<double> param1 = {5, 4};
+    std::vector<double> param2 = {6, 3};
+    FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
+    
+    QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
+    quadrature.calculateQuadratureNodes();
+
+    std::vector<double> weights = quadrature.getWeights();
+
+    BOOST_CHECK_EQUAL(weights.size(), 60);
+}
+
+
+BOOST_AUTO_TEST_CASE( TestCalculateFinalNodes ) {
+    double lowerBound = 0;
+    double upperBound = 2; 
+    int k = 30;
+    std::vector<double> param1 = {5, 4};
+    std::vector<double> param2 = {6, 3};
+    FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
+    
+    QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
+    quadrature.calculateQuadratureNodes();
+
+    std::vector<double> nodes = quadrature.getNodes();
+
+    BOOST_CHECK_EQUAL(nodes.size(), 60);
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()

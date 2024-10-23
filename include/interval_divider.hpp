@@ -52,6 +52,8 @@ public:
     {
         calculateMesh();
         transformMesh();
+        calculateLegendrePolynomials(legendreMatrix);
+        calculateWeights();
         evaluateFunctionOnTransformedMesh();
     }
 
@@ -172,13 +174,13 @@ private:
     }
 
 
-    void calculateWeight()
+    void calculateWeights()
     {
-        quadratureWeights.resize(2*k);
+        quadratureWeights.resize(2 * k);
 
         for (size_t i = 0; i < 2*k; ++i)
         {
-            quadratureWeights[i] = 2.0 / ((1 - transformedMesh[i]*transformedMesh[i]) * legendreMatrix(2*k, i) * legendreMatrix(2*k, i));         
+            quadratureWeights[i] = 2.0 / ((1 - transformedMesh[i]*transformedMesh[i]) * legendreMatrix(2*k - 1, i) * legendreMatrix(2*k - 1, i));         
         }
     }
 

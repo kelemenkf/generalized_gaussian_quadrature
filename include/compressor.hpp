@@ -2,6 +2,8 @@
 #define COMPRESSOR_HPP
 
 #include "ggq.hpp"
+#include <Eigen/Dense>
+using namespace Eigen;
 
 
 template<typename T>
@@ -9,7 +11,7 @@ class Compressor
 {
 private:
     T quadrature;
-    matrix<double> A;
+    MatrixXd A;
     matrix<double> U;
     std::vector<double> nodes;
     std::vector<double> weights;
@@ -32,7 +34,7 @@ public:
     }
 
 
-    matrix<double> getA() const
+    MatrixXd getA() const
     {
         return A;
     }
@@ -42,11 +44,13 @@ private:
     void constructA()
     {
         A.resize(nodes.size(), values.size());
+        std::cout << nodes.size() << std::endl;
+        std::cout << values.size() << std::endl;
         for (size_t column = 0; column < values.size(); ++column)
         {
             for (size_t row = 0; row < nodes.size(); ++row)
             {
-                A(row, column) = values[column][row];
+                A(row, column) = values[column][row] * sqrt(weights[column]);
             }
         }
     }

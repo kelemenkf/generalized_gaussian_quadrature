@@ -52,16 +52,10 @@ BOOST_AUTO_TEST_CASE( TestConstructA ) {
     quadrature.calculateQuadratureNodes();
     CompressorFixture compressor(quadrature);
 
-    matrix<double> A = compressor.getA();
+    MatrixXd A = compressor.getA();
 
-    BOOST_CHECK_EQUAL(A.size1(), 60);
-    BOOST_CHECK_EQUAL(A.size2(), 4);
-
-    matrix_column<matrix<double>> col1(A, 0);
-
-    for (std::size_t i = 0; i < col1.size(); ++i) {
-        std::cout << col1(i) << std::endl;
-    }
+    BOOST_CHECK_EQUAL(A.rows(), 60);
+    BOOST_CHECK_EQUAL(A.cols(), 4);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
