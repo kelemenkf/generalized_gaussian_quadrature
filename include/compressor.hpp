@@ -18,6 +18,7 @@ private:
     std::vector<double> nodes;
     std::vector<double> weights;
     std::vector<std::vector<double>> values;
+    std::vector<double> normalizingFactors;
 
 
 public:
@@ -29,6 +30,7 @@ public:
         constructA();
         decomposeIntoQR();
         scaleU();
+        getNormalizingFactors();
     }
 
 
@@ -60,7 +62,6 @@ private:
     void constructA()
     {
         A.resize(nodes.size(), values.size());
-        displayVector(weights);
         for (size_t column = 0; column < values.size(); ++column)
         {
             for (size_t row = 0; row < nodes.size(); ++row)
@@ -77,6 +78,7 @@ private:
 
         U = qr.householderQ();
         R = qr.matrixQR().triangularView<Eigen::Upper>();
+        std::cout << "Shape of R " << R.rows() << "x" << R.cols() << std::endl;
     }
 
 
@@ -87,6 +89,27 @@ private:
         {
             scaledU.row(row) /= sqrt(weights[row]);
         }
+    }
+
+
+    void getNormalizingFactors()
+    {  
+        for (size_t i = 0; i < R.rows(); ++i)
+        {
+            for (size_t j = 0; j < R.cols(); ++j)
+            {
+                if (i == j)
+                {
+                    std::cout << R(i,j) << std::endl;
+                }
+            }
+        }
+    }
+
+
+    void discardFunctions()
+    {
+
     }
 
 

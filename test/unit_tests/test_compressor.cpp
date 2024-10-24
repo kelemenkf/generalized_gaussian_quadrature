@@ -86,7 +86,6 @@ BOOST_AUTO_TEST_CASE( TestUScaling ) {
     MatrixXd scaledU = compressor.getScaledU();
     MatrixXd originalU = compressor.getU();
     std::vector<double> weights = quadrature.getWeights();
-    std::vector<double> nodes = quadrature.getNodes();
 
     MatrixXd U = scaledU;
     for (size_t row = 0; row < U.rows(); ++row)
@@ -105,6 +104,21 @@ BOOST_AUTO_TEST_CASE( TestUScaling ) {
             BOOST_CHECK_CLOSE_FRACTION(originalU(row, column), U(row, column), 1e-6);
         }
     }
+}
+
+
+BOOST_AUTO_TEST_CASE( TestLegendreWeights ) {
+    CompressorFixture compressor(quadrature);
+
+    std::vector<double> weights = quadrature.getWeights();
+
+    double weightSumFirstHalf = std::accumulate(weights.begin(), weights.begin() + (weights.size() / 2), 0.0);
+
+    double weightSumSecondHalf = std::accumulate(weights.begin() + (weights.size() / 2), weights.end(), 0.0);
+
+
+    BOOST_CHECK_CLOSE_FRACTION(weightSumFirstHalf, 1.0, 1e-6);
+    BOOST_CHECK_CLOSE_FRACTION(weightSumSecondHalf, 1.0, 1e-6); 
 }
 
 

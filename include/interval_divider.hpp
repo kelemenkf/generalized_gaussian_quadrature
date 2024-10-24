@@ -178,7 +178,19 @@ private:
 
         for (size_t i = 0; i < 2*k; ++i)
         {
-            quadratureWeights[i] = (upperBound - lowerBound) / ((1 - legendreMesh[i]*legendreMesh[i]) * boost::math::legendre_p(2*k, legendreMesh[i]) * boost::math::legendre_p(2*k, legendreMesh[i]));         
+            double x_i = legendreMesh[i];
+
+            double P_n = boost::math::legendre_p(2*k, x_i);
+
+            double P_nm1 = boost::math::legendre_p(2*k-1, x_i);
+
+            double dP_n = (2*k)*(P_nm1 - x_i*P_n)/(1.0 - x_i*x_i);
+            
+            double weight = 2.0 / ((1.0 - x_i * x_i) * dP_n * dP_n);
+
+            double scaled_weight = weight * ((upperBound - lowerBound) / 2.0);
+
+            quadratureWeights[i] = scaled_weight;
         }
     }
 

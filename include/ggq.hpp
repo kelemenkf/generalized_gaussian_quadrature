@@ -123,6 +123,7 @@ protected:
             std::vector<double> intervalWeights = divider.getQuadratureWeights();
             weights.insert(weights.end(), intervalWeights.begin(), intervalWeights.end());
         }
+        displayVector(weights);
     }
 
 
