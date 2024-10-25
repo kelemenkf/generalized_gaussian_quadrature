@@ -11,6 +11,7 @@ class Compressor
 {
 private:
     T quadrature;
+    double quadraturePrecision;
     MatrixXd A;
     MatrixXd U;
     MatrixXd scaledU;
@@ -22,7 +23,7 @@ private:
 
 
 public:
-    Compressor(const T& quadratureInput) : quadrature(quadratureInput)
+    Compressor(const T& quadratureInput, double quadraturePrecisionInput = 1e-3) : quadrature(quadratureInput), quadraturePrecision(quadraturePrecisionInput)
     {
         nodes = quadrature.getNodes();
         weights = quadrature.getWeights();
@@ -30,7 +31,7 @@ public:
         constructA();
         decomposeIntoQR();
         scaleU();
-        getNormalizingFactors();
+        calculateNormalizingFactors();
     }
 
 
@@ -58,6 +59,12 @@ public:
     }
 
 
+    std::vector<double> getNormalizingFactors() const 
+    {
+        return normalizingFactors;
+    }
+
+
 private:
     void constructA()
     {
@@ -78,7 +85,6 @@ private:
 
         U = qr.householderQ();
         R = qr.matrixQR().triangularView<Eigen::Upper>();
-        std::cout << "Shape of R " << R.rows() << "x" << R.cols() << std::endl;
     }
 
 
@@ -92,7 +98,7 @@ private:
     }
 
 
-    void getNormalizingFactors()
+    void calculateNormalizingFactors()
     {  
         for (size_t i = 0; i < R.rows(); ++i)
         {
@@ -100,7 +106,7 @@ private:
             {
                 if (i == j)
                 {
-                    std::cout << R(i,j) << std::endl;
+                    normalizingFactors.push_back(R(i,j));
                 }
             }
         }

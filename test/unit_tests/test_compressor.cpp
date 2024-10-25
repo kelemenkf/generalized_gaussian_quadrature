@@ -41,7 +41,8 @@ QuadratureRule<FunctionHandler<std::vector<double>, std::vector<double>>> quadra
 template<typename T>
 struct CompressorFixture: public Compressor<T>
 {
-    CompressorFixture(const T& quadratureInput) : Compressor<T>(quadratureInput) {}
+    CompressorFixture(const T& quadratureInput, double quadraturePrecisionInput = 1e-3) : 
+    Compressor<T>(quadratureInput, quadraturePrecisionInput) {}
 
     ~CompressorFixture() {}
 
@@ -121,6 +122,15 @@ BOOST_AUTO_TEST_CASE( TestLegendreWeights ) {
     BOOST_CHECK_CLOSE_FRACTION(weightSumSecondHalf, 1.0, 1e-6); 
 }
 
+
+BOOST_AUTO_TEST_CASE( TestGetNormalizingFactors ) {
+    CompressorFixture compressor(quadrature);
+
+    std::vector<double> normalizingFactors = compressor.getNormalizingFactors();
+    MatrixXd A = compressor.getA();
+
+    BOOST_CHECK_EQUAL(normalizingFactors.size(), A.cols());
+}
 
 
 BOOST_AUTO_TEST_SUITE_END()
