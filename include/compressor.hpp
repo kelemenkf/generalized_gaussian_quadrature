@@ -20,6 +20,7 @@ private:
     std::vector<double> weights;
     std::vector<std::vector<double>> values;
     std::vector<double> normalizingFactors;
+    std::vector<std::vector<double>> scaledDiscardedU;
 
 
 public:
@@ -32,6 +33,7 @@ public:
         decomposeIntoQR();
         scaleU();
         calculateNormalizingFactors();
+        discardFunctions(); 
     }
 
 
@@ -62,6 +64,12 @@ public:
     std::vector<double> getNormalizingFactors() const 
     {
         return normalizingFactors;
+    }
+
+
+    std::vector<std::vector<double>> getCompressedBasis() const
+    {
+        return scaledDiscardedU;
     }
 
 
@@ -106,7 +114,15 @@ private:
             {
                 if (i == j)
                 {
-                    normalizingFactors.push_back(R(i,j));
+                    if (R(i,j) < 0)
+                    {
+                        //Correction for Householder QR producing negative factors
+                        normalizingFactors.push_back(-R(i,j));
+                    }
+                    else 
+                    {
+                        normalizingFactors.push_back(R(i,j));
+                    }
                 }
             }
         }
@@ -115,11 +131,16 @@ private:
 
     void discardFunctions()
     {
-
+        for (size_t i = 0; i < normalizingFactors.size(); ++i)
+        {
+            if (normalizingFactors[i] > quadraturePrecision)
+            {
+                Eigen::VectorXd column = scaledU.col(i);
+                std::vector<double> vec(column.data(), column.data() + column.size());
+                scaledDiscardedU.push_back(vec);
+            }
+        }
     }
-
-
-protected:
 };
 
 #endif

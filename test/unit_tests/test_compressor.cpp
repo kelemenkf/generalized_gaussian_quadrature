@@ -130,6 +130,21 @@ BOOST_AUTO_TEST_CASE( TestGetNormalizingFactors ) {
     MatrixXd A = compressor.getA();
 
     BOOST_CHECK_EQUAL(normalizingFactors.size(), A.cols());
+
+    for (size_t i = 0; i < normalizingFactors.size(); ++i)
+    {
+        BOOST_CHECK_GT(normalizingFactors[i], 0);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE( TestOrthonomalBasis ) {
+    CompressorFixture compressor(quadrature);
+
+    std::vector<double> normalizingFactors = compressor.getNormalizingFactors();
+    std::vector<std::vector<double>> compressedBasis = compressor.getCompressedBasis();
+
+    BOOST_CHECK_EQUAL(compressedBasis.size(), 3);
 }
 
 
