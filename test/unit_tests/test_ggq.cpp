@@ -36,8 +36,9 @@ double testFunction2ParamPC(const double& x, const double& param1, const double&
 template<typename T>
 struct QuadratureRuleFixture: public QuadratureRule<T>
 {
-    QuadratureRuleFixture(double lowerBoundInput, double upperBoundInput, const T& handler)
-    : QuadratureRule<T>(lowerBoundInput, upperBoundInput, handler) {};
+    QuadratureRuleFixture(double lowerBoundInput, double upperBoundInput, const T& handler, double discretizerPrecisionInput = 1e-6, 
+    double quadraturePrecisionInput = 1e-4)
+    : QuadratureRule<T>(lowerBoundInput, upperBoundInput, handler, discretizerPrecisionInput, quadraturePrecisionInput) {};
 
     ~QuadratureRuleFixture() {};
 
@@ -51,7 +52,20 @@ struct QuadratureRuleFixture: public QuadratureRule<T>
 BOOST_AUTO_TEST_SUITE( QuadratureRuleTestSuite )
 
 
-BOOST_AUTO_TEST_CASE( TestConstructorValidation ) {
+BOOST_AUTO_TEST_CASE( TestConstructorPrecisionValidation ) {
+    double lowerBound = 10.5;
+    double upperBound = 20.4;
+
+    FunctionHandler<> handlerFunction(testFunction);
+
+    double discretizerPrecision = 1e-6;
+    double quadraturePrecision = 1e-5;
+
+    BOOST_CHECK_THROW(QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerFunction, discretizerPrecision, quadraturePrecision), std::invalid_argument);
+}
+
+
+BOOST_AUTO_TEST_CASE( TestConstructorFunctionValidation ) {
     double lowerBound = 10.5;
     double upperBound = 20.4;
 

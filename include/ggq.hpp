@@ -17,18 +17,23 @@ class QuadratureRule
 protected:
     double lowerBound;
     double upperBound;
+    double discretizerPrecision;
+    double quadraturePrecision;
     T handler;
     std::vector<double> consolidatedEndpoints;
     std::vector<double> nodes;
     std::vector<double> weights;
     std::vector<std::vector<double>> values;
+    std::vector<std::vector<double>> compressedBasis;
 
 
 public:
-    QuadratureRule(double lowerBoundInput, double upperBoundInput, T handler) 
-    : lowerBound(lowerBoundInput), upperBound(upperBoundInput), handler(handler)
+    QuadratureRule(double lowerBoundInput, double upperBoundInput, T handler, double discretizerPrecisionInput = 1e-6, 
+    double quadraturePrecisionInput = 1e-4) 
+    : lowerBound(lowerBoundInput), upperBound(upperBoundInput), handler(handler), discretizerPrecision(discretizerPrecisionInput),
+    quadraturePrecision(quadraturePrecisionInput)
     {
-
+        validatePrecisions(discretizerPrecision, quadraturePrecision);
     }
 
     ~QuadratureRule() 
@@ -141,6 +146,15 @@ protected:
         }
 
         T::resetCombinationIndex();
+    }
+
+
+    void validatePrecisions(double discretizer, double quadrature)
+    {
+        if (quadrature / discretizer < 100)
+        {
+            throw std::invalid_argument("Quadrature precision has to be at least 100x of discretizer precision");
+        }
     }
 };
 
