@@ -1,7 +1,6 @@
 #ifndef COMPRESSOR_HPP
 #define COMPRESSOR_HPP
 
-#include "ggq.hpp"
 #include <Eigen/Dense>
 using namespace Eigen;
 

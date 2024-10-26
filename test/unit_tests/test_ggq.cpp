@@ -205,6 +205,8 @@ BOOST_AUTO_TEST_CASE( TestCompressorCalling ) {
     QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
     quadrature.calculateQuadratureNodes();
     quadrature.compressFunctionSpace();
+
+    BOOST_CHECK_EQUAL(quadrature.getCompressedBasis().size(), 3);
 }
 
 

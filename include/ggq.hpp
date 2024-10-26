@@ -55,8 +55,8 @@ public:
 
     void compressFunctionSpace() 
     {   
-        Compressor(this, quadraturePrecision);
-        std::cout << "It works" << std::endl;
+        Compressor compressor(this, quadraturePrecision);
+        compressedBasis = compressor.getCompressedBasis();
     }
 
 
@@ -87,6 +87,12 @@ public:
     std::vector<double> getWeights() const
     {
         return weights;
+    }
+
+
+    std::vector<std::vector<double>> getCompressedBasis() const
+    {
+        return compressedBasis;
     }
 
 
