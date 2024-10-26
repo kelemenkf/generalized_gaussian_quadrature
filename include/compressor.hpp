@@ -10,7 +10,7 @@ template<typename T>
 class Compressor
 {
 private:
-    T quadrature;
+    const T* quadrature;
     double quadraturePrecision;
     MatrixXd A;
     MatrixXd U;
@@ -24,11 +24,11 @@ private:
 
 
 public:
-    Compressor(const T& quadratureInput, double quadraturePrecisionInput = 1e-3) : quadrature(quadratureInput), quadraturePrecision(quadraturePrecisionInput)
+    Compressor(const T* quadratureInput, double quadraturePrecisionInput = 1e-3) : quadrature(quadratureInput), quadraturePrecision(quadraturePrecisionInput)
     {
-        nodes = quadrature.getNodes();
-        weights = quadrature.getWeights();
-        values = quadrature.getValues();
+        nodes = quadrature->getNodes();
+        weights = quadrature->getWeights();
+        values = quadrature->getValues();
         constructA();
         decomposeIntoQR();
         scaleU();

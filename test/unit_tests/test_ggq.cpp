@@ -194,4 +194,18 @@ BOOST_AUTO_TEST_CASE( TestCalculateFinalNodes ) {
 }
 
 
+BOOST_AUTO_TEST_CASE( TestCompressorCalling ) {
+    double lowerBound = 0;
+    double upperBound = 2; 
+    int k = 30;
+    std::vector<double> param1 = {5, 4};
+    std::vector<double> param2 = {6, 3};
+    FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
+    
+    QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
+    quadrature.calculateQuadratureNodes();
+    quadrature.compressFunctionSpace();
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()

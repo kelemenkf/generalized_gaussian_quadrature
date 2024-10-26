@@ -36,12 +36,13 @@ std::vector<double> param1 = {5, 4};
 std::vector<double> param2 = {6, 3};
 FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
 
-QuadratureRule<FunctionHandler<std::vector<double>, std::vector<double>>> quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
+QuadratureRule<FunctionHandler<std::vector<double>, std::vector<double>>> quadratureObject(lowerBound, upperBound, handlerPiecewiseSmooth);
+QuadratureRule<FunctionHandler<std::vector<double>, std::vector<double>>>* quadrature = &quadratureObject;
 
 template<typename T>
 struct CompressorFixture: public Compressor<T>
 {
-    CompressorFixture(const T& quadratureInput, double quadraturePrecisionInput = 1e-3) : 
+    CompressorFixture(const T* quadratureInput, double quadraturePrecisionInput = 1e-3) : 
     Compressor<T>(quadratureInput, quadraturePrecisionInput) {}
 
     ~CompressorFixture() {}
@@ -62,7 +63,7 @@ BOOST_AUTO_TEST_CASE( TestCompressorConstructor ) {
 
 
 BOOST_AUTO_TEST_CASE( TestConstructA ) {
-    quadrature.calculateQuadratureNodes();
+    quadrature->calculateQuadratureNodes();
     CompressorFixture compressor(quadrature);
 
     MatrixXd A = compressor.getA();
@@ -86,7 +87,7 @@ BOOST_AUTO_TEST_CASE( TestUScaling ) {
 
     MatrixXd scaledU = compressor.getScaledU();
     MatrixXd originalU = compressor.getU();
-    std::vector<double> weights = quadrature.getWeights();
+    std::vector<double> weights = quadrature->getWeights();
 
     MatrixXd U = scaledU;
     for (size_t row = 0; row < U.rows(); ++row)
@@ -111,7 +112,7 @@ BOOST_AUTO_TEST_CASE( TestUScaling ) {
 BOOST_AUTO_TEST_CASE( TestLegendreWeights ) {
     CompressorFixture compressor(quadrature);
 
-    std::vector<double> weights = quadrature.getWeights();
+    std::vector<double> weights = quadrature->getWeights();
 
     double weightSumFirstHalf = std::accumulate(weights.begin(), weights.begin() + (weights.size() / 2), 0.0);
 

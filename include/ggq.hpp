@@ -8,6 +8,7 @@
 #include <numbers>
 #include "function_handler.hpp"
 #include "discretizer.hpp"
+#include "compressor.hpp"
 using namespace std::numbers;
 
 
@@ -52,6 +53,13 @@ public:
     }
 
 
+    void compressFunctionSpace() 
+    {   
+        Compressor(this, quadraturePrecision);
+        std::cout << "It works" << std::endl;
+    }
+
+
     double getLowerBound() const 
     {
         return lowerBound;
@@ -86,12 +94,11 @@ protected:
     void calculateConsolidatedEndpoints()
     {
         int k = 30;
-        double precision = 1e-5;
         size_t sizeOfParameterCombinations = handler.getParameterCombinationsSize();
 
         for (size_t i = 0; i < sizeOfParameterCombinations; ++i)
         {
-            Discretizer<T> discretizer(k, precision, lowerBound, upperBound, handler);
+            Discretizer<T> discretizer(k, discretizerPrecision, lowerBound, upperBound, handler);
             std::vector<double> endpoints = discretizer.getFinalEndpoints();
             consolidatedEndpoints.insert(consolidatedEndpoints.end(), endpoints.begin(), endpoints.end());
             std::cout << "Discretize function number " << i + 1 << std::endl;
