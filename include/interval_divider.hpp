@@ -27,6 +27,7 @@ private:
     double upperBound;
     T handler;
 
+
 public: 
     IntervalDivider(int kInput, double lowerBoundInput, double upperBoundInput, const T& handlerInput) 
     : k(kInput), lowerBound(lowerBoundInput), upperBound(upperBoundInput), handler(handlerInput)
@@ -74,6 +75,12 @@ public:
     }
 
 
+    std::vector<double> getQuadratureWeights() const 
+    {
+        return quadratureWeights;
+    }
+
+
     matrix<double> getLegendreMatrix() const
     {
         return legendreMatrix;
@@ -86,25 +93,62 @@ public:
     }
 
 
-    std::vector<double> getLagrangeVector() const
-    {
-        return lagrangeVector;
-    }
-
-
-    std::vector<double> getQuadratureWeights() const 
-    {
-        return quadratureWeights;
-    }
-
-
     vector<double> getAlphaVector() const
     {
         return alphaVector;
     }
 
 
+    std::vector<double> getLagrangeVector() const
+    {
+        return lagrangeVector;
+    }
+
+
 private: 
+    void calculateMesh()
+    {
+        legendreMesh.resize(2*k);
+        std::vector<double> positiveZeros = boost::math::legendre_p_zeros<double>(2*k);
+
+        std::copy(positiveZeros.begin(), positiveZeros.end(), legendreMesh.begin() + k);
+        std::transform(positiveZeros.rbegin(), positiveZeros.rend(), legendreMesh.begin(), [](double value){ return -value; });
+    }
+
+
+    void transformMesh()
+    {
+        transformedMesh.resize(2*k);
+        std::transform(legendreMesh.begin(), legendreMesh.end(), transformedMesh.begin(), [this](double value)
+        { 
+            return transformNode(value); 
+        });
+    }
+
+
+    void calculateWeights()
+    {
+        quadratureWeights.resize(2 * k);
+
+        for (size_t i = 0; i < 2*k; ++i)
+        {
+            double x_i = legendreMesh[i];
+
+            double P_n = boost::math::legendre_p(2*k, x_i);
+
+            double P_nm1 = boost::math::legendre_p(2*k-1, x_i);
+
+            double dP_n = (2*k)*(P_nm1 - x_i*P_n)/(1.0 - x_i*x_i);
+            
+            double weight = 2.0 / ((1.0 - x_i * x_i) * dP_n * dP_n);
+
+            double scaled_weight = weight * ((upperBound - lowerBound) / 2.0);
+
+            quadratureWeights[i] = scaled_weight;
+        }
+    }
+
+
     void calculateSquaredAlphas()
     {
         for (size_t i = k; i <= 2*k - 1; ++i)
@@ -172,49 +216,6 @@ private:
     }
 
 
-    void calculateWeights()
-    {
-        quadratureWeights.resize(2 * k);
-
-        for (size_t i = 0; i < 2*k; ++i)
-        {
-            double x_i = legendreMesh[i];
-
-            double P_n = boost::math::legendre_p(2*k, x_i);
-
-            double P_nm1 = boost::math::legendre_p(2*k-1, x_i);
-
-            double dP_n = (2*k)*(P_nm1 - x_i*P_n)/(1.0 - x_i*x_i);
-            
-            double weight = 2.0 / ((1.0 - x_i * x_i) * dP_n * dP_n);
-
-            double scaled_weight = weight * ((upperBound - lowerBound) / 2.0);
-
-            quadratureWeights[i] = scaled_weight;
-        }
-    }
-
-
-    void calculateMesh()
-    {
-        legendreMesh.resize(2*k);
-        std::vector<double> positiveZeros = boost::math::legendre_p_zeros<double>(2*k);
-
-        std::copy(positiveZeros.begin(), positiveZeros.end(), legendreMesh.begin() + k);
-        std::transform(positiveZeros.rbegin(), positiveZeros.rend(), legendreMesh.begin(), [](double value){ return -value; });
-    }
-
-
-    void transformMesh()
-    {
-        transformedMesh.resize(2*k);
-        std::transform(legendreMesh.begin(), legendreMesh.end(), transformedMesh.begin(), [this](double value)
-        { 
-            return transformNode(value); 
-        });
-    }
-
-    
     static int validateK(int inputK)
     {
         if (inputK > 0)
