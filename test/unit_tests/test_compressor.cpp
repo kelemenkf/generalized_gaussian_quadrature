@@ -30,6 +30,21 @@ bool isOrthonormal(const Eigen::MatrixXd& matrix, double tolerance = 1e-9) {
 }
 
 
+bool isOrthonormalWithWeight(const Eigen::MatrixXd& matrix, const std::vector<double>& weights, double tolerance = 1e-9)
+{
+    if (matrix.rows() != matrix.cols()) {
+        return false;
+    }
+
+    const Eigen::Map<const Eigen::VectorXd> weightsEigen(weights.data(), weights.size());
+
+    Eigen::MatrixXd identity_check = matrix.transpose() * weightsEigen.asDiagonal() * matrix;
+
+    Eigen::MatrixXd identity = Eigen::MatrixXd::Identity(matrix.rows(), matrix.cols());
+    return (identity_check.isApprox(identity, tolerance));
+}
+
+
 double lowerBound = 0;
 double upperBound = 2; 
 std::vector<double> param1 = {5, 4};
@@ -106,6 +121,8 @@ BOOST_AUTO_TEST_CASE( TestUScaling ) {
             BOOST_CHECK_CLOSE_FRACTION(originalU(row, column), U(row, column), 1e-6);
         }
     }
+
+    BOOST_CHECK_EQUAL(isOrthonormalWithWeight(scaledU, weights), true);
 }
 
 
@@ -146,6 +163,18 @@ BOOST_AUTO_TEST_CASE( TestOrthonomalBasis ) {
     std::vector<std::vector<double>> compressedBasis = compressor.getCompressedBasis();
 
     BOOST_CHECK_EQUAL(compressedBasis.size(), 3);
+}
+
+
+
+BOOST_AUTO_TEST_CASE( TestRVector ) {
+    CompressorFixture compressor(quadrature);
+
+    std::vector<double> rVector = compressor.getRVector();
+
+    displayVector(rVector);
+
+    BOOST_CHECK_EQUAL(rVector.size(), 3);
 }
 
 

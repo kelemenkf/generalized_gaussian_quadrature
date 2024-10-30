@@ -2,6 +2,8 @@
 #define COMPRESSOR_HPP
 
 #include <Eigen/Dense>
+#include <numeric>
+#include "utils.hpp"
 using namespace Eigen;
 
 
@@ -20,6 +22,7 @@ private:
     std::vector<std::vector<double>> values;
     std::vector<double> normalizingFactors;
     std::vector<std::vector<double>> scaledDiscardedU;
+    std::vector<double> rVector;
 
 
 public:
@@ -33,6 +36,7 @@ public:
         scaleU();
         calculateNormalizingFactors();
         discardFunctions(); 
+        calculateRVector();
     }
 
 
@@ -69,6 +73,12 @@ public:
     std::vector<std::vector<double>> getCompressedBasis() const
     {
         return scaledDiscardedU;
+    }
+
+
+    std::vector<double> getRVector() const
+    {
+        return rVector;
     }
 
 
@@ -138,6 +148,16 @@ private:
                 std::vector<double> vec(column.data(), column.data() + column.size());
                 scaledDiscardedU.push_back(vec);
             }
+        }
+    }
+
+
+    void calculateRVector()
+    {
+        for (size_t i = 0; i < scaledDiscardedU.size(); ++i)
+        {
+            double r = std::inner_product(scaledDiscardedU[i].begin(), scaledDiscardedU[i].end(), weights.begin(), 0);
+            rVector.push_back(r);
         }
     }
 };
