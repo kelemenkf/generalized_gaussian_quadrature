@@ -23,6 +23,7 @@ private:
     std::vector<double> normalizingFactors;
     std::vector<std::vector<double>> scaledDiscardedU;
     std::vector<double> rVector;
+    MatrixXd B;
 
 
 public:
@@ -37,6 +38,7 @@ public:
         calculateNormalizingFactors();
         discardFunctions(); 
         calculateRVector();
+        constructB();
     }
 
 
@@ -79,6 +81,12 @@ public:
     std::vector<double> getRVector() const
     {
         return rVector;
+    }
+
+
+    MatrixXd getB() const
+    {
+        return B;
     }
 
 
@@ -152,14 +160,45 @@ private:
     }
 
 
+    double innerProduct(size_t index)
+    {
+        double result = 0; 
+
+        if (scaledDiscardedU[index].size() != weights.size()) {
+            throw std::runtime_error("Size mismatch between vectors.");
+        }
+
+        for (size_t i = 0; i < scaledDiscardedU[index].size(); ++i)
+        {
+            result += (scaledDiscardedU[index][i] * weights[i]);
+        }
+
+        return result;
+    }
+
+
     void calculateRVector()
     {
         for (size_t i = 0; i < scaledDiscardedU.size(); ++i)
         {
-            double r = std::inner_product(scaledDiscardedU[i].begin(), scaledDiscardedU[i].end(), weights.begin(), 0);
-            rVector.push_back(r);
+            double res = innerProduct(i);
+            rVector.push_back(res);
+        }
+    }
+
+
+    void constructB()
+    {
+        B.resize(scaledDiscardedU.size(), weights.size());
+        for (size_t row = 0; row < scaledDiscardedU.size(); ++row)
+        {
+            for (size_t column = 0; column < weights.size(); ++column)
+            {
+                B(row, column) = scaledDiscardedU[row][column] * sqrt(weights[column]);
+            }
         }
     }
 };
+ 
 
 #endif

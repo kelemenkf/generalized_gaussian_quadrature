@@ -178,4 +178,14 @@ BOOST_AUTO_TEST_CASE( TestRVector ) {
 }
 
 
+BOOST_AUTO_TEST_CASE( TestConstructB ) {
+    CompressorFixture compressor(quadrature);
+
+    MatrixXd B = compressor.getB();
+
+    BOOST_CHECK_EQUAL(B.rows(), 3);
+    BOOST_CHECK_EQUAL(B.cols(), 60);
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()
