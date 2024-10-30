@@ -24,6 +24,8 @@ private:
     std::vector<std::vector<double>> scaledDiscardedU;
     std::vector<double> rVector;
     MatrixXd B;
+    MatrixXd R_11;
+    MatrixXd Q;
 
 
 public:
@@ -197,6 +199,31 @@ private:
                 B(row, column) = scaledDiscardedU[row][column] * sqrt(weights[column]);
             }
         }
+    }
+
+
+    void doubleOrthogonalization()
+    {
+        std::tuple<MatrixXd, MatrixXd> firstStep = pivotedGramSchmidt(B);
+        MatrixXd Q1 = std::get<0>(firstStep);
+        MatrixXd R1 = std::get<1>(firstStep);
+        std::tuple<MatrixXd, MatrixXd> secondStep = pivotedGramSchmidt(Q1*R1);
+        Q = std::get<0>(secondStep);
+        R_11 = std::get<1>(secondStep);
+    }
+
+
+protected:
+    std::tuple<MatrixXd, MatrixXd> pivotedGramSchmidt(MatrixXd& matrix) 
+    {
+        int m = matrix.rows();
+        int n = matrix.cols();
+        Q = MatrixXd::Zero(n, n);
+        R = MatrixXd::Zero(n, n);
+    
+        //Implement
+
+        return {Q, R};
     }
 };
  
