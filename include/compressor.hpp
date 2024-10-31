@@ -41,6 +41,7 @@ public:
         discardFunctions(); 
         calculateRVector();
         constructB();
+        doubleOrthogonalization();
     }
 
 
@@ -89,6 +90,18 @@ public:
     MatrixXd getB() const
     {
         return B;
+    }
+
+
+    MatrixXd getQ() const
+    {
+        return Q;
+    }
+
+
+    MatrixXd getR_11() const
+    {
+        return R_11;
     }
 
 
@@ -204,24 +217,84 @@ private:
 
     void doubleOrthogonalization()
     {
-        std::tuple<MatrixXd, MatrixXd> firstStep = pivotedGramSchmidt(B);
-        MatrixXd Q1 = std::get<0>(firstStep);
-        MatrixXd R1 = std::get<1>(firstStep);
-        std::tuple<MatrixXd, MatrixXd> secondStep = pivotedGramSchmidt(Q1*R1);
-        Q = std::get<0>(secondStep);
-        R_11 = std::get<1>(secondStep);
+        std::tuple<MatrixXd, MatrixXd> result = doublePivotedGramSchmidt(B);
+        Q = std::get<0>(result);
+        R_11 = std::get<1>(result);
+    }
+
+
+    void solveSystem()
+    {
+        
     }
 
 
 protected:
-    std::tuple<MatrixXd, MatrixXd> pivotedGramSchmidt(MatrixXd& matrix) 
+    std::tuple<MatrixXd, MatrixXd> doublePivotedGramSchmidt(MatrixXd& inputMatrix) 
     {
-        int m = matrix.rows();
-        int n = matrix.cols();
+        int n = inputMatrix.rows();
         Q = MatrixXd::Zero(n, n);
         R = MatrixXd::Zero(n, n);
-    
-        //Implement
+        MatrixXd V = inputMatrix;
+
+        std::vector<size_t> perm(n);
+        for (size_t i = 0; i < n; ++i)
+        {
+            perm[i] = i;
+        }
+
+        std::vector<double> norms(n);
+        for (size_t j = 0; j < n; ++j)
+        {
+            norms[j] = V.col(j).norm();
+        }
+
+
+        for (size_t k = 0; k < n; ++k)
+        {
+            size_t maxNormId = k;
+            double maxNorm = norms[k];
+            for(size_t j = k+1; j < n; ++j)
+            {
+                if (norms[j] > maxNorm)
+                {
+                    maxNormId = j;
+                    maxNorm = norms[j];
+                }
+            }
+
+            if (maxNormId != k)
+            {
+                V.col(k).swap(V.col(maxNormId));
+                std::swap(norms[k], norms[maxNormId]);
+                std::swap(perm[k], perm[maxNormId]);
+            }
+
+
+            Eigen::VectorXd vk = V.col(k);
+
+            double rkk = vk.norm();
+            R(k,k) = rkk;
+
+            Eigen::VectorXd qk = vk * (1 / rkk);
+            Q.col(k) = qk;
+
+
+            for (size_t j = k+1; j < n; ++j)
+            {
+                Eigen::VectorXd vj = V.col(j);
+                double rkj = vj.dot(qk);
+                R(k, j) = rkj;
+                vj -= qk * rkj;
+        
+            
+                rkj = vj.dot(qk);
+                vj -= qk * rkj;
+
+                V.col(j) = vj;
+                R(k,j) += rkj;
+            }
+        } 
 
         return {Q, R};
     }

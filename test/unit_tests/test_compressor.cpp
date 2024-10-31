@@ -66,12 +66,6 @@ struct CompressorFixture: public Compressor<T>
     {
         this->constructA();
     }
-
-
-    std::tuple<MatrixXd, MatrixXd> testPivotedGramSchmidt(MatrixXd& matrix)
-    {
-        return this->pivotedGramSchmidt(matrix);
-    }
 }; 
 
 
@@ -197,13 +191,12 @@ BOOST_AUTO_TEST_CASE( TestConstructB ) {
 BOOST_AUTO_TEST_CASE( TestPivotedGramSchmdit ) {
     CompressorFixture compressor(quadrature);
 
-    MatrixXd B = compressor.getB();
+    MatrixXd Q = compressor.getQ();
+    MatrixXd R_11 = compressor.getR_11();
 
-    std::tuple<MatrixXd, MatrixXd> result = compressor.testPivotedGramSchmidt(B);
+    std::cout << R_11 << std::endl;
 
-    MatrixXd Q = std::get<0>(result);
-
-    std::cout << Q.transpose() * Q << std::endl;
+    BOOST_CHECK_EQUAL(isOrthonormal(Q), true);
 }
 
 
