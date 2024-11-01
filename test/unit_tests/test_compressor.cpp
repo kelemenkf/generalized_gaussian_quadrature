@@ -45,6 +45,18 @@ bool isOrthonormalWithWeight(const Eigen::MatrixXd& matrix, const std::vector<do
 }
 
 
+MatrixXd reorderMatrix(const MatrixXd& B, const std::vector<size_t>& indices) {
+    MatrixXd reorderedB(B.rows(), B.cols());
+
+    for (size_t i = 0; i < indices.size(); ++i) {
+        size_t originalIndex = indices[i]; 
+        reorderedB.col(originalIndex) = B.col(i); 
+    }
+
+    return reorderedB;
+}
+
+
 double lowerBound = 0;
 double upperBound = 2; 
 std::vector<double> param1 = {5, 4};
@@ -65,6 +77,11 @@ struct CompressorFixture: public Compressor<T>
     void testConstructA()
     {
         this->constructA();
+    }
+
+    std::tuple<MatrixXd, MatrixXd, std::vector<size_t>> testPivotedGramSchmidt(MatrixXd& inputMatrix)
+    {   
+        return this->doublePivotedGramSchmidt(inputMatrix);
     }
 }; 
 
@@ -170,9 +187,7 @@ BOOST_AUTO_TEST_CASE( TestOrthonomalBasis ) {
 BOOST_AUTO_TEST_CASE( TestRVector ) {
     CompressorFixture compressor(quadrature);
 
-    std::vector<double> rVector = compressor.getRVector();
-
-    displayVector(rVector);
+    VectorXd rVector = compressor.getRVector();
 
     BOOST_CHECK_EQUAL(rVector.size(), 3);
 }
@@ -188,16 +203,100 @@ BOOST_AUTO_TEST_CASE( TestConstructB ) {
 }
 
 
-BOOST_AUTO_TEST_CASE( TestPivotedGramSchmdit ) {
+BOOST_AUTO_TEST_CASE( TestPivotedGramSchmidt ) {
+    CompressorFixture compressor(quadrature);
+
+    MatrixXd B{
+        {1, 1, 0, 3},
+        {1, 2, 0, 4},
+        {0, 0, 1, 2}
+    };
+    std::tuple<MatrixXd, MatrixXd, std::vector<size_t>> result = compressor.testPivotedGramSchmidt(B);
+
+    MatrixXd Q = std::get<0>(result);
+    MatrixXd R = std::get<1>(result);
+    std::vector<size_t> perm = std::get<2>(result);
+
+    MatrixXd computedB = Q * R;
+
+    MatrixXd reorderedB = reorderMatrix(computedB, perm);
+
+    if (B.cols() == reorderedB.cols() && B.rows() == reorderedB.rows())
+    {
+        for (size_t i = 0; i < B.rows(); ++i)
+        {
+            for (size_t j = 0; j < B.cols(); ++j)
+            {
+                BOOST_CHECK_CLOSE_FRACTION(B(i,j), reorderedB(i,j), 1e-6);
+            }      
+        }
+    }
+    else
+    {
+        std::cout << "Sizes don't match" << std::endl;
+    }
+
+    std::cout << "Computed B" << reorderedB << std::endl;
+    std::cout << "Original B" << B << std::endl;
+}
+
+
+ 
+BOOST_AUTO_TEST_CASE( TestPivotedGramSchmidtWithB ) {
+    CompressorFixture compressor(quadrature);
+
+    MatrixXd B = compressor.getB();
+    std::tuple<MatrixXd, MatrixXd, std::vector<size_t>> result = compressor.testPivotedGramSchmidt(B);
+
+    MatrixXd Q = std::get<0>(result);
+    MatrixXd R = std::get<1>(result);
+    std::vector<size_t> perm = std::get<2>(result);
+
+    BOOST_CHECK_EQUAL(isOrthonormal(Q), true);
+
+    MatrixXd computedB = Q * R;
+
+    MatrixXd reorderedB = reorderMatrix(computedB, perm);
+
+    if (B.cols() == reorderedB.cols() && B.rows() == reorderedB.rows())
+    {
+        for (size_t i = 0; i < B.rows(); ++i)
+        {
+            for (size_t j = 0; j < B.cols(); ++j)
+            {
+                BOOST_CHECK_CLOSE_FRACTION(B(i,j), reorderedB(i,j), 1e-6);
+            }      
+        }
+    }
+    else
+    {
+        std::cout << "Sizes don't match" << std::endl;
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE( TestFactorization ) {
     CompressorFixture compressor(quadrature);
 
     MatrixXd Q = compressor.getQ();
     MatrixXd R_11 = compressor.getR_11();
 
-    std::cout << R_11 << std::endl;
+    MatrixXd B = compressor.getB();
+    MatrixXd calculatedB = Q * R_11;
+    std::vector<size_t> selectedK = compressor.getSelectedK();
 
-    BOOST_CHECK_EQUAL(isOrthonormal(Q), true);
+    MatrixXd selectedB(Q.rows(), Q.cols());
+
+    for (size_t i = 0; i < selectedK.size(); ++i)
+    {
+        selectedB.col(i) = B.col(selectedK[i]);
+    }
+
+    std::cout << R_11 << std::endl;
+    std::cout << selectedB << std::endl;
+    std::cout << calculatedB << std::endl;
 }
+
 
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -22,10 +22,14 @@ private:
     std::vector<std::vector<double>> values;
     std::vector<double> normalizingFactors;
     std::vector<std::vector<double>> scaledDiscardedU;
-    std::vector<double> rVector;
+    VectorXd rVector;
     MatrixXd B;
     MatrixXd R_11;
     MatrixXd Q;
+    VectorXd z;
+    std::vector<size_t> selectedK;
+    std::vector<double> chebyshevNodes; 
+    std::vector<double> chebyshebWeights; 
 
 
 public:
@@ -42,6 +46,7 @@ public:
         calculateRVector();
         constructB();
         doubleOrthogonalization();
+        solveSystem();
     }
 
 
@@ -81,7 +86,7 @@ public:
     }
 
 
-    std::vector<double> getRVector() const
+    VectorXd getRVector() const
     {
         return rVector;
     }
@@ -102,6 +107,12 @@ public:
     MatrixXd getR_11() const
     {
         return R_11;
+    }
+
+
+    std::vector<size_t> getSelectedK() const
+    {
+        return selectedK;
     }
 
 
@@ -194,10 +205,11 @@ private:
 
     void calculateRVector()
     {
+        rVector.resize(scaledDiscardedU.size());
         for (size_t i = 0; i < scaledDiscardedU.size(); ++i)
         {
             double res = innerProduct(i);
-            rVector.push_back(res);
+            rVector[i] = res;
         }
     }
 
@@ -217,24 +229,74 @@ private:
 
     void doubleOrthogonalization()
     {
-        std::tuple<MatrixXd, MatrixXd> result = doublePivotedGramSchmidt(B);
+        std::tuple<MatrixXd, MatrixXd, std::vector<size_t>> result = doublePivotedGramSchmidt(B);
         Q = std::get<0>(result);
-        R_11 = std::get<1>(result);
+        MatrixXd tempR = std::get<1>(result);
+        std::vector<size_t> perm = std::get<2>(result);
+
+        size_t k = Q.cols(); 
+        selectedK.resize(k); 
+
+        for (size_t i = 0; i < k; ++i)
+        {
+            selectedK[i] = perm[i];
+        }
+
+        R_11.resize(Q.rows(), Q.cols());
+        for (size_t i = 0; i < Q.rows(); ++i)
+        {
+            for (size_t j = 0; j < Q.cols(); ++j)
+            {
+                R_11(i, j) = tempR(i, j);
+            }
+        }
     }
 
 
     void solveSystem()
     {
-        
+        VectorXd b = Q.transpose() * rVector;
+        z = VectorXd::Zero(b.size());
+
+        for (int i = R_11.rows() - 1; i >= 0; --i)
+        {
+            double sum = 0.0;
+            for (int j = i+1; j < R_11.rows(); ++j)
+            {
+                sum += R_11(i,j) * z(j);
+            }
+            z[i] = (b[i] - sum) / R_11(i,i);
+        }
+
+        std::cout << z << std::endl;
+    }
+
+
+    void formNewQuadrature()
+    {
+
     }
 
 
 protected:
-    std::tuple<MatrixXd, MatrixXd> doublePivotedGramSchmidt(MatrixXd& inputMatrix) 
+    MatrixXd reorderMatrix(const MatrixXd& B, const std::vector<size_t>& indices) {
+        MatrixXd reorderedB(B.rows(), B.cols());
+
+        for (size_t i = 0; i < indices.size(); ++i) {
+            size_t originalIndex = indices[i]; 
+            reorderedB.col(originalIndex) = B.col(i); 
+        }
+
+        return reorderedB;
+    }
+
+
+    std::tuple<MatrixXd, MatrixXd, std::vector<size_t>> doublePivotedGramSchmidt(MatrixXd& inputMatrix) 
     {
-        int n = inputMatrix.rows();
-        Q = MatrixXd::Zero(n, n);
-        R = MatrixXd::Zero(n, n);
+        int n = inputMatrix.cols();
+        int m = inputMatrix.rows();
+        Q = MatrixXd::Zero(m, m);
+        R = MatrixXd::Zero(m, n);
         MatrixXd V = inputMatrix;
 
         std::vector<size_t> perm(n);
@@ -248,9 +310,9 @@ protected:
         {
             norms[j] = V.col(j).norm();
         }
+    
 
-
-        for (size_t k = 0; k < n; ++k)
+        for (size_t k = 0; k < m; ++k)
         {
             size_t maxNormId = k;
             double maxNorm = norms[k];
@@ -266,37 +328,43 @@ protected:
             if (maxNormId != k)
             {
                 V.col(k).swap(V.col(maxNormId));
-                std::swap(norms[k], norms[maxNormId]);
                 std::swap(perm[k], perm[maxNormId]);
+                std::swap(norms[k], norms[maxNormId]);
             }
 
-
-            Eigen::VectorXd vk = V.col(k);
+            VectorXd vk = V.col(k);
 
             double rkk = vk.norm();
-            R(k,k) = rkk;
 
-            Eigen::VectorXd qk = vk * (1 / rkk);
+            if (rkk < 1e-10) { 
+                continue;
+            }
+
+            R(k,k) = rkk;
+            VectorXd qk = vk * (1 / rkk);
             Q.col(k) = qk;
 
 
-            for (size_t j = k+1; j < n; ++j)
+            for (size_t j = k + 1; j < n; ++j)
             {
-                Eigen::VectorXd vj = V.col(j);
-                double rkj = vj.dot(qk);
+                double rkj = V.col(j).dot(Q.col(k));
                 R(k, j) = rkj;
-                vj -= qk * rkj;
-        
-            
-                rkj = vj.dot(qk);
-                vj -= qk * rkj;
+                V.col(j) -= Q.col(k) * rkj;
 
-                V.col(j) = vj;
+                norms[j] = V.col(j).norm();
+            }
+
+            for (size_t j = k + 1; j < n; ++j)
+            {
+                double rkj = V.col(j).dot(Q.col(k));
                 R(k,j) += rkj;
+                V.col(j) -= Q.col(k) * rkj;
+
+                norms[j] = V.col(j).norm();
             }
         } 
 
-        return {Q, R};
+        return {Q, R, perm};
     }
 };
  
