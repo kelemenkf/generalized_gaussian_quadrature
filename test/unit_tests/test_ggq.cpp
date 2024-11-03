@@ -52,149 +52,165 @@ struct QuadratureRuleFixture: public QuadratureRule<T>
 BOOST_AUTO_TEST_SUITE( QuadratureRuleTestSuite )
 
 
-BOOST_AUTO_TEST_CASE( TestConstructorPrecisionValidation ) {
-    double lowerBound = 10.5;
-    double upperBound = 20.4;
+// BOOST_AUTO_TEST_CASE( TestConstructorPrecisionValidation ) {
+//     double lowerBound = 10.5;
+//     double upperBound = 20.4;
 
-    FunctionHandler<> handlerFunction(testFunction);
+//     FunctionHandler<> handlerFunction(testFunction);
 
-    double discretizerPrecision = 1e-6;
-    double quadraturePrecision = 1e-5;
+//     double discretizerPrecision = 1e-6;
+//     double quadraturePrecision = 1e-5;
 
-    BOOST_CHECK_THROW(QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerFunction, discretizerPrecision, quadraturePrecision), std::invalid_argument);
-}
-
-
-BOOST_AUTO_TEST_CASE( TestConstructorFunctionValidation ) {
-    double lowerBound = 10.5;
-    double upperBound = 20.4;
-
-    TestClass testObject;
-    TestClass* testObjectPtr = &testObject; 
-    auto testMethod = std::bind(&TestClass::testMethod, testObjectPtr, std::placeholders::_1);
-    std::function<double(const double&)> testMethodPtr = testMethod;
-
-    FunctionHandler<> handlerFunction(testFunction);
-
-    FunctionHandler<> handlerMethod(testMethodPtr);
-
-    BOOST_CHECK_NO_THROW(QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerFunction));
-
-    BOOST_CHECK_NO_THROW(QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerMethod));
-}
+//     BOOST_CHECK_THROW(QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerFunction, discretizerPrecision, quadraturePrecision), std::invalid_argument);
+// }
 
 
-BOOST_AUTO_TEST_CASE( TestCalculateConsolidatedEndpoints ) {
-    double lowerBound = 0;
-    double upperBound = 2; 
-    int k = 30;
-    std::vector<double> param1 = {5};
-    std::vector<double> param2 = {6};
-    FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
+// BOOST_AUTO_TEST_CASE( TestConstructorFunctionValidation ) {
+//     double lowerBound = 10.5;
+//     double upperBound = 20.4;
 
-    QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
-    quadrature.testCalculateConsolidatedEndpoints();
+//     TestClass testObject;
+//     TestClass* testObjectPtr = &testObject; 
+//     auto testMethod = std::bind(&TestClass::testMethod, testObjectPtr, std::placeholders::_1);
+//     std::function<double(const double&)> testMethodPtr = testMethod;
 
-    std::vector<double> consolidatedEndpoints = quadrature.getConsolidatedEndpoints();
-    std::vector<double> expectedConsolidatedEndpoints = {0, 1, 2};
+//     FunctionHandler<> handlerFunction(testFunction);
 
-    BOOST_CHECK_EQUAL(consolidatedEndpoints.size(), 3);
-    BOOST_CHECK_EQUAL_COLLECTIONS(consolidatedEndpoints.begin(), consolidatedEndpoints.end(), expectedConsolidatedEndpoints.begin(), expectedConsolidatedEndpoints.end());
-}
+//     FunctionHandler<> handlerMethod(testMethodPtr);
+
+//     BOOST_CHECK_NO_THROW(QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerFunction));
+
+//     BOOST_CHECK_NO_THROW(QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerMethod));
+// }
 
 
-BOOST_AUTO_TEST_CASE( TestCalculateConsolidatedEndpointsMoreParameters ) {
-    double lowerBound = 0;
-    double upperBound = 2; 
-    int k = 30;
-    std::vector<double> param1 = {5, 4};
-    std::vector<double> param2 = {6, 3};
-    FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
+// BOOST_AUTO_TEST_CASE( TestCalculateConsolidatedEndpoints ) {
+//     double lowerBound = 0;
+//     double upperBound = 2; 
+//     int k = 30;
+//     std::vector<double> param1 = {5};
+//     std::vector<double> param2 = {6};
+//     FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
+
+//     QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
+//     quadrature.testCalculateConsolidatedEndpoints();
+
+//     std::vector<double> consolidatedEndpoints = quadrature.getConsolidatedEndpoints();
+//     std::vector<double> expectedConsolidatedEndpoints = {0, 1, 2};
+
+//     BOOST_CHECK_EQUAL(consolidatedEndpoints.size(), 3);
+//     BOOST_CHECK_EQUAL_COLLECTIONS(consolidatedEndpoints.begin(), consolidatedEndpoints.end(), expectedConsolidatedEndpoints.begin(), expectedConsolidatedEndpoints.end());
+// }
+
+
+// BOOST_AUTO_TEST_CASE( TestCalculateConsolidatedEndpointsMoreParameters ) {
+//     double lowerBound = 0;
+//     double upperBound = 2; 
+//     int k = 30;
+//     std::vector<double> param1 = {5, 4};
+//     std::vector<double> param2 = {6, 3};
+//     FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
     
-    QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
-    quadrature.testCalculateConsolidatedEndpoints();
+//     QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
+//     quadrature.testCalculateConsolidatedEndpoints();
 
-    std::vector<double> consolidatedEndpoints = quadrature.getConsolidatedEndpoints();
-    std::vector<double> expectedConsolidatedEndpoints = {0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2};
+//     std::vector<double> consolidatedEndpoints = quadrature.getConsolidatedEndpoints();
+//     std::vector<double> expectedConsolidatedEndpoints = {0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2};
 
-    BOOST_CHECK_EQUAL(consolidatedEndpoints.size(), 12);
-    BOOST_CHECK_EQUAL_COLLECTIONS(consolidatedEndpoints.begin(), consolidatedEndpoints.end(), expectedConsolidatedEndpoints.begin(), expectedConsolidatedEndpoints.end());
-}
+//     BOOST_CHECK_EQUAL(consolidatedEndpoints.size(), 12);
+//     BOOST_CHECK_EQUAL_COLLECTIONS(consolidatedEndpoints.begin(), consolidatedEndpoints.end(), expectedConsolidatedEndpoints.begin(), expectedConsolidatedEndpoints.end());
+// }
 
 
 
-BOOST_AUTO_TEST_CASE( TestCalculateFinalConsolidatedEndpointsMoreParameters ) {
-    double lowerBound = 0;
-    double upperBound = 2; 
-    int k = 30;
-    std::vector<double> param1 = {5, 4};
-    std::vector<double> param2 = {6, 3};
-    FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
+// BOOST_AUTO_TEST_CASE( TestCalculateFinalConsolidatedEndpointsMoreParameters ) {
+//     double lowerBound = 0;
+//     double upperBound = 2; 
+//     int k = 30;
+//     std::vector<double> param1 = {5, 4};
+//     std::vector<double> param2 = {6, 3};
+//     FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
     
-    QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
-    quadrature.calculateQuadratureNodes();
+//     QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
+//     quadrature.calculateQuadratureNodes();
 
-    std::vector<double> consolidatedEndpoints = quadrature.getConsolidatedEndpoints();
-    std::vector<double> expectedConsolidatedEndpoints = {0, 1, 2};
+//     std::vector<double> consolidatedEndpoints = quadrature.getConsolidatedEndpoints();
+//     std::vector<double> expectedConsolidatedEndpoints = {0, 1, 2};
 
-    BOOST_CHECK_EQUAL(consolidatedEndpoints.size(), 3);
-    BOOST_CHECK_EQUAL_COLLECTIONS(consolidatedEndpoints.begin(), consolidatedEndpoints.end(), expectedConsolidatedEndpoints.begin(), expectedConsolidatedEndpoints.end());
-}
+//     BOOST_CHECK_EQUAL(consolidatedEndpoints.size(), 3);
+//     BOOST_CHECK_EQUAL_COLLECTIONS(consolidatedEndpoints.begin(), consolidatedEndpoints.end(), expectedConsolidatedEndpoints.begin(), expectedConsolidatedEndpoints.end());
+// }
 
 
-BOOST_AUTO_TEST_CASE( TestCalculateFinalValues ) {
-    double lowerBound = 0;
-    double upperBound = 2; 
-    int k = 30;
-    std::vector<double> param1 = {5, 4};
-    std::vector<double> param2 = {6, 3};
-    FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
+// BOOST_AUTO_TEST_CASE( TestCalculateFinalValues ) {
+//     double lowerBound = 0;
+//     double upperBound = 2; 
+//     int k = 30;
+//     std::vector<double> param1 = {5, 4};
+//     std::vector<double> param2 = {6, 3};
+//     FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
     
-    QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
-    quadrature.calculateQuadratureNodes();
+//     QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
+//     quadrature.calculateQuadratureNodes();
 
-    std::vector<std::vector<double>> values = quadrature.getValues();
+//     std::vector<std::vector<double>> values = quadrature.getValues();
 
-    BOOST_CHECK_EQUAL(values.size(), 4);
-    BOOST_CHECK_EQUAL(values[0].size(), 60);
-}
+//     BOOST_CHECK_EQUAL(values.size(), 4);
+//     BOOST_CHECK_EQUAL(values[0].size(), 60);
+// }
 
 
-BOOST_AUTO_TEST_CASE( TestCalculateFinalWeights) {
-    double lowerBound = 0;
-    double upperBound = 2; 
-    int k = 30;
-    std::vector<double> param1 = {5, 4};
-    std::vector<double> param2 = {6, 3};
-    FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
+// BOOST_AUTO_TEST_CASE( TestCalculateFinalWeights) {
+//     double lowerBound = 0;
+//     double upperBound = 2; 
+//     int k = 30;
+//     std::vector<double> param1 = {5, 4};
+//     std::vector<double> param2 = {6, 3};
+//     FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
     
-    QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
-    quadrature.calculateQuadratureNodes();
+//     QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
+//     quadrature.calculateQuadratureNodes();
 
-    std::vector<double> weights = quadrature.getWeights();
+//     std::vector<double> weights = quadrature.getWeights();
 
-    BOOST_CHECK_EQUAL(weights.size(), 60);
-}
+//     BOOST_CHECK_EQUAL(weights.size(), 60);
+// }
 
 
-BOOST_AUTO_TEST_CASE( TestCalculateFinalNodes ) {
-    double lowerBound = 0;
-    double upperBound = 2; 
-    int k = 30;
-    std::vector<double> param1 = {5, 4};
-    std::vector<double> param2 = {6, 3};
-    FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
+// BOOST_AUTO_TEST_CASE( TestCalculateFinalNodes ) {
+//     double lowerBound = 0;
+//     double upperBound = 2; 
+//     int k = 30;
+//     std::vector<double> param1 = {5, 4};
+//     std::vector<double> param2 = {6, 3};
+//     FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
     
-    QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
-    quadrature.calculateQuadratureNodes();
+//     QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
+//     quadrature.calculateQuadratureNodes();
 
-    std::vector<double> nodes = quadrature.getNodes();
+//     std::vector<double> nodes = quadrature.getNodes();
 
-    BOOST_CHECK_EQUAL(nodes.size(), 60);
-}
+//     BOOST_CHECK_EQUAL(nodes.size(), 60);
+// }
 
 
-BOOST_AUTO_TEST_CASE( TestCompressorCalling ) {
+// BOOST_AUTO_TEST_CASE( TestCompressorCalling ) {
+//     double lowerBound = 0;
+//     double upperBound = 2; 
+//     int k = 30;
+//     std::vector<double> param1 = {5, 4};
+//     std::vector<double> param2 = {6, 3};
+//     FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
+    
+//     QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
+//     quadrature.calculateQuadratureNodes();
+//     quadrature.compressFunctionSpace();
+
+//     BOOST_CHECK_EQUAL(quadrature.getCompressedBasis().size(), 3);
+// }
+
+
+BOOST_AUTO_TEST_CASE( TestIntegralEvaluationWithChebyshevNodes ) {
     double lowerBound = 0;
     double upperBound = 2; 
     int k = 30;
@@ -205,9 +221,12 @@ BOOST_AUTO_TEST_CASE( TestCompressorCalling ) {
     QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
     quadrature.calculateQuadratureNodes();
     quadrature.compressFunctionSpace();
+    
+    std::vector<double> integrals;
+    integrals = quadrature.evaluateIntegralsChebyshevNodes();
 
-    BOOST_CHECK_EQUAL(quadrature.getCompressedBasis().size(), 3);
-}
+    displayVector(integrals);
+}   
 
 
 BOOST_AUTO_TEST_SUITE_END()

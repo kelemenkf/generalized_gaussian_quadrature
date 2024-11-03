@@ -29,7 +29,7 @@ private:
     VectorXd z;
     std::vector<size_t> selectedK;
     std::vector<double> chebyshevNodes; 
-    std::vector<double> chebyshebWeights; 
+    std::vector<double> chebyshevWeights; 
 
 
 public:
@@ -47,6 +47,7 @@ public:
         constructB();
         doubleOrthogonalization();
         solveSystem();
+        formNewQuadrature();
     }
 
 
@@ -113,6 +114,18 @@ public:
     std::vector<size_t> getSelectedK() const
     {
         return selectedK;
+    }
+
+
+    std::vector<double> getChebyshevNodes() const
+    {
+        return chebyshevNodes;
+    }
+
+
+    std::vector<double> getChebyshevWeights() const
+    {
+        return chebyshevWeights;
     }
 
 
@@ -186,7 +199,7 @@ private:
     }
 
 
-    double innerProduct(size_t index)
+    double computeR(size_t index)
     {
         double result = 0; 
 
@@ -208,7 +221,7 @@ private:
         rVector.resize(scaledDiscardedU.size());
         for (size_t i = 0; i < scaledDiscardedU.size(); ++i)
         {
-            double res = innerProduct(i);
+            double res = computeR(i);
             rVector[i] = res;
         }
     }
@@ -267,14 +280,18 @@ private:
             }
             z[i] = (b[i] - sum) / R_11(i,i);
         }
-
-        std::cout << z << std::endl;
     }
 
 
     void formNewQuadrature()
     {
-
+        chebyshevWeights.resize(selectedK.size());
+        chebyshevNodes.resize(selectedK.size());
+        for (size_t i = 0; i < selectedK.size(); ++i)
+        {   
+            chebyshevWeights[i] = z(i) * sqrt(weights[selectedK[i]]);
+            chebyshevNodes[i] = nodes[selectedK[i]];
+        }
     }
 
 
@@ -351,7 +368,6 @@ protected:
                 R(k, j) = rkj;
                 V.col(j) -= Q.col(k) * rkj;
 
-                norms[j] = V.col(j).norm();
             }
 
             for (size_t j = k + 1; j < n; ++j)

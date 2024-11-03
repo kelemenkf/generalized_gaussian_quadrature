@@ -26,7 +26,8 @@ protected:
     std::vector<double> weights;
     std::vector<std::vector<double>> values;
     std::vector<std::vector<double>> compressedBasis;
-
+    std::vector<double> chebyshevNodes; 
+    std::vector<double> chebyshevWeights; 
 
 public:
     QuadratureRule(double lowerBoundInput, double upperBoundInput, T handler, double discretizerPrecisionInput = 1e-6, 
@@ -36,6 +37,7 @@ public:
     {
         validatePrecisions(discretizerPrecision, quadraturePrecision);
     }
+
 
     ~QuadratureRule() 
     {
@@ -57,6 +59,65 @@ public:
     {   
         Compressor compressor(this, quadraturePrecision);
         compressedBasis = compressor.getCompressedBasis();
+        chebyshevNodes = compressor.getChebyshevNodes();
+        chebyshevWeights = compressor.getChebyshevWeights();
+    }
+
+
+    std::vector<std::vector<double>> evaluateAtChebyshevNodes()
+    {
+        size_t sizeOfParameterCombinations = handler.getParameterCombinationsSize();
+        std::vector<std::vector<double>> valuesAll;
+
+        displayVector(chebyshevNodes);
+        displayVector(chebyshevWeights);
+
+        for (size_t i = 0; i < sizeOfParameterCombinations; ++i)
+        {   
+            std::vector<double> values(chebyshevNodes.size());
+            std::transform(chebyshevNodes.begin(), chebyshevNodes.end(), values.begin(), [this](double value){
+                return this->handler.callFunction(value);
+            });
+            displayVector(values);
+            valuesAll.push_back(values);
+            T::incrementCombinationIndex();
+        }
+
+        T::resetCombinationIndex();
+
+        return valuesAll;
+    }
+
+
+    std::vector<double> evaluateIntegralsChebyshevNodes() 
+    {
+        std::vector<std::vector<double>> values = evaluateAtChebyshevNodes();
+
+        std::vector<double> integrals(values.size());
+
+        for (size_t i = 0; i < values.size(); ++i)
+        {
+            double integral;
+            integral = innerProduct(values[i], chebyshevWeights);
+            integrals[i] = integral;
+        }
+
+        return integrals;
+    }
+
+
+    std::vector<double> evaluateIntegrals()
+    {
+        std::vector<double> integrals(values.size());
+
+        for (size_t i = 0; i < values.size(); ++i)
+        {
+            double integral;
+            integral = innerProduct(values[i], weights);
+            integrals[i] = integral;
+        }
+
+        return integrals;
     }
 
 
