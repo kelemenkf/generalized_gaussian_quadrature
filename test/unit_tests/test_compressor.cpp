@@ -178,7 +178,7 @@ BOOST_AUTO_TEST_CASE( TestOrthonomalBasis ) {
 
     std::vector<double> normalizingFactors = compressor.getNormalizingFactors();
     std::vector<std::vector<double>> compressedBasis = compressor.getCompressedBasis();
-
+    
     BOOST_CHECK_EQUAL(compressedBasis.size(), 3);
 }
 
@@ -227,7 +227,14 @@ BOOST_AUTO_TEST_CASE( TestPivotedGramSchmidt ) {
         {
             for (size_t j = 0; j < B.cols(); ++j)
             {
-                BOOST_CHECK_CLOSE_FRACTION(B(i,j), reorderedB(i,j), 1e-6);
+                if (B(i,j) == 0)
+                {
+                    BOOST_CHECK_SMALL(reorderedB(i,j), 1e-6);
+                }
+                else
+                {
+                    BOOST_CHECK_CLOSE_FRACTION(B(i,j), reorderedB(i,j), 1e-6);
+                }
             }      
         }
     }
@@ -235,9 +242,6 @@ BOOST_AUTO_TEST_CASE( TestPivotedGramSchmidt ) {
     {
         std::cout << "Sizes don't match" << std::endl;
     }
-
-    std::cout << "Computed B" << reorderedB << std::endl;
-    std::cout << "Original B" << B << std::endl;
 }
 
 
@@ -264,7 +268,14 @@ BOOST_AUTO_TEST_CASE( TestPivotedGramSchmidtWithB ) {
         {
             for (size_t j = 0; j < B.cols(); ++j)
             {
-                BOOST_CHECK_CLOSE_FRACTION(B(i,j), reorderedB(i,j), 1e-6);
+                if (B(i,j) == 0)
+                {
+                    BOOST_CHECK_SMALL(reorderedB(i,j), 1e-6);
+                }
+                else
+                {
+                    BOOST_CHECK_CLOSE_FRACTION(B(i,j), reorderedB(i,j), 1e-6);
+                }
             }      
         }
     }
@@ -291,10 +302,6 @@ BOOST_AUTO_TEST_CASE( TestFactorization ) {
     {
         selectedB.col(i) = B.col(selectedK[i]);
     }
-
-    std::cout << R_11 << std::endl;
-    std::cout << selectedB << std::endl;
-    std::cout << calculatedB << std::endl;
 }
 
 

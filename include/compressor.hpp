@@ -296,18 +296,6 @@ private:
 
 
 protected:
-    MatrixXd reorderMatrix(const MatrixXd& B, const std::vector<size_t>& indices) {
-        MatrixXd reorderedB(B.rows(), B.cols());
-
-        for (size_t i = 0; i < indices.size(); ++i) {
-            size_t originalIndex = indices[i]; 
-            reorderedB.col(originalIndex) = B.col(i); 
-        }
-
-        return reorderedB;
-    }
-
-
     std::tuple<MatrixXd, MatrixXd, std::vector<size_t>> doublePivotedGramSchmidt(MatrixXd& inputMatrix) 
     {
         int n = inputMatrix.cols();
@@ -342,11 +330,16 @@ protected:
                 }
             }
 
+
             if (maxNormId != k)
             {
                 V.col(k).swap(V.col(maxNormId));
                 std::swap(perm[k], perm[maxNormId]);
-                std::swap(norms[k], norms[maxNormId]);
+
+                for (size_t i = 0; i < k; ++i) 
+                {
+                    std::swap(R(i, k), R(i, maxNormId));
+                }
             }
 
             VectorXd vk = V.col(k);
@@ -358,27 +351,31 @@ protected:
             }
 
             R(k,k) = rkk;
-            VectorXd qk = vk * (1 / rkk);
-            Q.col(k) = qk;
-
+            VectorXd qk = vk / rkk;
+            Q.col(k) = qk;       
 
             for (size_t j = k + 1; j < n; ++j)
             {
                 double rkj = V.col(j).dot(Q.col(k));
+
                 R(k, j) = rkj;
                 V.col(j) -= Q.col(k) * rkj;
-
             }
+
 
             for (size_t j = k + 1; j < n; ++j)
             {
                 double rkj = V.col(j).dot(Q.col(k));
                 R(k,j) += rkj;
                 V.col(j) -= Q.col(k) * rkj;
+            }
 
+            for (size_t j = k + 1; j < n; ++j)
+            {
                 norms[j] = V.col(j).norm();
             }
         } 
+
 
         return {Q, R, perm};
     }

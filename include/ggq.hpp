@@ -69,16 +69,12 @@ public:
         size_t sizeOfParameterCombinations = handler.getParameterCombinationsSize();
         std::vector<std::vector<double>> valuesAll;
 
-        displayVector(chebyshevNodes);
-        displayVector(chebyshevWeights);
-
         for (size_t i = 0; i < sizeOfParameterCombinations; ++i)
         {   
             std::vector<double> values(chebyshevNodes.size());
             std::transform(chebyshevNodes.begin(), chebyshevNodes.end(), values.begin(), [this](double value){
                 return this->handler.callFunction(value);
             });
-            displayVector(values);
             valuesAll.push_back(values);
             T::incrementCombinationIndex();
         }
