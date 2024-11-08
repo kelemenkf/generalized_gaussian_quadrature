@@ -2,6 +2,7 @@ bin/
 build/
 notes/
 notebooks/
+temp/
 
 *.o
 *.obj
