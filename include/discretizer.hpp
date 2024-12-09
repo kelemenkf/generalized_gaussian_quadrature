@@ -17,6 +17,7 @@ private:
     std::vector<double> measureVector;
     T handler;
 
+
 public:
     Discretizer(int kInput, double precisionInput, double lowerBoundInput, double upperBoundInput, const T& handlerInput) 
     : k(validateK(kInput)), precision(validatePrecision(precisionInput)), lowerBound(lowerBoundInput), upperBound(upperBoundInput), handler(handlerInput)

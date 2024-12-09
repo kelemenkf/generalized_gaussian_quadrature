@@ -9,6 +9,7 @@
 #include "function_handler.hpp"
 #include "discretizer.hpp"
 #include "compressor.hpp"
+#include "optimizer.hpp"
 using namespace std::numbers;
 
 
@@ -27,7 +28,8 @@ protected:
     std::vector<std::vector<double>> values;
     std::vector<std::vector<double>> compressedBasis;
     std::vector<double> chebyshevNodes; 
-    std::vector<double> chebyshevWeights; 
+    std::vector<double> chebyshevWeights;
+
 
 public:
     QuadratureRule(double lowerBoundInput, double upperBoundInput, T handler, double discretizerPrecisionInput = 1e-6, 
@@ -47,6 +49,7 @@ public:
 
     void calculateQuadratureNodes()
     {
+        //Stage 1 of the paper 
         calculateConsolidatedEndpoints();
         sortConsolidatedEndpoints();
         removeDuplicateEndpoits();
@@ -57,6 +60,7 @@ public:
 
     void compressFunctionSpace() 
     {   
+        //Stage 2 of the paper
         Compressor compressor(this, quadraturePrecision);
         compressedBasis = compressor.getCompressedBasis();
         chebyshevNodes = compressor.getChebyshevNodes();

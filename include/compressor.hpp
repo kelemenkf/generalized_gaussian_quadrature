@@ -43,7 +43,7 @@ public:
         scaleU();
         calculateNormalizingFactors();
         discardFunctions(); 
-        calculateRVector();
+        calculateBasisFunctionIntegrals();
         constructB();
         doubleOrthogonalization();
         solveSystem();
@@ -199,7 +199,18 @@ private:
     }
 
 
-    double computeR(size_t index)
+    void calculateBasisFunctionIntegrals()
+    {
+        rVector.resize(scaledDiscardedU.size());
+        for (size_t i = 0; i < scaledDiscardedU.size(); ++i)
+        {
+            double res = calculateBasisIntegral(i);
+            rVector[i] = res;
+        }
+    }
+
+
+    double calculateBasisIntegral(size_t index)
     {
         double result = 0; 
 
@@ -213,17 +224,6 @@ private:
         }
 
         return result;
-    }
-
-
-    void calculateRVector()
-    {
-        rVector.resize(scaledDiscardedU.size());
-        for (size_t i = 0; i < scaledDiscardedU.size(); ++i)
-        {
-            double res = computeR(i);
-            rVector[i] = res;
-        }
     }
 
 
