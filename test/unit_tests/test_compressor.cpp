@@ -66,6 +66,7 @@ FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth
 QuadratureRule<FunctionHandler<std::vector<double>, std::vector<double>>> quadratureObject(lowerBound, upperBound, handlerPiecewiseSmooth);
 QuadratureRule<FunctionHandler<std::vector<double>, std::vector<double>>>* quadrature = &quadratureObject;
 
+
 template<typename T>
 struct CompressorFixture: public Compressor<T>
 {

@@ -41,14 +41,10 @@ public:
     {
         calculateMesh();
         transformMesh();
-
-
         calculateLegendrePolynomials(legendreMatrix);
         invertMatrix();
         evaluateFunctionOnTransformedMesh();
         calculateAlphaCoefficients();
-
-
         calculateSquaredAlphas();
     }
 
@@ -161,63 +157,63 @@ private:
         }
     }
 
-    // void calculateAlphaCoefficients()
-    // {
-    //     vector<double> lagrangeVectorUblas;
-    //     lagrangeVectorUblas.resize(lagrangeVector.size());
-    //     for (size_t i = 0; i < lagrangeVector.size(); ++i)
-    //     {
-    //         lagrangeVectorUblas(i) = lagrangeVector[i];
-    //     }
-    //     alphaVector = prod(invertedLegendreMatrix, lagrangeVectorUblas);
-    // }
+    void calculateAlphaCoefficients()
+    {
+        vector<double> lagrangeVectorUblas;
+        lagrangeVectorUblas.resize(lagrangeVector.size());
+        for (size_t i = 0; i < lagrangeVector.size(); ++i)
+        {
+            lagrangeVectorUblas(i) = lagrangeVector[i];
+        }
+        alphaVector = prod(invertedLegendreMatrix, lagrangeVectorUblas);
+    }
 
 
-    // void evaluateFunctionOnTransformedMesh()
-    // {
-    //     lagrangeVector.resize(legendreMesh.size());
-    //     std::transform(transformedMesh.begin(), transformedMesh.end(), lagrangeVector.begin(), [this](double value){
-    //         return this->handler.callFunction(value);
-    //     });
-    // }
+    void evaluateFunctionOnTransformedMesh()
+    {
+        lagrangeVector.resize(legendreMesh.size());
+        std::transform(transformedMesh.begin(), transformedMesh.end(), lagrangeVector.begin(), [this](double value){
+            return this->handler.callFunction(value);
+        });
+    }
 
 
-    // void invertMatrix() 
-    // {
-    //     matrix<double> copyOfLegendreMatrix(legendreMatrix);
+    void invertMatrix() 
+    {
+        matrix<double> copyOfLegendreMatrix(legendreMatrix);
         
-    //     permutation_matrix<std::size_t> pm(copyOfLegendreMatrix.size1());
+        permutation_matrix<std::size_t> pm(copyOfLegendreMatrix.size1());
 
-    //     int res = lu_factorize(copyOfLegendreMatrix, pm);
-    //     if (res != 0) {
-    //         throw std::invalid_argument("Matrix is singular");
-    //     }
+        int res = lu_factorize(copyOfLegendreMatrix, pm);
+        if (res != 0) {
+            throw std::invalid_argument("Matrix is singular");
+        }
 
-    //     invertedLegendreMatrix.resize(2*k, 2*k);
-    //     invertedLegendreMatrix.assign(identity_matrix<double>(copyOfLegendreMatrix.size1()));
+        invertedLegendreMatrix.resize(2*k, 2*k);
+        invertedLegendreMatrix.assign(identity_matrix<double>(copyOfLegendreMatrix.size1()));
 
-    //     lu_substitute(copyOfLegendreMatrix, pm, invertedLegendreMatrix);
-    // }
+        lu_substitute(copyOfLegendreMatrix, pm, invertedLegendreMatrix);
+    }
 
 
-    // void calculateLegendrePolynomials(matrix<double>& inputMatrix)
-    // {
-    //     inputMatrix.resize(2*k, 2*k);
-    //     for (size_t i = 0; i < 2*k; ++i)
-    //     {
-    //         for (size_t j = 0; j < legendreMesh.size(); ++j)
-    //         {  
-    //             if (j == 0)
-    //             {
-    //                 inputMatrix(i, j) = 1;
-    //             }
-    //             else
-    //             {
-    //                 inputMatrix(i, j) = transformNode((boost::math::legendre_p(j, legendreMesh[i])));
-    //             }
-    //         }
-    //     }
-    // }
+    void calculateLegendrePolynomials(matrix<double>& inputMatrix)
+    {
+        inputMatrix.resize(2*k, 2*k);
+        for (size_t i = 0; i < 2*k; ++i)
+        {
+            for (size_t j = 0; j < legendreMesh.size(); ++j)
+            {  
+                if (j == 0)
+                {
+                    inputMatrix(i, j) = 1;
+                }
+                else
+                {
+                    inputMatrix(i, j) = transformNode((boost::math::legendre_p(j, legendreMesh[i])));
+                }
+            }
+        }
+    }
 
 
     static int validateK(int inputK)

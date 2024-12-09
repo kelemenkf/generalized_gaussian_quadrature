@@ -157,6 +157,18 @@ public:
     }
 
 
+    std::vector<double> getChebyshevNodes() const
+    {
+        return chebyshevNodes;
+    }
+
+
+    std::vector<double> getChebyshevWeights() const
+    {
+        return chebyshevWeights;
+    }
+
+
 protected:
     void calculateConsolidatedEndpoints()
     {
