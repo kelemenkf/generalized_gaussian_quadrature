@@ -42,6 +42,7 @@ void declare_quadrature(py::module& m, const std::string& suffix) {
         .def("get_nodes", &Quadrature::getNodes)
         .def("get_values", &Quadrature::getValues)
         .def("get_u", &Quadrature::getCompressedBasis)
+        .def("get_legendre", &Quadrature::getLegendre)
     ;
 }
 

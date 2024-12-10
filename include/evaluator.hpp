@@ -25,7 +25,7 @@ public:
     Evaluator(const std::vector<double>& inputNodes, const std::vector<double>& inputValues, const std::vector<double>& inputEndpoints) :
     values(inputValues), nodes(inputNodes), endpoints(inputEndpoints)
     {
-        storeLagrangeCoefficientsOverAllIntervals();
+        //storeLagrangeCoefficientsOverAllIntervals();
     }
 
     ~Evaluator() {};
@@ -34,6 +34,15 @@ public:
     std::vector<vector<double>> getCoefficients() const
     {
         return coefficients;
+    }
+
+
+    matrix<double> getLegendreMatirx() 
+    {
+        std::vector<double> x = divideNodesIntoIntervals(nodes, endpoints[0], endpoints[1]);
+        matrix<double> L = calculateLegendrePolynomials(x);
+
+        return L; 
     }
 
     
@@ -68,11 +77,9 @@ private:
                 y.push_back(values[j]);
             }
 
-    
             matrix<double> L = calculateLegendrePolynomials(x);
-            matrix<double> invertedL = invertMatrix(L);
 
-            std::cout << invertedL << std::endl;
+            matrix<double> invertedL = invertMatrix(L);
 
             coefficients.push_back(calculateAlphaCoefficients(y, invertedL));
 
@@ -143,8 +150,6 @@ private:
             }
         }
 
-        std::cout << legendreMatrix << std::endl;
-
         return legendreMatrix;
     }
 
@@ -152,12 +157,8 @@ private:
     matrix<double> invertMatrix(matrix<double>& input) 
     {
         matrix<double> invertedLegendreMatrix(input.size1(), input.size2());
+
         matrix<double> copyOfLegendreMatrix(input);
-
-        std::cout << copyOfLegendreMatrix.size1() << " " << copyOfLegendreMatrix.size2() << std::endl; 
-
-        std::cout << invertedLegendreMatrix.size1() << " " << invertedLegendreMatrix.size2() << std::endl; 
-        
         permutation_matrix<std::size_t> pm(copyOfLegendreMatrix.size1());
 
         int res = lu_factorize(copyOfLegendreMatrix, pm);
@@ -166,10 +167,7 @@ private:
         }
 
         invertedLegendreMatrix.assign(identity_matrix<double>(copyOfLegendreMatrix.size1()));
-
-        std::cout << copyOfLegendreMatrix << std::endl;
-        std::cout << pm << std::endl;
-
+    
         lu_substitute(copyOfLegendreMatrix, pm, invertedLegendreMatrix);
 
         return invertedLegendreMatrix;

@@ -7,6 +7,7 @@
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/numeric/ublas/operation.hpp>
 #include <cmath>
+#include "utils.hpp"
 using namespace boost::numeric::ublas;
 
 
@@ -184,7 +185,7 @@ private:
     void invertMatrix() 
     {
         matrix<double> copyOfLegendreMatrix(legendreMatrix);
-        
+ 
         permutation_matrix<std::size_t> pm(copyOfLegendreMatrix.size1());
 
         int res = lu_factorize(copyOfLegendreMatrix, pm);
@@ -196,6 +197,7 @@ private:
         invertedLegendreMatrix.assign(identity_matrix<double>(copyOfLegendreMatrix.size1()));
 
         lu_substitute(copyOfLegendreMatrix, pm, invertedLegendreMatrix);
+
     }
 
 
@@ -216,6 +218,8 @@ private:
                 }
             }
         }
+
+        std::cout << inputMatrix << std::endl;
     }
 
 

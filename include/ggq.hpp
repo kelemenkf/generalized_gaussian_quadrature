@@ -10,6 +10,7 @@
 #include "discretizer.hpp"
 #include "compressor.hpp"
 #include "optimizer.hpp"
+#include "evaluator.hpp"
 using namespace std::numbers;
 
 
@@ -167,6 +168,27 @@ public:
     std::vector<double> getChebyshevWeights() const
     {
         return chebyshevWeights;
+    }
+
+
+    std::vector<std::vector<double>> getLegendre()
+    {
+        Evaluator evaluator(nodes, compressedBasis[0], consolidatedEndpoints);
+
+        matrix<double> L =  evaluator.getLegendreMatirx(); 
+
+        std::vector<std::vector<double>> vectorL(L.size1());
+
+        for (size_t i = 0; i < L.size1(); ++i)
+        {
+            vectorL[i].resize(L.size2());
+            for (size_t j = 0; j < L.size2(); ++j)
+            {
+                vectorL[i][j] = L(i,j);
+            }
+        }
+
+        return vectorL;
     }
 
 

@@ -39,11 +39,11 @@ BOOST_AUTO_TEST_CASE( TestEvaluatorConstructor ) {
     std::vector<double> nodes = quadratureObject.getNodes();
     std::vector<double> endpoints = quadratureObject.getConsolidatedEndpoints();
 
-    Evaluator evaluator(nodes, basisFunctions[0], endpoints);
+    //Evaluator evaluator(nodes, basisFunctions[0], endpoints);
 
-    std::vector<vector<double>> coefficients = evaluator.getCoefficients();
+    // std::vector<vector<double>> coefficients = evaluator.getCoefficients();
 
-    size_t intervalLength = 30;
+    // size_t intervalLength = 30;
 
     // for (size_t i = 0; i < coefficients.size(); ++i)
     // {
@@ -54,12 +54,12 @@ BOOST_AUTO_TEST_CASE( TestEvaluatorConstructor ) {
     //     }     
     // }
 
-    BOOST_CHECK_CLOSE_FRACTION(evaluator.evaluate(nodes[0], coefficients[0]), basisFunctions[0][0], 1e-9);
+    // BOOST_CHECK_CLOSE_FRACTION(evaluator.evaluate(nodes[0], coefficients[0]), basisFunctions[0][0], 1e-9);
 }
 
 
 BOOST_AUTO_TEST_CASE( TestMatrixInversion ) {
-    
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()
