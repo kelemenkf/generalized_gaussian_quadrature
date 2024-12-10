@@ -63,6 +63,7 @@ public:
         //Stage 2 of the paper
         Compressor compressor(this, quadraturePrecision);
         compressedBasis = compressor.getCompressedBasis();
+        std::cout << compressedBasis.size() << std::endl;
         chebyshevNodes = compressor.getChebyshevNodes();
         chebyshevWeights = compressor.getChebyshevWeights();
     }

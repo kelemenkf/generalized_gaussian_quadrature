@@ -37,9 +37,11 @@ void declare_quadrature(py::module& m, const std::string& suffix) {
         .def(py::init<double, double, FHClass>())
         .def(py::init<double, double, FHClass, double, double>())
         .def("calculate_quadrature", &Quadrature::calculateQuadratureNodes)
+        .def("compress_functions", &Quadrature::compressFunctionSpace)
         .def("get_endpoints", &Quadrature::getConsolidatedEndpoints)
         .def("get_nodes", &Quadrature::getNodes)
         .def("get_values", &Quadrature::getValues)
+        .def("get_u", &Quadrature::getCompressedBasis)
     ;
 }
 

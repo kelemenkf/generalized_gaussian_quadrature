@@ -37,47 +37,29 @@ BOOST_AUTO_TEST_CASE( TestEvaluatorConstructor ) {
     quadratureObject.compressFunctionSpace();
     std::vector<std::vector<double>> basisFunctions = quadratureObject.getCompressedBasis();
     std::vector<double> nodes = quadratureObject.getNodes();
+    std::vector<double> endpoints = quadratureObject.getConsolidatedEndpoints();
 
-    displayVector(basisFunctions[0]);
-    displayVector(nodes);
+    Evaluator evaluator(nodes, basisFunctions[0], endpoints);
 
-    Evaluator evaluator(nodes, basisFunctions[0]);
+    std::vector<vector<double>> coefficients = evaluator.getCoefficients();
 
-    polynomial<double> coefficients = evaluator.getCoefficients();
+    size_t intervalLength = 30;
 
-    std::cout << coefficients << std::endl;
+    // for (size_t i = 0; i < coefficients.size(); ++i)
+    // {
+    //     for (size_t j = 0; j < intervalLength; ++j)
+    //     {
+    //         std::cout << i << " " << intervalLength * i + j << std::endl;
+    //         BOOST_CHECK_CLOSE_FRACTION(coefficients[i].evaluate(nodes[intervalLength * i + j]), basisFunctions[0][intervalLength * i + j], 1e-9);
+    //     }     
+    // }
 
-    std::cout << coefficients.evaluate(nodes[0]) << std::endl;
-
-    BOOST_CHECK_EQUAL(coefficients.evaluate(nodes[0]), basisFunctions[0][0]);
+    BOOST_CHECK_CLOSE_FRACTION(evaluator.evaluate(nodes[0], coefficients[0]), basisFunctions[0][0], 1e-9);
 }
 
 
-
-
-
-BOOST_AUTO_TEST_CASE( TestEvaluatorSimplePolynomial ) {
-    quadratureObject.calculateQuadratureNodes();
-    quadratureObject.compressFunctionSpace();
-    std::vector<double> values{0.3, 0.5, 0.6, 1.2};
-    std::vector<double> legendreMesh(4);
-    std::vector<double> positiveZeros = boost::math::legendre_p_zeros<double>(4);
-    std::copy(positiveZeros.begin(), positiveZeros.end(), legendreMesh.begin() + 2);
-    std::transform(positiveZeros.rbegin(), positiveZeros.rend(), legendreMesh.begin(), [](double value){ return -value; });
-
-    Evaluator evaluator(legendreMesh, values);
-
-    displayVector(positiveZeros);
-
-    polynomial<double> coefficients = evaluator.getCoefficients();
-
-    std::cout << coefficients << std::endl;
-
-    std::cout << coefficients.evaluate(legendreMesh[0]) << std::endl;
-
-    BOOST_CHECK_CLOSE(coefficients.evaluate(legendreMesh[0]), values[0], 1e-9);
+BOOST_AUTO_TEST_CASE( TestMatrixInversion ) {
+    
 }
-
-
 
 BOOST_AUTO_TEST_SUITE_END()

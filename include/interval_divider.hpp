@@ -29,8 +29,8 @@ private:
 
 
 public: 
-    IntervalDivider(int kInput, double lowerBoundInput, double upperBoundInput, const T& handlerInput) 
-    : k(kInput), lowerBound(lowerBoundInput), upperBound(upperBoundInput), handler(handlerInput)
+    IntervalDivider(int kInput, double lowerBoundInput, double upperBoundInput, const T& handlerInput)  
+    : k(kInput), lowerBound(lowerBoundInput), upperBound(upperBoundInput), handler(handlerInput) 
     {};
 
 
@@ -157,14 +157,17 @@ private:
         }
     }
 
+
     void calculateAlphaCoefficients()
     {
         vector<double> lagrangeVectorUblas;
         lagrangeVectorUblas.resize(lagrangeVector.size());
+
         for (size_t i = 0; i < lagrangeVector.size(); ++i)
         {
             lagrangeVectorUblas(i) = lagrangeVector[i];
         }
+        
         alphaVector = prod(invertedLegendreMatrix, lagrangeVectorUblas);
     }
 
