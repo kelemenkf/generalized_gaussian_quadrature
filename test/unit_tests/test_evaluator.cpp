@@ -39,7 +39,14 @@ BOOST_AUTO_TEST_CASE( TestEvaluatorConstructor ) {
     std::vector<double> nodes = quadratureObject.getNodes();
     std::vector<double> endpoints = quadratureObject.getConsolidatedEndpoints();
 
-    //Evaluator evaluator(nodes, basisFunctions[0], endpoints);
+    Evaluator evaluator(nodes, basisFunctions[0], endpoints);
+
+    std::vector<double> y = evaluator.getY();
+
+    IntervalDivider divider(15, endpoints[0], endpoints[1], handlerPiecewiseSmooth, y);
+
+    divider.interpolateFunction();
+    vector<double> alpha = divider.getAlphaVector();
 
     // std::vector<vector<double>> coefficients = evaluator.getCoefficients();
 
@@ -54,12 +61,36 @@ BOOST_AUTO_TEST_CASE( TestEvaluatorConstructor ) {
     //     }     
     // }
 
-    // BOOST_CHECK_CLOSE_FRACTION(evaluator.evaluate(nodes[0], coefficients[0]), basisFunctions[0][0], 1e-9);
+    BOOST_CHECK_CLOSE_FRACTION(divider.evaluate(nodes[0], alpha), y[0], 1e-9);
 }
 
 
 BOOST_AUTO_TEST_CASE( TestMatrixInversion ) {
+    quadratureObject.calculateQuadratureNodes();
+    quadratureObject.compressFunctionSpace();
+    std::vector<std::vector<double>> basisFunctions = quadratureObject.getCompressedBasis();
+    std::vector<double> nodes = quadratureObject.getNodes();
+    std::vector<double> endpoints = quadratureObject.getConsolidatedEndpoints();
 
-}
+    Evaluator evaluator(nodes, basisFunctions[0], endpoints);
+
+    std::vector<double> y = evaluator.getY();
+
+    IntervalDivider divider(15, endpoints[0], endpoints[1], handlerPiecewiseSmooth, y);
+
+    divider.interpolateFunction();
+
+    vector<double> alphaVector = divider.getAlphaVector(); 
+    matrix<double> legendreMatrix = divider.getLegendreMatrix();
+    matrix<double> invertedLegendreMatrix = divider.getInvertedLegendreMatrix();
+    std::vector<double> lagrangeVector = divider.getLagrangeVector();
+
+    vector<double> calculatedF = prod(legendreMatrix, alphaVector);  
+
+    for (size_t i = 0; i < lagrangeVector.size(); ++i)
+    {
+        BOOST_CHECK_CLOSE_FRACTION(calculatedF[i], lagrangeVector[i], 1e-9);
+    }
+ }
 
 BOOST_AUTO_TEST_SUITE_END()

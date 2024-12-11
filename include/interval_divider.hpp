@@ -30,8 +30,9 @@ private:
 
 
 public: 
-    IntervalDivider(int kInput, double lowerBoundInput, double upperBoundInput, const T& handlerInput)  
-    : k(kInput), lowerBound(lowerBoundInput), upperBound(upperBoundInput), handler(handlerInput) 
+    IntervalDivider(int kInput, double lowerBoundInput, double upperBoundInput, const T& handlerInput, const std::vector<double>& 
+    lagrangeInput = {})  
+    : k(kInput), lowerBound(lowerBoundInput), upperBound(upperBoundInput), handler(handlerInput), lagrangeVector(lagrangeInput)
     {};
 
 
@@ -55,6 +56,30 @@ public:
         calculateMesh();
         transformMesh();
         calculateWeights();
+    }
+
+
+    void interpolateFunction()
+    {
+        calculateMesh();
+        transformMesh();
+        calculateLegendrePolynomials(legendreMatrix);
+        invertMatrix();
+        calculateAlphaCoefficients();
+    }
+
+
+    double evaluate(double x, vector<double> coefficients)
+    {
+        double result = 0; 
+
+        for (size_t i = 0; i < coefficients.size(); ++i)
+        {
+            std::cout << coefficients[i] << " " << result << " " << boost::math::legendre_p(i, x) << std::endl;
+            result += coefficients[i] * boost::math::legendre_p(i, x);
+        }
+
+        return result;
     }
 
 
@@ -197,7 +222,6 @@ private:
         invertedLegendreMatrix.assign(identity_matrix<double>(copyOfLegendreMatrix.size1()));
 
         lu_substitute(copyOfLegendreMatrix, pm, invertedLegendreMatrix);
-
     }
 
 
@@ -218,8 +242,6 @@ private:
                 }
             }
         }
-
-        std::cout << inputMatrix << std::endl;
     }
 
 

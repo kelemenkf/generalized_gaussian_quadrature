@@ -19,6 +19,7 @@ private:
     const std::vector<double>& values;
     const std::vector<double>& endpoints;
     std::vector<vector<double>> coefficients;
+    std::vector<double> y; 
 
 
 public: 
@@ -52,11 +53,26 @@ public:
 
         for (size_t i = 0; i < coefficients.size(); ++i)
         {
+            std::cout << coefficients[i] << " " << result << " " << boost::math::legendre_p(i, x) << std::endl;
             result += coefficients[i] * boost::math::legendre_p(i, x);
         }
 
         return result;
     }
+
+    std::vector<double> getY(const size_t& i = 0)
+    {
+        std::vector<double> x = divideNodesIntoIntervals(nodes, endpoints[i], endpoints[i+1]);
+
+        std::vector<double> y;
+
+        for (size_t j = 0; j < (0 + 30); ++j)
+        {
+            y.push_back(values[j]);
+        }
+
+        return y; 
+    } 
 
 
 private: 
