@@ -4,9 +4,7 @@
 #include <boost/math/tools/polynomial.hpp>
 #include <boost/math/special_functions/legendre.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
-#include <boost/numeric/ublas/lu.hpp>
 #include <boost/numeric/ublas/io.hpp>
-#include <boost/numeric/ublas/operation.hpp>
 
 using namespace boost::math::tools;
 using namespace boost::numeric::ublas;
@@ -15,197 +13,88 @@ using namespace boost::numeric::ublas;
 class Evaluator
 {
 private: 
-    const std::vector<double>& nodes;
-    const std::vector<double>& values;
-    const std::vector<double>& endpoints;
-    std::vector<vector<double>> coefficients;
-    std::vector<double> y; 
+    std::vector<double> inputNodes; 
+    std::vector<double> reversedNodes;
+    std::vector<double> coefficients;
+    double lowerBound; 
+    double upperBound;
+    std::vector<double> output; 
 
 
-public: 
-    Evaluator(const std::vector<double>& inputNodes, const std::vector<double>& inputValues, const std::vector<double>& inputEndpoints) :
-    values(inputValues), nodes(inputNodes), endpoints(inputEndpoints)
+public:
+    Evaluator(std::vector<double> inputValue, const std::vector<double>& coefficientsInput, double inputLowerBound, 
+    double inputUpperBound) : inputNodes(inputValue), coefficients(coefficientsInput), lowerBound(inputLowerBound), upperBound(inputUpperBound) 
     {
-        //storeLagrangeCoefficientsOverAllIntervals();
-    }
+        reverseNodes();
+        evaluateAll();
+    };
+
 
     ~Evaluator() {};
 
 
-    std::vector<vector<double>> getCoefficients() const
+    std::vector<double> getOutput() const
     {
-        return coefficients;
+        return output; 
     }
 
 
-    matrix<double> getLegendreMatirx() 
+    std::vector<double> getReversedNodes() const
     {
-        std::vector<double> x = divideNodesIntoIntervals(nodes, endpoints[0], endpoints[1]);
-        matrix<double> L = calculateLegendrePolynomials(x);
-
-        return L; 
+        return reversedNodes;
     }
 
-    
-    double evaluate(double x, vector<double> coefficients)
+
+    std::vector<double> getInputNodes() const
     {
-        double result = 0; 
-
-        for (size_t i = 0; i < coefficients.size(); ++i)
-        {
-            std::cout << coefficients[i] << " " << result << " " << boost::math::legendre_p(i, x) << std::endl;
-            result += coefficients[i] * boost::math::legendre_p(i, x);
-        }
-
-        return result;
+        return inputNodes;
     }
-
-    std::vector<double> getY(const size_t& i = 0)
-    {
-        std::vector<double> x = divideNodesIntoIntervals(nodes, endpoints[i], endpoints[i+1]);
-
-        std::vector<double> y;
-
-        for (size_t j = 0; j < (0 + 30); ++j)
-        {
-            y.push_back(values[j]);
-        }
-
-        return y; 
-    } 
 
 
 private: 
-    void storeLagrangeCoefficientsOverAllIntervals()
+    void evaluateAll()
     {
-        size_t valuesIndex = 0;
+        output.resize(inputNodes.size());
 
-        for (size_t i = 0; i < endpoints.size() - 1; ++i)
-        {
-            std::vector<double> x = divideNodesIntoIntervals(nodes, endpoints[i], endpoints[i+1]);
-
-            size_t intervalLength = x.size();
-
-            std::vector<double> y;
-
-            for (size_t j = valuesIndex; j < (valuesIndex + intervalLength); ++j)
-            {
-                y.push_back(values[j]);
-            }
-
-            matrix<double> L = calculateLegendrePolynomials(x);
-
-            matrix<double> invertedL = invertMatrix(L);
-
-            coefficients.push_back(calculateAlphaCoefficients(y, invertedL));
-
-            valuesIndex += 30;
-        }
+        std::transform(inputNodes.begin(), inputNodes.end(), output.begin(), [this](double value){
+            return this->evaluate(value);
+        });
     }
 
 
-    std::vector<double> divideNodesIntoIntervals(const std::vector<double> x, const double& lowerBound, const double& upperBound)
+    double evaluate(double x)
     {
-        std::vector<double> result;
+        double result = 0;
 
-        for (size_t i = 0; i < x.size(); ++i)
-        {
-            if (x[i] >= lowerBound && x[i] <= upperBound)
-            {
-                result.push_back(x[i]);
-            }
-        }
+       for (size_t i = 0; i < coefficients.size(); ++i)
+       {
+            result += coefficients[i] * transformNode(boost::math::legendre_p(i, reversedNodes[i]));
+       } 
 
-        return result;
+       return result;
     }
 
 
-
-    polynomial<double> calculateLagrangeCoefficients(const std::vector<double>& x, const std::vector<double>& y)
+    void reverseNodes()
     {
-        size_t n = x.size();
-        polynomial<double> result(0.0);
+        reversedNodes.resize(inputNodes.size());
 
-        for (size_t i = 0; i < n; ++i)
-        {
-            polynomial<double> term(1.0);
-            double denom = 1.0;
-
-            for (size_t j = 0; j < n; ++j)
-            {
-                if (i != j)
-                {
-                    term *= polynomial<double>({-x[j], 1.0});
-                    denom *= (x[i] - x[j]);
-                }
-            }
-
-            result += (term/denom) * y[i];
-        }
-
-        return result;
+        std::transform(inputNodes.begin(), inputNodes.end(), reversedNodes.begin(), [this](double value){
+            return this->reverseNode(value);
+        });
     }
 
 
-    matrix<double> calculateLegendrePolynomials(const std::vector<double>& x)
+    inline double transformNode(double value) const
     {
-        matrix<double> legendreMatrix(x.size(), x.size());
-
-        for (size_t i = 0; i < x.size(); ++i)
-        {
-            for (size_t j = 0; j < x.size(); ++j)
-            {  
-                if (j == 0)
-                {
-                    legendreMatrix(i, j) = 1;
-                }
-                else
-                {
-                    legendreMatrix(i, j) = boost::math::legendre_p(j, x[i]);
-                }
-            }
-        }
-
-        return legendreMatrix;
+        return ((this->upperBound - this->lowerBound) * value + (this->upperBound + this->lowerBound)) / 2;
     }
 
 
-    matrix<double> invertMatrix(matrix<double>& input) 
+    inline double reverseNode(double value) const 
     {
-        matrix<double> invertedLegendreMatrix(input.size1(), input.size2());
-
-        matrix<double> copyOfLegendreMatrix(input);
-        permutation_matrix<std::size_t> pm(copyOfLegendreMatrix.size1());
-
-        int res = lu_factorize(copyOfLegendreMatrix, pm);
-        if (res != 0) {
-            throw std::invalid_argument("Matrix is singular");
-        }
-
-        invertedLegendreMatrix.assign(identity_matrix<double>(copyOfLegendreMatrix.size1()));
-    
-        lu_substitute(copyOfLegendreMatrix, pm, invertedLegendreMatrix);
-
-        return invertedLegendreMatrix;
-    }
-
-
-    vector<double> calculateAlphaCoefficients(const std::vector<double>& P, const matrix<double>& invertedL)
-    {
-        vector<double> coefficients; 
-        vector<double> lagrangeVectorUblas;
-        lagrangeVectorUblas.resize(P.size());
-
-        for (size_t i = 0; i < P.size(); ++i)
-        {
-            lagrangeVectorUblas(i) = P[i];
-        }
-        
-        coefficients = prod(invertedL, lagrangeVectorUblas);
-
-        return coefficients;
+        return ((2 * value) - (this->upperBound + this->lowerBound) / this->upperBound - this->lowerBound);
     }
 };
-
 
 #endif

@@ -69,13 +69,12 @@ public:
     }
 
 
-    double evaluate(double x, vector<double> coefficients)
+    double evaluate(double x, std::vector<double> coefficients)
     {
         double result = 0; 
 
         for (size_t i = 0; i < coefficients.size(); ++i)
         {
-            std::cout << coefficients[i] << " " << result << " " << boost::math::legendre_p(i, x) << std::endl;
             result += coefficients[i] * boost::math::legendre_p(i, x);
         }
 
@@ -121,6 +120,7 @@ public:
 
     vector<double> getAlphaVector() const
     {
+        std::cout << alphaVector << std::endl;
         return alphaVector;
     }
 
@@ -130,7 +130,7 @@ public:
         return lagrangeVector;
     }
 
-
+  
 private: 
     void calculateMesh()
     {

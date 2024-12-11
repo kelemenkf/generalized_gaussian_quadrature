@@ -47,6 +47,22 @@ void declare_quadrature(py::module& m, const std::string& suffix) {
 }
 
 
+template<typename... Parameters>
+void declare_interval_divider(py::module& m, const std::string& suffix) {
+    using FHClass = FunctionHandler<Parameters...>;
+    using Quadrature = QuadratureRule<FHClass>;
+    using Divider = IntervalDivider<FHClass>;
+    std::string class_name = "Divider" + suffix;
+
+    py::class_<Divider>(m, class_name.c_str())
+        .def(py::init<int, double, double, FHClass, std::vector<double>>())
+        .def("interpolate", &Divider::interpolateFunction)
+        .def("get_alphas", &Divider::getAlphaVector)
+        .def("eval", &Divider::evaluate)
+    ;
+}
+
+
 PYBIND11_MODULE(ggq, m) {
     declare_function_handler<>(m, "0Param");
     declare_function_handler<std::vector<double>>(m, "1Param");
@@ -57,6 +73,9 @@ PYBIND11_MODULE(ggq, m) {
     declare_quadrature<std::vector<double>>(m, "1Param");
     declare_quadrature<std::vector<double>, std::vector<double>>(m, "2Param");
     declare_quadrature<std::vector<double>, std::vector<double>, std::vector<double>>(m, "3Param");
-
-    m.def("test_function", [](){ return "Carey nem mariah"; });
+    
+    declare_interval_divider<>(m, "0Param");
+    declare_interval_divider<std::vector<double>>(m, "1Param");
+    declare_interval_divider<std::vector<double>, std::vector<double>>(m, "2Param");
+    declare_interval_divider<std::vector<double>, std::vector<double>, std::vector<double>>(m, "3Param");
 }

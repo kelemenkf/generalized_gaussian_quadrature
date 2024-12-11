@@ -39,31 +39,19 @@ BOOST_AUTO_TEST_CASE( TestEvaluatorConstructor ) {
     std::vector<double> nodes = quadratureObject.getNodes();
     std::vector<double> endpoints = quadratureObject.getConsolidatedEndpoints();
 
-    Evaluator evaluator(nodes, basisFunctions[0], endpoints);
 
-    std::vector<double> y = evaluator.getY();
-
-    IntervalDivider divider(15, endpoints[0], endpoints[1], handlerPiecewiseSmooth, y);
-
-    divider.interpolateFunction();
-    vector<double> alpha = divider.getAlphaVector();
-
-    // std::vector<vector<double>> coefficients = evaluator.getCoefficients();
-
-    // size_t intervalLength = 30;
-
-    // for (size_t i = 0; i < coefficients.size(); ++i)
-    // {
-    //     for (size_t j = 0; j < intervalLength; ++j)
-    //     {
-    //         std::cout << i << " " << intervalLength * i + j << std::endl;
-    //         BOOST_CHECK_CLOSE_FRACTION(coefficients[i].evaluate(nodes[intervalLength * i + j]), basisFunctions[0][intervalLength * i + j], 1e-9);
-    //     }     
-    // }
-
-    BOOST_CHECK_CLOSE_FRACTION(divider.evaluate(nodes[0], alpha), y[0], 1e-9);
 }
 
+
+BOOST_AUTO_TEST_CASE( TestNodeInversion ) {
+    quadratureObject.calculateQuadratureNodes();
+    quadratureObject.compressFunctionSpace();
+    std::vector<std::vector<double>> basisFunctions = quadratureObject.getCompressedBasis();
+    std::vector<double> nodes = quadratureObject.getNodes();
+    std::vector<double> endpoints = quadratureObject.getConsolidatedEndpoints();
+
+    Evaluator(nodes);
+}
 
 BOOST_AUTO_TEST_CASE( TestMatrixInversion ) {
     quadratureObject.calculateQuadratureNodes();
@@ -71,10 +59,6 @@ BOOST_AUTO_TEST_CASE( TestMatrixInversion ) {
     std::vector<std::vector<double>> basisFunctions = quadratureObject.getCompressedBasis();
     std::vector<double> nodes = quadratureObject.getNodes();
     std::vector<double> endpoints = quadratureObject.getConsolidatedEndpoints();
-
-    Evaluator evaluator(nodes, basisFunctions[0], endpoints);
-
-    std::vector<double> y = evaluator.getY();
 
     IntervalDivider divider(15, endpoints[0], endpoints[1], handlerPiecewiseSmooth, y);
 
@@ -89,7 +73,7 @@ BOOST_AUTO_TEST_CASE( TestMatrixInversion ) {
 
     for (size_t i = 0; i < lagrangeVector.size(); ++i)
     {
-        BOOST_CHECK_CLOSE_FRACTION(calculatedF[i], lagrangeVector[i], 1e-9);
+        BOOST_CHECK_CLOSE_FRACTION(calculatedF(i), lagrangeVector[i], 1e-9);
     }
  }
 
