@@ -54,9 +54,9 @@ public:
 private: 
     void evaluateAll()
     {
-        output.resize(inputNodes.size());
+        output.resize(reversedNodes.size());
 
-        std::transform(inputNodes.begin(), inputNodes.end(), output.begin(), [this](double value){
+        std::transform(reversedNodes.begin(), reversedNodes.end(), output.begin(), [this](double value){
             return this->evaluate(value);
         });
     }
@@ -68,7 +68,7 @@ private:
 
        for (size_t i = 0; i < coefficients.size(); ++i)
        {
-            result += coefficients[i] * transformNode(boost::math::legendre_p(i, reversedNodes[i]));
+            result += coefficients[i] * transformNode(boost::math::legendre_p(i, x));
        } 
 
        return result;

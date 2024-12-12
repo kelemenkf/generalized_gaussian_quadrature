@@ -63,11 +63,10 @@ void declare_interval_divider(py::module& m, const std::string& suffix) {
     ;
 }
 
-
+ 
 void declare_evaluator(py::module& m) {
-    py::class_<Evaluator>(m)
-        .def(py::init<std::vector<double>, std::vector<double>, double, double>())
-        .def(py::init<std::vector<double>, std::vector<double>>())
+    py::class_<Evaluator>(m, "Evaluator")
+        .def(py::init<std::vector<double>, const std::vector<double>&, double, double>())
         .def("get_evaluated_nodes", &Evaluator::getOutput)
     ;
 }
@@ -88,4 +87,6 @@ PYBIND11_MODULE(ggq, m) {
     declare_interval_divider<std::vector<double>>(m, "1Param");
     declare_interval_divider<std::vector<double>, std::vector<double>>(m, "2Param");
     declare_interval_divider<std::vector<double>, std::vector<double>, std::vector<double>>(m, "3Param");
+
+    declare_evaluator(m);
 }
