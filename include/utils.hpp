@@ -6,6 +6,14 @@
 #include <iostream>
 #include <map>
 #include <cmath>
+#include <boost/math/tools/polynomial.hpp>
+#include <boost/math/special_functions/legendre.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/io.hpp>
+
+using namespace boost::math::tools;
+using namespace boost::numeric::ublas;
+
 
 template<typename T>
 void displayVector(const std::vector<T>& vector)
@@ -35,5 +43,18 @@ T innerProduct(const std::vector<T>& input1, const std::vector<T>& input2)
     return result;
 }
 
+
+template<typename T>
+std::vector<T> convertBoostVectorToStd(const vector<T>& input)
+{
+    std::vector<T> result(input.size()); 
+
+    for (size_t i = 0; i < input.size(); ++i)
+    {
+        result[i] = input(i);
+    }
+
+    return result;
+}
 
 #endif

@@ -18,6 +18,7 @@ template<typename T>
 class QuadratureRule
 {
 protected:
+    double k;
     double lowerBound;
     double upperBound;
     double discretizerPrecision;
@@ -26,17 +27,19 @@ protected:
     std::vector<double> consolidatedEndpoints;
     std::vector<double> nodes;
     std::vector<double> weights;
+    //values referes to values of the original function with each parameter - rename this
     std::vector<std::vector<double>> values;
     std::vector<std::vector<double>> compressedBasis;
+    std::vector<std::vector<double>> splitNodes;
     std::vector<double> chebyshevNodes; 
     std::vector<double> chebyshevWeights;
 
 
 public:
     QuadratureRule(double lowerBoundInput, double upperBoundInput, T handler, double discretizerPrecisionInput = 1e-6, 
-    double quadraturePrecisionInput = 1e-4) 
+    double quadraturePrecisionInput = 1e-4, double kInput = 30) 
     : lowerBound(lowerBoundInput), upperBound(upperBoundInput), handler(handler), discretizerPrecision(discretizerPrecisionInput),
-    quadraturePrecision(quadraturePrecisionInput)
+    quadraturePrecision(quadraturePrecisionInput), k(kInput)
     {
         validatePrecisions(discretizerPrecision, quadraturePrecision);
     }
@@ -66,6 +69,7 @@ public:
         compressedBasis = compressor.getCompressedBasis();
         chebyshevNodes = compressor.getChebyshevNodes();
         chebyshevWeights = compressor.getChebyshevWeights();
+        splitNodesAtEndpoints(k);
     }
 
 
@@ -170,28 +174,59 @@ public:
     }
 
 
-    std::vector<std::vector<double>> getLegendre()
+    std::vector<std::vector<double>> getSplitNodes() const
     {
-        Evaluator evaluator(nodes, compressedBasis[0], consolidatedEndpoints);
+        return splitNodes;
+    }
 
-        matrix<double> L =  evaluator.getLegendreMatirx(); 
 
-        std::vector<std::vector<double>> vectorL(L.size1());
+    std::vector<double> getBasisFunctionInterval(const size_t& functionIndex = 0, const size_t& nodesIndex = 0)
+    {
+        std::vector<double> result;
 
-        for (size_t i = 0; i < L.size1(); ++i)
+        size_t indexStart = nodesIndex * splitNodes[nodesIndex].size();
+
+        for (size_t i = indexStart; i < indexStart + splitNodes[nodesIndex].size(); ++i)
         {
-            vectorL[i].resize(L.size2());
-            for (size_t j = 0; j < L.size2(); ++j)
-            {
-                vectorL[i][j] = L(i,j);
-            }
-        }
+            result.push_back(compressedBasis[functionIndex][i]);
+        } 
 
-        return vectorL;
+        return result;
     }
 
 
 protected:
+    void splitNodesAtEndpoints(const size_t& k)
+    {
+        size_t valuesIndex = 0;
+
+        for (size_t i = 0; i < consolidatedEndpoints.size() - 1; ++i)
+        {
+            std::vector<double> x = getNodesBetweenBounds(nodes, consolidatedEndpoints[i], consolidatedEndpoints[i+1]);
+
+            splitNodes.push_back(x);
+            
+            valuesIndex += k;
+        }
+    }
+
+
+    std::vector<double> getNodesBetweenBounds(const std::vector<double> x, const double& lowerBound, const double& upperBound)
+    {
+        std::vector<double> result;
+
+        for (size_t i = 0; i < x.size(); ++i)
+        {
+            if (x[i] >= lowerBound && x[i] <= upperBound)
+            {
+                result.push_back(x[i]);
+            }
+        }
+
+        return result;
+    }
+
+
     void calculateConsolidatedEndpoints()
     {
         int k = 30;

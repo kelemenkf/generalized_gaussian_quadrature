@@ -42,7 +42,8 @@ void declare_quadrature(py::module& m, const std::string& suffix) {
         .def("get_nodes", &Quadrature::getNodes)
         .def("get_values", &Quadrature::getValues)
         .def("get_u", &Quadrature::getCompressedBasis)
-        .def("get_legendre", &Quadrature::getLegendre)
+        .def("get_split_nodes", &Quadrature::getSplitNodes)
+        .def("get_y", &Quadrature::getBasisFunctionInterval)
     ;
 }
 
@@ -59,6 +60,15 @@ void declare_interval_divider(py::module& m, const std::string& suffix) {
         .def("interpolate", &Divider::interpolateFunction)
         .def("get_alphas", &Divider::getAlphaVector)
         .def("eval", &Divider::evaluate)
+    ;
+}
+
+
+void declare_evaluator(py::module& m) {
+    py::class_<Evaluator>(m)
+        .def(py::init<std::vector<double>, std::vector<double>, double, double>())
+        .def(py::init<std::vector<double>, std::vector<double>>())
+        .def("get_evaluated_nodes", &Evaluator::getOutput)
     ;
 }
 
