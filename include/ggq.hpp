@@ -18,6 +18,7 @@ template<typename T>
 class QuadratureRule
 {
 protected:
+    //make k size_t
     double k;
     double lowerBound;
     double upperBound;
@@ -229,7 +230,6 @@ protected:
 
     void calculateConsolidatedEndpoints()
     {
-        int k = 30;
         size_t sizeOfParameterCombinations = handler.getParameterCombinationsSize();
 
         for (size_t i = 0; i < sizeOfParameterCombinations; ++i)
@@ -261,7 +261,6 @@ protected:
 
     void determineFinalNodes()
     {
-        int k = 30;
         for (size_t i = 0; i < consolidatedEndpoints.size() - 1; ++i)
         {
             IntervalDivider divider(k / 2, consolidatedEndpoints[i], consolidatedEndpoints[i+1], handler);

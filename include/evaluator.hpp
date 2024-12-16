@@ -13,6 +13,7 @@ using namespace boost::numeric::ublas;
 class Evaluator
 {
 private: 
+    //turn nodes into a map?
     std::vector<double> inputNodes; 
     std::vector<double> reversedNodes;
     std::vector<double> coefficients;
@@ -26,6 +27,7 @@ public:
     double inputUpperBound) : inputNodes(inputValue), coefficients(coefficientsInput), lowerBound(inputLowerBound), upperBound(inputUpperBound) 
     {
         reverseNodes();
+        displayVector(reversedNodes);
         evaluateAll();
     };
 
@@ -93,7 +95,7 @@ private:
 
     inline double reverseNode(double value) const 
     {
-        return ((2 * value) - (this->upperBound + this->lowerBound) / this->upperBound - this->lowerBound);
+        return (2 * value - (this->upperBound + this->lowerBound)) / (this->upperBound - this->lowerBound);
     }
 };
 

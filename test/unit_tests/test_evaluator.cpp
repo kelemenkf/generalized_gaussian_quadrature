@@ -114,4 +114,9 @@ BOOST_AUTO_TEST_CASE( TestNodeEvaluation ) {
 }
 
 
+
+BOOST_AUTO_TEST_CASE(TestSmallerNumberOfNodes ) {
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()
