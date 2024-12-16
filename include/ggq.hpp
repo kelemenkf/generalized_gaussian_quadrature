@@ -18,8 +18,7 @@ template<typename T>
 class QuadratureRule
 {
 protected:
-    //make k size_t
-    double k;
+    size_t k;
     double lowerBound;
     double upperBound;
     double discretizerPrecision;
@@ -38,7 +37,7 @@ protected:
 
 public:
     QuadratureRule(double lowerBoundInput, double upperBoundInput, T handler, double discretizerPrecisionInput = 1e-6, 
-    double quadraturePrecisionInput = 1e-4, double kInput = 30) 
+    double quadraturePrecisionInput = 1e-4, size_t kInput = 30) 
     : lowerBound(lowerBoundInput), upperBound(upperBoundInput), handler(handler), discretizerPrecision(discretizerPrecisionInput),
     quadraturePrecision(quadraturePrecisionInput), k(kInput)
     {

@@ -27,7 +27,6 @@ public:
     double inputUpperBound) : inputNodes(inputValue), coefficients(coefficientsInput), lowerBound(inputLowerBound), upperBound(inputUpperBound) 
     {
         reverseNodes();
-        displayVector(reversedNodes);
         evaluateAll();
     };
 
@@ -56,6 +55,9 @@ public:
 private: 
     void evaluateAll()
     {
+        double mean_original = std::accumulate(inputNodes.begin(), inputNodes.end(), 0.0) / inputNodes.size();
+        std::cout << "c_0: " << coefficients[0] << ", Mean of data: " << mean_original << std::endl;
+
         output.resize(reversedNodes.size());
 
         std::transform(reversedNodes.begin(), reversedNodes.end(), output.begin(), [this](double value){
@@ -70,7 +72,11 @@ private:
 
        for (size_t i = 0; i < coefficients.size(); ++i)
        {
-            result += coefficients[i] * transformNode(boost::math::legendre_p(i, x));
+            double res = boost::math::legendre_p(i, x); 
+            std::cout << i << " " << res << " " << x << std::endl;
+            result += coefficients[i] * res;
+            std::cout << result << std::endl;
+            std::cout << std::endl;
        } 
 
        return result;
