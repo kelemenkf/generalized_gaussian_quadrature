@@ -140,8 +140,8 @@ BOOST_AUTO_TEST_CASE( TestLegendreMatrix ) {
 
     expectedMatrix(0, 0) = 1;
     expectedMatrix(1, 0) = 1;
-    expectedMatrix(0, 1) = interpolator.testTransformNode(-0.57735);
-    expectedMatrix(1, 1) = interpolator.testTransformNode(0.57735);
+    expectedMatrix(0, 1) = -0.57735;
+    expectedMatrix(1, 1) = 0.57735;
 
 
     BOOST_CHECK_EQUAL(legendreMatrix.size1(), 2*k);
