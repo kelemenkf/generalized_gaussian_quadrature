@@ -57,7 +57,7 @@ struct IntervalDividerFixture: public IntervalDivider<T>
         return this->getLagrangeVector();
     }
 
-    vector<double> testGetAlphaVector() const
+    std::vector<double> testGetAlphaVector() const
     {
         return this->getAlphaVector();
     }
@@ -263,7 +263,7 @@ BOOST_AUTO_TEST_CASE( TestAlphaVectorSolution ) {
     IntervalDividerFixture divider(k, lowerBound, upperBound, handler);
     divider.processInterval();
 
-    vector<double> alphaVector = divider.testGetAlphaVector();
+    std::vector<double> alphaVector = divider.testGetAlphaVector();
 
     BOOST_CHECK_EQUAL(alphaVector.size(), 2*k);
 

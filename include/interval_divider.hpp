@@ -21,7 +21,7 @@ private:
     std::vector<double> quadratureWeights;
     matrix<double> legendreMatrix;
     matrix<double> invertedLegendreMatrix;
-    vector<double> alphaVector;
+    std::vector<double> alphaVector;
     std::vector<double> lagrangeVector;
     double measure;
     double lowerBound;
@@ -118,9 +118,8 @@ public:
     }
 
 
-    vector<double> getAlphaVector() const
+    std::vector<double> getAlphaVector() const
     {
-        std::cout << alphaVector << std::endl;
         return alphaVector;
     }
 
@@ -193,8 +192,11 @@ private:
         {
             lagrangeVectorUblas(i) = lagrangeVector[i];
         }
-        
-        alphaVector = prod(invertedLegendreMatrix, lagrangeVectorUblas);
+
+        vector<double> temp; 
+        temp = prod(invertedLegendreMatrix, lagrangeVectorUblas);        
+
+        alphaVector = convertBoostVectorToStd(temp);     
     }
 
 
@@ -238,7 +240,7 @@ private:
                 }
                 else
                 {
-                    inputMatrix(i, j) = transformNode((boost::math::legendre_p(j, legendreMesh[i])));
+                    inputMatrix(i, j) = boost::math::legendre_p(j, legendreMesh[i]);
                 }
             }
         }

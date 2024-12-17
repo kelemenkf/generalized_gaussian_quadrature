@@ -49,11 +49,9 @@ BOOST_AUTO_TEST_CASE( TestNodeInversion ) {
     IntervalDivider divider(15, endpoints[0], endpoints[1], handlerPiecewiseSmooth, y);
     divider.interpolateFunction();
 
-    vector<double> alphas = divider.getAlphaVector();
+    std::vector<double> alphas = divider.getAlphaVector();
 
-    std::vector<double> coefficients = convertBoostVectorToStd(alphas);
-
-    Evaluator evaluator(splitNodes[0], coefficients, endpoints[0], endpoints[1]);
+    Evaluator evaluator(splitNodes[0], alphas, endpoints[0], endpoints[1]);
 
     std::vector<double> reversedNodes = evaluator.getReversedNodes();
     std::vector<double> legendreNodes = divider.getLegendreMesh();
@@ -75,12 +73,12 @@ BOOST_AUTO_TEST_CASE( TestMatrixInversion ) {
 
     divider.interpolateFunction();
 
-    vector<double> alphaVector = divider.getAlphaVector(); 
+    std::vector<double> alphaVector = divider.getAlphaVector(); 
     matrix<double> legendreMatrix = divider.getLegendreMatrix();
     matrix<double> invertedLegendreMatrix = divider.getInvertedLegendreMatrix();
     std::vector<double> lagrangeVector = divider.getLagrangeVector();
 
-    vector<double> calculatedF = prod(legendreMatrix, alphaVector);  
+    vector<double> calculatedF = prod(legendreMatrix, convertStdVectorToBoost(alphaVector));  
 
     for (size_t i = 0; i < lagrangeVector.size(); ++i)
     {
@@ -98,11 +96,9 @@ BOOST_AUTO_TEST_CASE( TestNodeEvaluation ) {
     IntervalDivider divider(15, endpoints[0], endpoints[1], handlerPiecewiseSmooth, y);
     divider.interpolateFunction();
 
-    vector<double> alphas = divider.getAlphaVector();
+    std::vector<double> alphas = divider.getAlphaVector();
 
-    std::vector<double> coefficients = convertBoostVectorToStd(alphas);
-
-    Evaluator evaluator(splitNodes[0], coefficients, endpoints[0], endpoints[1]);
+    Evaluator evaluator(splitNodes[0], alphas, endpoints[0], endpoints[1]);
 
     std::vector<double> reversedNodes = evaluator.getReversedNodes();
     std::vector<double> legendreNodes = divider.getLegendreMesh();
