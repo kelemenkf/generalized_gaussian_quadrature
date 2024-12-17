@@ -25,15 +25,17 @@ protected:
     double quadraturePrecision;
     T handler;
     std::vector<double> consolidatedEndpoints;
+    //Legendre nodes and weights - rename
     std::vector<double> nodes;
     std::vector<double> weights;
     //values referes to values of the original function with each parameter - rename this
     std::vector<std::vector<double>> values;
     std::vector<std::vector<double>> compressedBasis;
+    std::vector<std::vector<std::vector<double>>> splitCompressedBasis; 
     std::vector<std::vector<double>> splitNodes;
     std::vector<double> chebyshevNodes; 
     std::vector<double> chebyshevWeights;
-
+    std::vector<std::vector<std::vector<double>>> basisCoefficients;
 
 public:
     QuadratureRule(double lowerBoundInput, double upperBoundInput, T handler, double discretizerPrecisionInput = 1e-6, 
@@ -70,6 +72,13 @@ public:
         chebyshevNodes = compressor.getChebyshevNodes();
         chebyshevWeights = compressor.getChebyshevWeights();
         splitNodesAtEndpoints(k);
+    }
+
+
+    void obtainBasisCoefficients()
+    {
+        splitCompressedBasisAtEndpoints();
+        interpolateBasisFunctionsAtEachInterval();
     }
 
 
@@ -179,6 +188,18 @@ public:
         return splitNodes;
     }
 
+    
+    std::vector<std::vector<std::vector<double>>> getSplitCompressedBasis() const 
+    {
+        return splitCompressedBasis; 
+    }
+
+
+    std::vector<std::vector<std::vector<double>>> getBasisCoefficients() const
+    {
+        return basisCoefficients;
+    }
+
 
     std::vector<double> getBasisFunctionInterval(const size_t& functionIndex = 0, const size_t& nodesIndex = 0)
     {
@@ -196,6 +217,51 @@ public:
 
 
 protected:
+    void interpolateBasisFunctionsAtEachInterval()
+    {
+        basisCoefficients.resize(splitCompressedBasis.size());
+
+        for (size_t i = 0; i < splitCompressedBasis.size(); ++i)
+        {
+            basisCoefficients[i].resize(splitCompressedBasis[i].size());
+
+            for (size_t j = 0; j < splitCompressedBasis[i].size(); ++j)
+            {
+                Interpolator interpolator(k / 2, consolidatedEndpoints[j], consolidatedEndpoints[j+1], handler, splitCompressedBasis[i][j]);
+                interpolator.interpolateFunction();
+
+                basisCoefficients[i][j] = interpolator.getAlphaVector();
+            }
+        }
+    }
+
+    void splitCompressedBasisAtEndpoints() 
+    {  
+        splitCompressedBasis.resize(compressedBasis.size());
+
+        for (size_t i = 0; i < compressedBasis.size(); ++i)
+        {
+            size_t numberOfIntervals = splitNodes.size(); 
+            size_t valuesIndex = 0;
+
+            for (size_t j = 0; j < numberOfIntervals; ++j)
+            {
+                size_t tempK = 0;
+                std::vector<double> uValue; 
+
+                while (tempK < k)
+                {
+                    uValue.push_back(compressedBasis[i][valuesIndex + tempK]);
+                    tempK += 1;
+                }
+
+                valuesIndex += k;
+                splitCompressedBasis[i].push_back(uValue);
+            }
+        }        
+    }
+
+
     void splitNodesAtEndpoints(const size_t& k)
     {
         size_t valuesIndex = 0;

@@ -230,4 +230,46 @@ BOOST_AUTO_TEST_CASE( TestIntegralEvaluationWithChebyshevNodes ) {
 }   
 
 
+BOOST_AUTO_TEST_CASE( TestCompressedBasisSplitting ) {
+    double lowerBound = 0;
+    double upperBound = 2; 
+    int k = 30;
+    std::vector<double> param1 = {5, 4};
+    std::vector<double> param2 = {6, 3};
+    FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
+    
+    QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
+    quadrature.calculateQuadratureNodes();
+    quadrature.compressFunctionSpace();
+    quadrature.obtainBasisCoefficients();
+
+    std::vector<std::vector<std::vector<double>>> splitCompressedBasis = quadrature.getSplitCompressedBasis();
+
+    BOOST_CHECK_EQUAL(splitCompressedBasis.size(), 3);
+    BOOST_CHECK_EQUAL(splitCompressedBasis[0].size(), 2);
+    BOOST_CHECK_EQUAL(splitCompressedBasis[0][0].size(), 30);
+}
+
+
+BOOST_AUTO_TEST_CASE( TestCompressedBasisInterpolationCoefficients ) {
+    double lowerBound = 0;
+    double upperBound = 2; 
+    int k = 30;
+    std::vector<double> param1 = {5, 4};
+    std::vector<double> param2 = {6, 3};
+    FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
+    
+    QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
+    quadrature.calculateQuadratureNodes();
+    quadrature.compressFunctionSpace();
+    quadrature.obtainBasisCoefficients();
+
+    std::vector<std::vector<std::vector<double>>> basisCoefficients = quadrature.getBasisCoefficients();
+
+    BOOST_CHECK_EQUAL(basisCoefficients.size(), 3);
+    BOOST_CHECK_EQUAL(basisCoefficients[0].size(), 2);
+    BOOST_CHECK_EQUAL(basisCoefficients[0][0].size(), 30);
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()
