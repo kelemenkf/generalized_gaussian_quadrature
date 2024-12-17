@@ -1,7 +1,7 @@
 #define BOOST_TEST_MODULE IntervalDividerTestSuite
 #include <iostream>
 #include <boost/test/included/unit_test.hpp>
-#include "interval_divider.hpp"
+#include "interpolator.hpp"
 #include "function_handler.hpp"
 
 

@@ -1,7 +1,7 @@
 #ifndef DISCRETIZER_HPP
 #define DISCRETIZER_HPP
 
-#include "interval_divider.hpp"
+#include "interpolator.hpp"
 #include "utils.hpp"
 #include <tuple>
 
