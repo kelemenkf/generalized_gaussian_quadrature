@@ -1,5 +1,5 @@
-#ifndef INTERVAL_DIVIDER_HPP
-#define INTERVAL_DIVIDER_HPP
+#ifndef INTERPOLATOR_HPP 
+#define INTERPOLATOR_HPP 
 
 #include <boost/math/special_functions/legendre.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
@@ -12,7 +12,7 @@ using namespace boost::numeric::ublas;
 
 
 template<typename T>
-class IntervalDivider
+class Interpolator 
 {
 private: 
     int k;
@@ -30,13 +30,13 @@ private:
 
 
 public: 
-    IntervalDivider(int kInput, double lowerBoundInput, double upperBoundInput, const T& handlerInput, const std::vector<double>& 
+    Interpolator(int kInput, double lowerBoundInput, double upperBoundInput, const T& handlerInput, const std::vector<double>& 
     lagrangeInput = {})  
     : k(kInput), lowerBound(lowerBoundInput), upperBound(upperBoundInput), handler(handlerInput), lagrangeVector(lagrangeInput)
     {};
 
 
-    ~IntervalDivider() {};
+    ~Interpolator() {};
 
 
     void processInterval()

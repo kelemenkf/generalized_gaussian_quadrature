@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE( TestNodeInversion ) {
     std::vector<double> y = quadratureObject.getBasisFunctionInterval(0, 0);
     std::vector<std::vector<double>> splitNodes = quadratureObject.getSplitNodes();
 
-    IntervalDivider divider(15, endpoints[0], endpoints[1], handlerPiecewiseSmooth, y);
+    Interpolator divider(15, endpoints[0], endpoints[1], handlerPiecewiseSmooth, y);
     divider.interpolateFunction();
 
     std::vector<double> alphas = divider.getAlphaVector();
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( TestMatrixInversion ) {
     std::vector<double> endpoints = quadratureObject.getConsolidatedEndpoints();
     std::vector<double> y = quadratureObject.getBasisFunctionInterval(0, 0);
 
-    IntervalDivider divider(15, endpoints[0], endpoints[1], handlerPiecewiseSmooth, y);
+    Interpolator divider(15, endpoints[0], endpoints[1], handlerPiecewiseSmooth, y);
 
     divider.interpolateFunction();
 
@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE( TestNodeEvaluation ) {
     std::vector<double> y = quadratureObject.getBasisFunctionInterval(0, 0);
     std::vector<std::vector<double>> splitNodes = quadratureObject.getSplitNodes();
 
-    IntervalDivider divider(15, endpoints[0], endpoints[1], handlerPiecewiseSmooth, y);
+    Interpolator divider(15, endpoints[0], endpoints[1], handlerPiecewiseSmooth, y);
     divider.interpolateFunction();
 
     std::vector<double> alphas = divider.getAlphaVector();

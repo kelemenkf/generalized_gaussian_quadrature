@@ -262,7 +262,7 @@ protected:
     {
         for (size_t i = 0; i < consolidatedEndpoints.size() - 1; ++i)
         {
-            IntervalDivider divider(k / 2, consolidatedEndpoints[i], consolidatedEndpoints[i+1], handler);
+            Interpolator divider(k / 2, consolidatedEndpoints[i], consolidatedEndpoints[i+1], handler);
             divider.calculateLegendreNodes();
             std::vector<double> transformedNodes = divider.getTransformedMesh();
             nodes.insert(nodes.end(), transformedNodes.begin(), transformedNodes.end());

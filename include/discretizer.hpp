@@ -56,7 +56,7 @@ public:
         measureVector.reserve(endpoints.size() - 1);
         for (size_t i = 0; i < endpoints.size() - 1; ++i)
         {
-            IntervalDivider divider(k, endpoints[i], endpoints[i+1], handler);
+            Interpolator divider(k, endpoints[i], endpoints[i+1], handler);
 
             divider.processInterval();
 

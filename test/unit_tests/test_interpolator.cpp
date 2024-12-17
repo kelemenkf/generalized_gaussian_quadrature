@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE IntervalDividerTestSuite
+#define BOOST_TEST_MODULE InterpolatorTestSuite
 #include <iostream>
 #include <boost/test/included/unit_test.hpp>
 #include "interpolator.hpp"
@@ -25,12 +25,12 @@ FunctionHandler<> handler(testFunction);
 
 
 template<typename T>
-struct IntervalDividerFixture: public IntervalDivider<T>
+struct InterpolatorFixture : public Interpolator<T>
 {
-    IntervalDividerFixture(int kInput, double lowerBoundInput, double upperBoundInput, const T& handlerInput) 
-    : IntervalDivider<T>(kInput, lowerBoundInput, upperBoundInput, handlerInput) {};
+    InterpolatorFixture(int kInput, double lowerBoundInput, double upperBoundInput, const T& handlerInput) 
+    : Interpolator<T>(kInput, lowerBoundInput, upperBoundInput, handlerInput) {};
 
-    ~IntervalDividerFixture() {};
+    ~InterpolatorFixture() {};
 
     std::vector<double> testGetLegendreMesh() const
     {
@@ -69,13 +69,13 @@ struct IntervalDividerFixture: public IntervalDivider<T>
 };
 
 
-BOOST_AUTO_TEST_SUITE( DividerTestSuite )
+BOOST_AUTO_TEST_SUITE( InterpolatorTestSuite )
 
-BOOST_AUTO_TEST_CASE( TestDividerValidation ) {
+BOOST_AUTO_TEST_CASE( TestInterpolatorValidation ) {
     double lowerBound = 1;
     double upperBound = 2;
 
-    BOOST_CHECK_NO_THROW(IntervalDivider divider(30, lowerBound, upperBound, handler));
+    BOOST_CHECK_NO_THROW(Interpolator interpolator(30, lowerBound, upperBound, handler));
 }
 
 
@@ -85,11 +85,11 @@ BOOST_AUTO_TEST_CASE( TestLegendreMeshEven ) {
     int k = 1;
     std::vector<double> roots = {-0.57735, 0.57735};
 
-    IntervalDividerFixture divider(k, lowerBound, upperBound, handler);
+    InterpolatorFixture interpolator(k, lowerBound, upperBound, handler);
 
-    divider.processInterval();
+    interpolator.processInterval();
 
-    std::vector<double> estimatedRoots = divider.testGetLegendreMesh();
+    std::vector<double> estimatedRoots = interpolator.testGetLegendreMesh();
 
     BOOST_CHECK_EQUAL(estimatedRoots.size(), 2*k);
 
@@ -110,11 +110,11 @@ BOOST_AUTO_TEST_CASE( TestLegendreMeshTransformed ) {
         return ((upperBound - lowerBound) * value + (upperBound + lowerBound)) / 2;
     });
 
-    IntervalDividerFixture divider(k, lowerBound, upperBound, handler);
+    InterpolatorFixture interpolator(k, lowerBound, upperBound, handler);
 
-    divider.processInterval();
+    interpolator.processInterval();
 
-    std::vector<double> estimatedRoots = divider.testGetTransformedMesh();
+    std::vector<double> estimatedRoots = interpolator.testGetTransformedMesh();
 
     BOOST_CHECK_EQUAL(estimatedRoots.size(), 2*k);
 
@@ -132,16 +132,16 @@ BOOST_AUTO_TEST_CASE( TestLegendreMatrix ) {
     matrix<double> legendreMatrix;
     matrix<double> expectedMatrix(2*k, 2*k);
 
-    IntervalDividerFixture divider(k, lowerBound, upperBound, handler);
+    InterpolatorFixture interpolator(k, lowerBound, upperBound, handler);
 
-    divider.processInterval();
+    interpolator.processInterval();
 
-    legendreMatrix = divider.testGetLegendreMatrix();
+    legendreMatrix = interpolator.testGetLegendreMatrix();
 
     expectedMatrix(0, 0) = 1;
     expectedMatrix(1, 0) = 1;
-    expectedMatrix(0, 1) = divider.testTransformNode(-0.57735);
-    expectedMatrix(1, 1) = divider.testTransformNode(0.57735);
+    expectedMatrix(0, 1) = interpolator.testTransformNode(-0.57735);
+    expectedMatrix(1, 1) = interpolator.testTransformNode(0.57735);
 
 
     BOOST_CHECK_EQUAL(legendreMatrix.size1(), 2*k);
@@ -162,12 +162,12 @@ BOOST_AUTO_TEST_CASE( TestLagrangeVectorValues ) {
     double upperBound = 1;
     int k = 1;
 
-    IntervalDividerFixture divider(k, lowerBound, upperBound, handler);
-    divider.processInterval();
+    InterpolatorFixture interpolator(k, lowerBound, upperBound, handler);
+    interpolator.processInterval();
 
     std::vector<double> roots = {-0.57735, 0.57735};
     std::vector<double> expectedInterpolationPoints = {testFunction(roots[0]), testFunction(roots[1])};
-    std::vector<double> interpolationPoints = divider.testGetLagrangeVector();
+    std::vector<double> interpolationPoints = interpolator.testGetLagrangeVector();
 
     BOOST_CHECK_EQUAL(interpolationPoints.size(), 2*k);
 
@@ -189,12 +189,12 @@ BOOST_AUTO_TEST_CASE( TestLagrangeVectorValuesWithPassedObject ) {
     std::function<double(const double&)> methodPtr = method;
     FunctionHandler<> handler(methodPtr);
 
-    IntervalDividerFixture divider(k, lowerBound, upperBound, handler);
-    divider.processInterval();
+    InterpolatorFixture interpolator(k, lowerBound, upperBound, handler);
+    interpolator.processInterval();
 
     std::vector<double> roots = {-0.57735, 0.57735};
     std::vector<double> expectedInterpolationPoints = {testFunction(roots[0]), testFunction(roots[1])};
-    std::vector<double> interpolationPoints = divider.testGetLagrangeVector();
+    std::vector<double> interpolationPoints = interpolator.testGetLagrangeVector();
 
     BOOST_CHECK_EQUAL(interpolationPoints.size(), 2*k);
 
@@ -215,11 +215,11 @@ BOOST_AUTO_TEST_CASE( TestLagrangeVectorValuesNonDefaultDomain ) {
         return ((upperBound - lowerBound) * value + (upperBound + lowerBound)) / 2;
     });
 
-    IntervalDividerFixture divider(k, lowerBound, upperBound, handler);
-    divider.processInterval();
+    InterpolatorFixture interpolator(k, lowerBound, upperBound, handler);
+    interpolator.processInterval();
 
     std::vector<double> expectedInterpolationPoints = {testFunction(roots[0]), testFunction(roots[1])};
-    std::vector<double> interpolationPoints = divider.testGetLagrangeVector();
+    std::vector<double> interpolationPoints = interpolator.testGetLagrangeVector();
 
     for (size_t i = 0; i < interpolationPoints.size(); ++i)
     {
@@ -232,14 +232,14 @@ BOOST_AUTO_TEST_CASE( TestMatrixInversion ) {
     double lowerBound = -1;
     double upperBound = 1;
     int k = 30;
-    IntervalDividerFixture divider(k, lowerBound, upperBound, handler);
-    divider.processInterval();
+    InterpolatorFixture interpolator(k, lowerBound, upperBound, handler);
+    interpolator.processInterval();
 
-    matrix<double> legendreMatrix = divider.testGetLegendreMatrix();
+    matrix<double> legendreMatrix = interpolator.testGetLegendreMatrix();
 
-    BOOST_CHECK_NO_THROW(divider.testGetInvertedLegendreMatrix());
+    BOOST_CHECK_NO_THROW(interpolator.testGetInvertedLegendreMatrix());
 
-    matrix<double> invertedLegendreMatrix = divider.testGetInvertedLegendreMatrix();
+    matrix<double> invertedLegendreMatrix = interpolator.testGetInvertedLegendreMatrix();
 
     matrix<double> expectedIdentity = prod(legendreMatrix, invertedLegendreMatrix);
 
@@ -260,10 +260,10 @@ BOOST_AUTO_TEST_CASE( TestAlphaVectorSolution ) {
     double lowerBound = -1;
     double upperBound = 1;
     int k = 2;
-    IntervalDividerFixture divider(k, lowerBound, upperBound, handler);
-    divider.processInterval();
+    InterpolatorFixture interpolator(k, lowerBound, upperBound, handler);
+    interpolator.processInterval();
 
-    std::vector<double> alphaVector = divider.testGetAlphaVector();
+    std::vector<double> alphaVector = interpolator.testGetAlphaVector();
 
     BOOST_CHECK_EQUAL(alphaVector.size(), 2*k);
 
@@ -283,10 +283,10 @@ BOOST_AUTO_TEST_CASE( TestMeasureCalculation ) {
     double lowerBound = -1;
     double upperBound = 1;
     int k = 30;
-    IntervalDividerFixture divider(k, lowerBound, upperBound, handler);
-    divider.processInterval();
+    InterpolatorFixture interpolator(k, lowerBound, upperBound, handler);
+    interpolator.processInterval();
 
-    double measure = divider.getMeasure();
+    double measure = interpolator.getMeasure();
 
     BOOST_CHECK_GT(measure, 0);
 }
@@ -296,10 +296,10 @@ BOOST_AUTO_TEST_CASE( TestMeasureCalculationNonStandardInterval ) {
     double lowerBound = 1;
     double upperBound = 2;
     int k = 30;
-    IntervalDividerFixture divider(k, lowerBound, upperBound, handler);
-    divider.processInterval();
+    InterpolatorFixture interpolator(k, lowerBound, upperBound, handler);
+    interpolator.processInterval();
 
-    double measure = divider.getMeasure();
+    double measure = interpolator.getMeasure();
 
     BOOST_CHECK_GT(measure, 0);
 }
