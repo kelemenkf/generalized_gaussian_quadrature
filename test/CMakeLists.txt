@@ -6,6 +6,7 @@ add_executable(test_interpolator unit_tests/test_interpolator.cpp)
 add_executable(test_function_handler unit_tests/test_function_handler.cpp)
 add_executable(test_compressor unit_tests/test_compressor.cpp)
 add_executable(test_evaluator unit_tests/test_evaluator.cpp)
+add_executable(test_optimizer unit_tests/test_optimizer.cpp)
 
 #Link library
 target_link_libraries(test_ggq ggq_library)
@@ -15,6 +16,7 @@ target_link_libraries(test_function_handler ggq_library)
 # target_link_libraries(discretizer_performance ggq_library)
 target_link_libraries(test_compressor ggq_library)
 target_link_libraries(test_evaluator ggq_library)
+target_link_libraries(test_optimizer ggq_library)
 
 # Specify the include directories for the test executables
 target_include_directories(test_ggq PRIVATE ${PROJECT_SOURCE_DIR}/include)
@@ -24,6 +26,7 @@ target_include_directories(test_interpolator PRIVATE ${PROJECT_SOURCE_DIR}/inclu
 target_include_directories(test_function_handler PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(test_compressor PRIVATE ${PROJECT_SOURCE_DIR}/include)
 target_include_directories(test_evaluator PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(test_optimizer PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
 #Link testing framework
 target_link_libraries(test_ggq Boost::unit_test_framework)
@@ -33,3 +36,4 @@ target_link_libraries(test_interpolator Boost::unit_test_framework)
 target_link_libraries(test_function_handler Boost::unit_test_framework)
 target_link_libraries(test_compressor Boost::unit_test_framework)
 target_link_libraries(test_evaluator Boost::unit_test_framework)
+target_link_libraries(test_optimizer Boost::unit_test_framework)

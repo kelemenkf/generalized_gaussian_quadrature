@@ -2,6 +2,11 @@
 #define OPTIMIZER_HPP
 
 #include "evaluator.hpp"
+#include <Eigen/Dense>
+#include <numeric>
+#include "utils.hpp"
+using namespace Eigen;
+
 
 class Optimizer
 {
@@ -11,6 +16,7 @@ private:
     std::vector<std::vector<std::vector<double>>> basisCoefficients;
     std::vector<std::vector<std::vector<double>>> splitCompressedBasis; 
     std::vector<double> basisIntegrals;
+    MatrixXd Jacobian; 
 
 
 public: 
@@ -19,7 +25,9 @@ public:
     inputSplitCompressedBasis, const std::vector<double>& inputBasisIntegrals)
     : chebyshevNodes(inputChebyshevNodes), chebyshevWeights(inputChebyshevWeights), basisCoefficients(inputBasisCoefficients), 
     splitCompressedBasis(inputSplitCompressedBasis), basisIntegrals(inputBasisIntegrals)
-    {};
+    { 
+        validateSystem();
+    };
 
     ~Optimizer(){};
 
@@ -27,10 +35,22 @@ public:
 protected: 
     void formJacobian()
     {
+        Jacobian.resize(splitCompressedBasis.size(), 2 * chebyshevNodes.size());
 
+        std::cout << Jacobian.rows() << " " << Jacobian.cols() << std::endl;
     }
 
 private: 
+    void validateSystem()
+    {
+        int m = basisIntegrals.size(); 
+        int n = chebyshevNodes.size(); 
+
+        if (m <= n)
+        {
+            throw std::invalid_argument("The system is not overdetermined.");
+        }
+    }
 };
 
 
