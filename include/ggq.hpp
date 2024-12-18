@@ -36,6 +36,8 @@ protected:
     std::vector<double> chebyshevNodes; 
     std::vector<double> chebyshevWeights;
     std::vector<std::vector<std::vector<double>>> basisCoefficients;
+    std::vector<double> basisIntegrals;
+
 
 public:
     QuadratureRule(double lowerBoundInput, double upperBoundInput, T handler, double discretizerPrecisionInput = 1e-6, 
@@ -201,22 +203,24 @@ public:
     }
 
 
-    std::vector<double> getBasisFunctionInterval(const size_t& functionIndex = 0, const size_t& nodesIndex = 0)
+    std::vector<double> getBasisIntegrals() const
     {
-        std::vector<double> result;
-
-        size_t indexStart = nodesIndex * splitNodes[nodesIndex].size();
-
-        for (size_t i = indexStart; i < indexStart + splitNodes[nodesIndex].size(); ++i)
-        {
-            result.push_back(compressedBasis[functionIndex][i]);
-        } 
-
-        return result;
-    }
+        return basisIntegrals; 
+    } 
 
 
 protected:
+    void evaluateBasisIntegrals()
+    {
+        basisIntegrals.resize(compressedBasis.size());
+
+        for (size_t i = 0; i < compressedBasis.size(); ++i)
+        {
+            basisIntegrals[i] = innerProduct(compressedBasis[i], weights);
+        }
+    }
+
+
     void interpolateBasisFunctionsAtEachInterval()
     {
         basisCoefficients.resize(splitCompressedBasis.size());
