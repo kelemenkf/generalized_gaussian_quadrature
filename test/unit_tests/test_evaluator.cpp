@@ -52,6 +52,7 @@ BOOST_AUTO_TEST_CASE( TestNodeInversion ) {
     std::vector<double> alphas = divider.getAlphaVector();
 
     Evaluator evaluator(splitNodes[0], alphas, endpoints[0], endpoints[1]);
+    evaluator.evaluateInput();
 
     std::vector<double> reversedNodes = evaluator.getReversedNodes();
     std::vector<double> legendreNodes = divider.getLegendreMesh();
@@ -99,6 +100,7 @@ BOOST_AUTO_TEST_CASE( TestNodeEvaluation ) {
     std::vector<double> alphas = divider.getAlphaVector();
 
     Evaluator evaluator(splitNodes[0], alphas, endpoints[0], endpoints[1]);
+    evaluator.evaluateInput();
 
     std::vector<double> reversedNodes = evaluator.getReversedNodes();
     std::vector<double> legendreNodes = divider.getLegendreMesh();
@@ -112,6 +114,20 @@ BOOST_AUTO_TEST_CASE( TestNodeEvaluation ) {
 
 
 BOOST_AUTO_TEST_CASE(TestSmallerNumberOfNodes ) {
+}
+
+
+BOOST_AUTO_TEST_CASE( TestFirstDerivativeEvaluator ) {
+    std::vector<double> coefficients{1, 2, 3};
+    std::vector<double> inputNodes{1, 2, 3};
+
+    Evaluator evaluator(inputNodes, coefficients, 2, 3);
+
+    double result = evaluator.evaluateFirstDerivative(1); 
+
+    std::cout << result << std::endl;
+
+    BOOST_CHECK_EQUAL(result, 11);
 }
 
 

@@ -26,8 +26,6 @@ public:
     Evaluator(std::vector<double> inputValue, const std::vector<double>& coefficientsInput, double inputLowerBound, 
     double inputUpperBound) : inputNodes(inputValue), coefficients(coefficientsInput), lowerBound(inputLowerBound), upperBound(inputUpperBound) 
     {
-        reverseNodes();
-        evaluateAll();
     };
 
 
@@ -49,6 +47,26 @@ public:
     std::vector<double> getInputNodes() const
     {
         return inputNodes;
+    }
+
+
+    double evaluateFirstDerivative(const double& x)
+    {
+        double result = 0; 
+
+        for (size_t i = 0; i < coefficients.size(); ++i)
+        {
+            result += coefficients[i] * boost::math::legendre_p_prime(i, x);
+        }
+
+        return result;
+    }
+
+
+    void evaluateInput()
+    {
+        reverseNodes();
+        evaluateAll();
     }
 
 

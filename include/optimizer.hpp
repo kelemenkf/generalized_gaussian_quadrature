@@ -24,6 +24,12 @@ public:
     ~Optimizer(){};
 
 
+protected: 
+    void formJacobian()
+    {
+
+    }
+
 private: 
 };
 

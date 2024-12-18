@@ -71,6 +71,7 @@ void declare_evaluator(py::module& m) {
     py::class_<Evaluator>(m, "Evaluator")
         .def(py::init<std::vector<double>, const std::vector<double>&, double, double>())
         .def("get_evaluated_nodes", &Evaluator::getOutput)
+        .def("evaluate_input", &Evaluator::evaluateInput)
     ;
 }
 
