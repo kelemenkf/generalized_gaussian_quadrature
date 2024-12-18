@@ -38,7 +38,6 @@ protected:
     std::vector<std::vector<std::vector<double>>> basisCoefficients;
     std::vector<double> basisIntegrals;
 
-
 public:
     QuadratureRule(double lowerBoundInput, double upperBoundInput, T handler, double discretizerPrecisionInput = 1e-6, 
     double quadraturePrecisionInput = 1e-4, size_t kInput = 30) 
@@ -81,6 +80,13 @@ public:
     {
         splitCompressedBasisAtEndpoints();
         interpolateBasisFunctionsAtEachInterval();
+    }
+
+
+    void optimizeQuadrature()
+    {
+        //Stage 3 of the paper
+        Optimizer optimizer(chebyshevNodes, chebyshevWeights, basisCoefficients, splitCompressedBasis, basisIntegrals);
     }
 
 
@@ -200,6 +206,21 @@ public:
     std::vector<std::vector<std::vector<double>>> getBasisCoefficients() const
     {
         return basisCoefficients;
+    }
+
+
+    std::vector<double> getBasisFunctionInterval(const size_t& functionIndex = 0, const size_t& nodesIndex = 0)
+    {
+        std::vector<double> result;
+
+        size_t indexStart = nodesIndex * splitNodes[nodesIndex].size();
+
+        for (size_t i = indexStart; i < indexStart + splitNodes[nodesIndex].size(); ++i)
+        {
+            result.push_back(compressedBasis[functionIndex][i]);
+        } 
+
+        return result;
     }
 
 

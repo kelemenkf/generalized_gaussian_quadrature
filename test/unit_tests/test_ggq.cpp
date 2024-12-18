@@ -46,6 +46,11 @@ struct QuadratureRuleFixture: public QuadratureRule<T>
     {
         this->calculateConsolidatedEndpoints();
     }
+
+    void testEvaluateBasisIntegrals() 
+    {
+        this->evaluateBasisIntegrals();
+    }
 };
 
 
@@ -269,6 +274,29 @@ BOOST_AUTO_TEST_CASE( TestCompressedBasisInterpolationCoefficients ) {
     BOOST_CHECK_EQUAL(basisCoefficients.size(), 3);
     BOOST_CHECK_EQUAL(basisCoefficients[0].size(), 2);
     BOOST_CHECK_EQUAL(basisCoefficients[0][0].size(), 30);
+}
+
+
+BOOST_AUTO_TEST_CASE( TestBasisIntegralCalculations ) {
+    double lowerBound = 0;
+    double upperBound = 2; 
+    int k = 30;
+    std::vector<double> param1 = {5, 4};
+    std::vector<double> param2 = {6, 3};
+    FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
+    
+    QuadratureRuleFixture quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
+    quadrature.calculateQuadratureNodes();
+    quadrature.compressFunctionSpace();
+    quadrature.obtainBasisCoefficients();
+    quadrature.testEvaluateBasisIntegrals();
+
+    std::vector<double> basisIntegrals = quadrature.getBasisIntegrals();
+
+    std::cout << "Values of basis integrals " << std::endl;
+    displayVector(basisIntegrals);
+
+    BOOST_CHECK_EQUAL(basisIntegrals.size(), 3);
 }
 
 
