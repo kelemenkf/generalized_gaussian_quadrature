@@ -31,8 +31,6 @@ public:
     : chebyshevNodes(inputChebyshevNodes), chebyshevWeights(inputChebyshevWeights), basisCoefficients(inputBasisCoefficients), 
     splitCompressedBasis(inputSplitCompressedBasis), basisIntegrals(inputBasisIntegrals), endpoints(inputEndpoints), splitNodes(inputSplitNodes)
     { 
-        displayVector(chebyshevNodes);
-        displayVector(chebyshevWeights);
         assignChebyshevNodesToInterval();
         formJacobian();
     };
@@ -80,8 +78,8 @@ protected:
                 for(size_t i = 0; i < (element->second).size(); ++i)
                 {
                     int interval = element->first;
-                    int lowerBound = interval; 
-                    int upperBound = interval + 1; 
+                    int lowerBound = endpoints[interval]; 
+                    int upperBound = endpoints[interval + 1]; 
                     std::cout << "Interval " << interval << " lower bound " << lowerBound << " upper bound " << upperBound << std::endl;
                     std::vector<double> alphas = basisCoefficients[function][interval];
                     displayVector(alphas);

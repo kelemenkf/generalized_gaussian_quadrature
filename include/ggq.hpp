@@ -37,6 +37,8 @@ protected:
     std::vector<double> chebyshevWeights;
     std::vector<std::vector<std::vector<double>>> basisCoefficients;
     std::vector<double> basisIntegrals;
+    std::vector<std::vector<double>> Jacobian; 
+
 
 public:
     QuadratureRule(double lowerBoundInput, double upperBoundInput, T handler, double discretizerPrecisionInput = 1e-6, 
@@ -89,6 +91,7 @@ public:
         evaluateBasisIntegrals();
         Optimizer optimizer(chebyshevNodes, chebyshevWeights, basisCoefficients, splitCompressedBasis, basisIntegrals, consolidatedEndpoints, 
         splitNodes);
+        Jacobian = optimizer.getJacobian();
     }
 
 
@@ -230,6 +233,12 @@ public:
     {
         return basisIntegrals; 
     } 
+
+
+    std::vector<std::vector<double>> getJacobian() const
+    {
+        return Jacobian;
+    }
 
 
 protected:

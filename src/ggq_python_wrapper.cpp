@@ -40,6 +40,7 @@ void declare_quadrature(py::module& m, const std::string& suffix) {
         .def("calculate_quadrature", &Quadrature::calculateQuadratureNodes)
         .def("compress_functions", &Quadrature::compressFunctionSpace)
         .def("interpolate_basis", &Quadrature::obtainBasisCoefficients)
+        .def("optimize", &Quadrature::optimizeQuadrature)
         .def("get_endpoints", &Quadrature::getConsolidatedEndpoints)
         .def("get_nodes", &Quadrature::getNodes)
         .def("get_values", &Quadrature::getValues)
@@ -47,6 +48,8 @@ void declare_quadrature(py::module& m, const std::string& suffix) {
         .def("get_split_nodes", &Quadrature::getSplitNodes)
         .def("get_alphas", &Quadrature::getBasisCoefficients)
         .def("get_split_u", &Quadrature::getSplitCompressedBasis)
+        .def("get_jacobian", &Quadrature::getJacobian)
+        .def("get_chebyshev_nodes", &Quadrature::getChebyshevNodes)
     ;
 }
 
