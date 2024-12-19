@@ -56,7 +56,21 @@ public:
 
         for (size_t i = 0; i < coefficients.size(); ++i)
         {
-            result += coefficients[i] * boost::math::legendre_p_prime(i, x);
+            result += coefficients[i] * boost::math::legendre_p_prime(i, reverseNode(x));
+        }
+
+        return result;
+    }
+
+
+    double evaluateUnreversed(const double& x)
+    {
+        double result = 0; 
+
+        for (size_t i = 0; i < coefficients.size(); ++i)
+        {
+            double res = boost::math::legendre_p(i, reverseNode(x));
+            result += coefficients[i] * res;
         }
 
         return result;
@@ -80,7 +94,7 @@ private:
         });
     }
 
-
+   
     double evaluate(double x)
     {
         double result = 0;
@@ -93,7 +107,6 @@ private:
 
        return result;
     }
-
 
     void reverseNodes()
     {

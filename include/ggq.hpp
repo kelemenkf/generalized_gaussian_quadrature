@@ -86,7 +86,9 @@ public:
     void optimizeQuadrature()
     {
         //Stage 3 of the paper
-        Optimizer optimizer(chebyshevNodes, chebyshevWeights, basisCoefficients, splitCompressedBasis, basisIntegrals);
+        evaluateBasisIntegrals();
+        Optimizer optimizer(chebyshevNodes, chebyshevWeights, basisCoefficients, splitCompressedBasis, basisIntegrals, consolidatedEndpoints, 
+        splitNodes);
     }
 
 
