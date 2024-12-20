@@ -21,6 +21,7 @@ private:
     std::vector<std::vector<double>> splitNodes;
     std::map<int, std::vector<std::pair<double, double>>> intervalChebyshevNodesMap;
     MatrixXd Jacobian; 
+    MatrixXd A;
 
 
 public: 
@@ -33,6 +34,7 @@ public:
     { 
         assignChebyshevNodesToInterval();
         formJacobian();
+        formA();
     };
 
     ~Optimizer(){};
@@ -63,6 +65,24 @@ public:
 
 
 protected: 
+    MatrixXd shermanMorrisonWoodburry(const MatrixXd& input, int j)
+    {
+       VectorXd u = input.col(j); 
+
+       MatrixXd rank1 = u * u.transpose();
+
+       return input - rank1; 
+    }
+
+
+    void formA()
+    {
+        A = (Jacobian * Jacobian.transpose()).inverse();
+
+        std::cout << A << std::endl;
+    }
+
+
     void formJacobian()
     {
         Jacobian.resize(splitCompressedBasis.size(), 2 * chebyshevNodes.size());
@@ -100,10 +120,6 @@ protected:
 
 
 private: 
-    void sortChebyshevNodes()
-    {
-        std::sort(chebyshevNodes.begin(), chebyshevNodes.end());
-    }
 
 
     void assignChebyshevNodesToInterval()

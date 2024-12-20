@@ -50,6 +50,8 @@ void declare_quadrature(py::module& m, const std::string& suffix) {
         .def("get_split_u", &Quadrature::getSplitCompressedBasis)
         .def("get_jacobian", &Quadrature::getJacobian)
         .def("get_chebyshev_nodes", &Quadrature::getChebyshevNodes)
+        .def("get_chebyshev_integrals", &Quadrature::evaluateIntegralsChebyshevNodes)
+        .def("get_legendre_integrals", &Quadrature::evaluateIntegrals)
     ;
 }
 
