@@ -22,6 +22,8 @@ private:
     std::map<int, std::vector<std::pair<double, double>>> intervalChebyshevNodesMap;
     MatrixXd Jacobian; 
     MatrixXd A;
+    std::vector<VectorXd> stepDirections; 
+    std::vector<double> stepDirectionNorms;
 
 
 public: 
@@ -35,6 +37,7 @@ public:
         assignChebyshevNodesToInterval();
         formJacobian();
         formA();
+        calculateStepDirections();
     };
 
     ~Optimizer(){};
@@ -64,14 +67,70 @@ public:
     }
 
 
-protected: 
-    MatrixXd shermanMorrisonWoodburry(const MatrixXd& input, int j)
+    std::vector<VectorXd> getStepDirections() const 
     {
-       VectorXd u = input.col(j); 
+        return stepDirections;
+    }
 
-       MatrixXd rank1 = u * u.transpose();
 
-       return input - rank1; 
+protected:
+    void reorderNodesBasedOnNorms()
+    {}
+
+
+    void calculateStepDirectionNorms()
+    {
+        stepDirectionNorms.resize(stepDirections.size());
+
+        for (size_t i = 0; i < stepDirections.size(); ++i)
+        {
+            stepDirectionNorms[i] = stepDirections[i].norm();
+        }
+    }
+
+
+    VectorXd transformIntegrals()
+    {
+        VectorXd r(basisIntegrals.size());
+
+        for (size_t i = 0; i < basisIntegrals.size(); ++i)
+        {
+            r(i) = basisIntegrals[i];
+        }
+
+        return r;
+    }
+
+
+    void calculateStepDirections()
+    {
+        size_t j = chebyshevNodes.size(); 
+        stepDirections.resize(j);
+
+        for (size_t k = 0; k < chebyshevNodes.size(); ++k)
+        {
+            std::cout << k + j << " " << stepDirections.size() << std::endl;
+ 
+            MatrixXd A_k = shermanMorrisonWoodburry(A, k, j);
+
+            VectorXd stepDirection = A_k * Jacobian.transpose() * transformIntegrals();
+
+            stepDirections[k] = stepDirection;
+        }
+    }
+
+
+    MatrixXd shermanMorrisonWoodburry(const MatrixXd& input, int k, int j = 0)
+    {
+       VectorXd u_k = input.col(k); 
+
+       MatrixXd rank1 = u_k * u_k.transpose();
+       
+       VectorXd u_kj = input.col(k + j);
+
+       MatrixXd rank2 =  u_kj * u_kj.transpose();
+
+       return input - rank1 - rank2; 
     }
 
 

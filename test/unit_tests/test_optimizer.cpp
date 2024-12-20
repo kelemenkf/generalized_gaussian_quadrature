@@ -53,7 +53,11 @@ struct OptimizerFixture : public Optimizer
 
     MatrixXd testShermanMorrisonWoodburry(const MatrixXd& input, int j)
     {
-        return this->shermanMorrisonWoodburry(input, j);
+       VectorXd u_k = input.col(j); 
+
+       MatrixXd rank1 =  u_k * u_k.transpose();
+
+       return input - rank1; 
     }
 };
 
@@ -195,6 +199,39 @@ BOOST_AUTO_TEST_CASE( TestShermannWoodburryMorrision ) {
     }
 
     std::cout << calculated << std::endl;
+}
+
+
+BOOST_AUTO_TEST_CASE( TestCalculateStepDirections ) {
+    double lowerBound = 0;
+    double upperBound = 2; 
+    int k = 30;
+    std::vector<double> param1 = {5, 4};
+    std::vector<double> param2 = {6, 3};
+    FunctionHandler<std::vector<double>, std::vector<double>> handlerTest3Param(testFunction2ParamPC, param1, param2);
+    
+    QuadratureRule quadrature(lowerBound, upperBound, handlerTest3Param);
+    quadrature.calculateQuadratureNodes();
+    quadrature.compressFunctionSpace();
+    quadrature.obtainBasisCoefficients();
+    quadrature.optimizeQuadrature();
+
+    std::vector<double> chebyshevNodes = quadrature.getChebyshevNodes();
+    std::vector<double> chebyshevWeights = quadrature.getChebyshevWeights();
+    std::vector<std::vector<std::vector<double>>> basisCoefficients = quadrature.getBasisCoefficients();
+    std::vector<std::vector<std::vector<double>>> splitCompressedBasis = quadrature.getSplitCompressedBasis();
+    std::vector<double> basisIntegrals = quadrature.getBasisIntegrals();
+    std::vector<double> endpoints = quadrature.getConsolidatedEndpoints();
+    std::vector<std::vector<double>> splitNodes = quadrature.getSplitNodes();
+
+    OptimizerFixture optimizer(chebyshevNodes, chebyshevWeights, basisCoefficients, splitCompressedBasis, basisIntegrals, endpoints, splitNodes);
+
+    std::vector<VectorXd> stepDirections = optimizer.getStepDirections();
+
+    for (size_t i = 0; i < stepDirections.size(); ++i)
+    {
+        std::cout << stepDirections[i] << std::endl;
+    }
 }
 
 
