@@ -232,6 +232,10 @@ BOOST_AUTO_TEST_CASE( TestCalculateStepDirections ) {
     {
         std::cout << stepDirections[i] << std::endl;
     }
+
+    int n = chebyshevNodes.size(); 
+
+    BOOST_CHECK_EQUAL(stepDirections.size(), n);
 }
 
 

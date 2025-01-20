@@ -40,6 +40,7 @@ public:
         formJacobian();
         formA();
         calculateStepDirections();
+        calculateStepDirectionNorms(); 
     };
 
     ~Optimizer(){};
@@ -107,14 +108,14 @@ protected:
 
     void calculateStepDirections()
     {
-        size_t j = chebyshevNodes.size(); 
-        stepDirections.resize(j);
+        size_t n = chebyshevNodes.size(); 
+        stepDirections.resize(n);
 
         std::cout << "a" << std::endl;
 
         for (size_t k = 0; k < chebyshevNodes.size(); ++k)
         {
-            MatrixXd A_k = shermanMorrisonWoodburry(A, k, j);
+            MatrixXd A_k = shermanMorrisonWoodburry(A, k, n);
 
             std::cout << "A_k size " << A_k.rows() << " " << A_k.cols() << std::endl;
 
@@ -122,7 +123,11 @@ protected:
 
             std::cout << "r size" << eigenBasisIntegrals.rows() << " " << eigenBasisIntegrals.cols() << std::endl;
 
-            VectorXd stepDirection = A_k * (Jacobian.transpose() * eigenBasisIntegrals);
+            MatrixXd J_k = updateJacobian(Jacobian, k, n);
+
+            std::cout << J_k.rows() << J_k.cols() << std::endl;
+
+            VectorXd stepDirection = J_k.transpose() * A_k * eigenBasisIntegrals;
 
             stepDirections[k] = stepDirection;
         }
@@ -137,41 +142,47 @@ protected:
 	
 		VectorXd u_k = Jacobian.col(k); 
 
-        std::cout << "h" << std::endl;
+        std::cout << u_k.size() << std::endl;
+        std::cout << input.rows() << input.cols() << std::endl;
 
 		double scalar1 = 1.0 + u_k.transpose() * input * u_k;
 
-        std::cout << "g" << std::endl;
-
 		VectorXd Au_k = input * u_k; 
-
-        std::cout << "f" << std::endl;
 
 		A_prime -= (Au_k * Au_k.transpose()) / scalar1;
 
     	VectorXd u_kj = Jacobian.col(k + j);
 
-        std::cout << "e" << std::endl;
-
 		double scalar2 = 1.0 + u_kj.transpose() * A_prime * u_kj;
-
-        std::cout << "d" << std::endl; 
 
 		VectorXd A_prime_u_kj = A_prime * u_kj;
 
-        std::cout << "b" << std::endl;
-
 		A_prime -= (A_prime_u_kj * A_prime_u_kj.transpose()) / scalar2;
-
-        std::cout << "c" << std::endl;
 
 		return A_prime;
     }
 
 
+    MatrixXd updateJacobian(const MatrixXd& Jacobian, int k, int n)
+    {
+        VectorXd v(Jacobian.cols()); 
+        v.setZero();
+        v[k] = 1;
+
+        VectorXd column = Jacobian.col(k);
+
+        VectorXd v2(Jacobian.cols());
+        v2.setZero();
+        v2[k+n] = 1;
+
+        VectorXd column2 = Jacobian.col(k + n);
+
+        return Jacobian - (column * v.transpose()) - (column2 * v2.transpose());
+    }
+
+
     void formA()
     {
-        std::cout << "ez meg jo" << std::endl;
         A = (Jacobian * Jacobian.transpose()).inverse();
     }
 
@@ -208,8 +219,6 @@ protected:
 
 
 private: 
-
-
     void assignChebyshevNodesToInterval()
     {
        for (int interval = 0; interval < splitNodes.size(); ++interval)
