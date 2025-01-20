@@ -17,6 +17,7 @@ private:
     std::vector<std::vector<std::vector<double>>> basisCoefficients;
     std::vector<std::vector<std::vector<double>>> splitCompressedBasis; 
     std::vector<double> basisIntegrals;
+    VectorXd eigenBasisIntegrals;
     std::vector<double> endpoints;
     std::vector<std::vector<double>> splitNodes;
     std::map<int, std::vector<std::pair<double, double>>> intervalChebyshevNodesMap;
@@ -35,6 +36,7 @@ public:
     splitCompressedBasis(inputSplitCompressedBasis), basisIntegrals(inputBasisIntegrals), endpoints(inputEndpoints), splitNodes(inputSplitNodes)
     { 
         assignChebyshevNodesToInterval();
+        transformIntegrals();
         formJacobian();
         formA();
         calculateStepDirections();
@@ -75,7 +77,9 @@ public:
 
 protected:
     void reorderNodesBasedOnNorms()
-    {}
+    {
+        
+    }
 
 
     void calculateStepDirectionNorms()
@@ -89,16 +93,15 @@ protected:
     }
 
 
-    VectorXd transformIntegrals()
+    void transformIntegrals()
     {
-        VectorXd r(basisIntegrals.size());
+        eigenBasisIntegrals.resize(basisIntegrals.size());
 
         for (size_t i = 0; i < basisIntegrals.size(); ++i)
         {
-            r(i) = basisIntegrals[i];
+            eigenBasisIntegrals(i) = basisIntegrals[i];
         }
 
-        return r;
     }
 
 
@@ -107,13 +110,19 @@ protected:
         size_t j = chebyshevNodes.size(); 
         stepDirections.resize(j);
 
+        std::cout << "a" << std::endl;
+
         for (size_t k = 0; k < chebyshevNodes.size(); ++k)
         {
-            std::cout << k + j << " " << stepDirections.size() << std::endl;
- 
             MatrixXd A_k = shermanMorrisonWoodburry(A, k, j);
 
-            VectorXd stepDirection = A_k * Jacobian.transpose() * transformIntegrals();
+            std::cout << "A_k size " << A_k.rows() << " " << A_k.cols() << std::endl;
+
+            std::cout << "Jacobian size " << Jacobian.rows() << " " << Jacobian.cols() << std::endl;
+
+            std::cout << "r size" << eigenBasisIntegrals.rows() << " " << eigenBasisIntegrals.cols() << std::endl;
+
+            VectorXd stepDirection = A_k * (Jacobian.transpose() * eigenBasisIntegrals);
 
             stepDirections[k] = stepDirection;
         }
@@ -122,23 +131,48 @@ protected:
 
     MatrixXd shermanMorrisonWoodburry(const MatrixXd& input, int k, int j = 0)
     {
-       VectorXd u_k = input.col(k); 
+		//this may be not good 
+		
+		MatrixXd A_prime = input;
+	
+		VectorXd u_k = Jacobian.col(k); 
 
-       MatrixXd rank1 = u_k * u_k.transpose();
-       
-       VectorXd u_kj = input.col(k + j);
+        std::cout << "h" << std::endl;
 
-       MatrixXd rank2 =  u_kj * u_kj.transpose();
+		double scalar1 = 1.0 + u_k.transpose() * input * u_k;
 
-       return input - rank1 - rank2; 
+        std::cout << "g" << std::endl;
+
+		VectorXd Au_k = input * u_k; 
+
+        std::cout << "f" << std::endl;
+
+		A_prime -= (Au_k * Au_k.transpose()) / scalar1;
+
+    	VectorXd u_kj = Jacobian.col(k + j);
+
+        std::cout << "e" << std::endl;
+
+		double scalar2 = 1.0 + u_kj.transpose() * A_prime * u_kj;
+
+        std::cout << "d" << std::endl; 
+
+		VectorXd A_prime_u_kj = A_prime * u_kj;
+
+        std::cout << "b" << std::endl;
+
+		A_prime -= (A_prime_u_kj * A_prime_u_kj.transpose()) / scalar2;
+
+        std::cout << "c" << std::endl;
+
+		return A_prime;
     }
 
 
     void formA()
     {
+        std::cout << "ez meg jo" << std::endl;
         A = (Jacobian * Jacobian.transpose()).inverse();
-
-        std::cout << A << std::endl;
     }
 
 
@@ -159,11 +193,8 @@ protected:
                     int interval = element->first;
                     int lowerBound = endpoints[interval]; 
                     int upperBound = endpoints[interval + 1]; 
-                    std::cout << "Interval " << interval << " lower bound " << lowerBound << " upper bound " << upperBound << std::endl;
                     std::vector<double> alphas = basisCoefficients[function][interval];
-                    displayVector(alphas);
                     Evaluator evaluator(splitNodes[interval], alphas, lowerBound, upperBound);
-                    std::cout << (element->second)[i].first << " " << (element->second)[i].second << std::endl;
                     double derivativeAtChebyshevNode = evaluator.evaluateFirstDerivative(((element->second)[i]).first);
                     double u = evaluator.evaluateUnreversed((element->second)[i].first);
                     Jacobian(function, nodeIndex) = derivativeAtChebyshevNode * (element->second)[i].second;  
@@ -173,8 +204,6 @@ protected:
             }
 
         }
-
-        std::cout << Jacobian << std::endl;
     }
 
 
