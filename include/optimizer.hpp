@@ -2,6 +2,7 @@
 #define OPTIMIZER_HPP
 
 #include "evaluator.hpp"
+#include "damped_gauss_newton.hpp"
 #include <Eigen/Dense>
 #include <numeric>
 #include "utils.hpp"
@@ -94,7 +95,26 @@ public:
 protected:
     void dampedGaussNewton(int removedNode, int numberOfSteps)
     {
-        std::cout << "Performs " << numberOfSteps << " number of damped Gauss-Newton steps." << std::endl;
+        std::cout << "Performing " << numberOfSteps << " number of damped Gauss-Newton steps." << std::endl;
+
+        for (size_t i = 0; i < sortedStepDirectionNorms.size(); ++i)
+        {
+            //Calls DGN with all combinations of nodes removed in order of inreasing eta        
+            //First take current nodes, remove the one on the current iteration then apply the calculated delta x_k. This is the frist step
+            //and input for DGN. 
+        }
+    }
+
+    void removeNode()
+    {
+
+    }
+
+    
+    void calculatePrecision()
+    {
+        //takes a quadrature as an input and cacluates precision
+        //for the original input this should already be known?  
     }
 
 
@@ -102,7 +122,7 @@ protected:
     {
         MatrixXd JacobianDGN = removeColumnFromEigenMatrix(Jacobian, columnToRemove, n);
 
-        std::cout << JacobianDGN.rows() << " " << JacobianDGN.cols() << std::endl;
+        std::cout << "System was reduced to a " << JacobianDGN.rows() << " by " << JacobianDGN.cols() << " system." << std::endl;
     }
 
 
@@ -234,7 +254,18 @@ protected:
                     nodeIndex += 1;
                 }
             }
+        }
 
+        int m = Jacobian.rows(); 
+        int n = Jacobian.cols(); 
+
+        if (m < n)
+        {
+            std::cout << "System is underdetermined of size " << m << " by " << n << std::endl;
+        }
+        else if (m = n)
+        {
+            std::cout << "System is " << m << " by " << n << std::endl;
         }
     }
 
