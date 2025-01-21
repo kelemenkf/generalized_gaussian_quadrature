@@ -43,6 +43,7 @@ public:
         calculateStepDirections();
         calculateStepDirectionNorms();
         reorderNodesBasedOnNorms();
+        formInitialJacobianDGN(sortedStepDirectionNorms[0].second, chebyshevNodes.size()); 
     };
 
     ~Optimizer(){};
@@ -91,6 +92,20 @@ public:
 
 
 protected:
+    void dampedGaussNewton(int removedNode, int numberOfSteps)
+    {
+        std::cout << "Performs " << numberOfSteps << " number of damped Gauss-Newton steps." << std::endl;
+    }
+
+
+    void formInitialJacobianDGN(int columnToRemove, int n) 
+    {
+        MatrixXd JacobianDGN = removeColumnFromEigenMatrix(Jacobian, columnToRemove, n);
+
+        std::cout << JacobianDGN.rows() << " " << JacobianDGN.cols() << std::endl;
+    }
+
+
     void reorderNodesBasedOnNorms()
     {
         for (size_t i = 0; i < stepDirectionNorms.size(); ++i)

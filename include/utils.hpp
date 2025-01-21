@@ -10,6 +10,7 @@
 #include <boost/math/special_functions/legendre.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
+#include <Eigen/Core>
 
 using namespace boost::math::tools;
 using namespace boost::numeric::ublas;
@@ -67,6 +68,24 @@ vector<T> convertStdVectorToBoost(const std::vector<T>& input)
     for (size_t i = 0; i < input.size(); ++i)
     {
         result(i) = input[i];
+    }
+
+    return result;
+}
+
+
+template<typename MatrixType>
+MatrixType removeColumnFromEigenMatrix(MatrixType& input, int columnToRemove, int n)
+{
+    MatrixType result(input.rows(), 0);
+
+    for (int col = 0; col < input.cols(); ++col)
+    {
+        if (col != columnToRemove && col != (columnToRemove + n))
+        {
+            result.conservativeResize(Eigen::NoChange, result.cols() + 1);
+            result.col(result.cols() - 1) = input.col(col);
+        }
     }
 
     return result;
