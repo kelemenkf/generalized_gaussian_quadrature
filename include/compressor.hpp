@@ -38,6 +38,8 @@ public:
         nodes = quadrature->getNodes();
         weights = quadrature->getWeights();
         values = quadrature->getValues();
+        std::cout << "Compressor got " << values.size() << " functions as input." << std::endl;
+        std::cout << "Compressor got a quadrature input with " << nodes.size() << " nodes." << std::endl;
         constructA();
         decomposeIntoQR();
         scaleU();
@@ -48,6 +50,8 @@ public:
         doubleOrthogonalization();
         solveSystem();
         formNewQuadrature();
+        std::cout << "Compressor outputs a function space with " << scaledU.cols() << " functions." << std::endl;
+        std::cout << "Compressor outputs a quadrature with " << chebyshevNodes.size() << " nodes." << std::endl; 
     }
 
 

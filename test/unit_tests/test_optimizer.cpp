@@ -1,6 +1,7 @@
 #define BOOST_TEST_MODULE OptimizerTestSuite
 #include <iostream>
 #include <boost/test/included/unit_test.hpp>
+#include <boost/algorithm/cxx11/is_sorted.hpp>
 #include "ggq.hpp"
 
 
@@ -113,13 +114,17 @@ BOOST_AUTO_TEST_CASE( TestOptimizerIntervalChyebyshevNodeMap ) {
 
     OptimizerFixture optimizer(chebyshevNodes, chebyshevWeights, basisCoefficients, splitCompressedBasis, basisIntegrals, endpoints, splitNodes);
 
-    //std::map<int, std::vector<double>> intervalNodeMap = optimizer.getIntervalChebyshevNodesMap();
+    std::map<int, std::vector<std::pair<double, double>>> intervalNodeMap = optimizer.getIntervalChebyshevNodesMap();
 
-    //for (auto element = intervalNodeMap.begin(); element != intervalNodeMap.end(); ++element)
-    //{
-    //    std::cout << element->first << std::endl; 
-    //   displayVector(element->second);
-    //}
+    int numberOfNodes = 0;
+
+    for (auto element = intervalNodeMap.begin(); element != intervalNodeMap.end(); ++element)
+    {
+        std::cout << element->first << std::endl; 
+        numberOfNodes += (element->second).size();
+    }
+
+    BOOST_CHECK_EQUAL(numberOfNodes, chebyshevNodes.size());
 }
 
 
@@ -154,54 +159,6 @@ BOOST_AUTO_TEST_CASE( TestFormJacobian ) {
 }
 
 
-// BOOST_AUTO_TEST_CASE( TestShermannWoodburryMorrision ) {
-//     MatrixXd A {
-//         {1, 3},
-//         {2, 4}
-//     };
-
-//     MatrixXd expected {
-//         {0, 1},
-//         {0, 0}
-//     };
-
-//     double lowerBound = 0;
-//     double upperBound = 2; 
-//     int k = 30;
-//     std::vector<double> param1 = {5, 4};
-//     std::vector<double> param2 = {6, 3};
-//     FunctionHandler<std::vector<double>, std::vector<double>> handlerTest3Param(testFunction2ParamPC, param1, param2);
-    
-//     QuadratureRule quadrature(lowerBound, upperBound, handlerTest3Param);
-//     quadrature.calculateQuadratureNodes();
-//     quadrature.compressFunctionSpace();
-//     quadrature.obtainBasisCoefficients();
-//     quadrature.optimizeQuadrature();
-
-//     std::vector<double> chebyshevNodes = quadrature.getChebyshevNodes();
-//     std::vector<double> chebyshevWeights = quadrature.getChebyshevWeights();
-//     std::vector<std::vector<std::vector<double>>> basisCoefficients = quadrature.getBasisCoefficients();
-//     std::vector<std::vector<std::vector<double>>> splitCompressedBasis = quadrature.getSplitCompressedBasis();
-//     std::vector<double> basisIntegrals = quadrature.getBasisIntegrals();
-//     std::vector<double> endpoints = quadrature.getConsolidatedEndpoints();
-//     std::vector<std::vector<double>> splitNodes = quadrature.getSplitNodes();
-
-//     OptimizerFixture optimizer(chebyshevNodes, chebyshevWeights, basisCoefficients, splitCompressedBasis, basisIntegrals, endpoints, splitNodes);
-
-//     MatrixXd calculated = optimizer.testShermanMorrisonWoodburry(A, 0);     
-
-//     for (size_t row = 0; row < expected.rows(); ++row)
-//     {
-//         for (size_t col = 0; col < expected.cols(); ++col)
-//         {
-//             BOOST_CHECK_EQUAL(calculated(row, col), expected(row, col));
-//         }
-//     }
-
-//     std::cout << calculated << std::endl;
-// }
-
-
 BOOST_AUTO_TEST_CASE( TestCalculateStepDirections ) {
     double lowerBound = 0;
     double upperBound = 2; 
@@ -228,14 +185,50 @@ BOOST_AUTO_TEST_CASE( TestCalculateStepDirections ) {
 
     std::vector<VectorXd> stepDirections = optimizer.getStepDirections();
 
-    for (size_t i = 0; i < stepDirections.size(); ++i)
-    {
-        std::cout << stepDirections[i] << std::endl;
-    }
-
     int n = chebyshevNodes.size(); 
 
     BOOST_CHECK_EQUAL(stepDirections.size(), n);
+
+    std::vector<double> stepDirectionNorms = optimizer.getStepDirectionNorms();
+
+    BOOST_CHECK_EQUAL(stepDirectionNorms.size(), n);
+}
+
+
+BOOST_AUTO_TEST_CASE( TestStepDirectionNormReordering ) {
+    double lowerBound = 0;
+    double upperBound = 2; 
+    int k = 30;
+    std::vector<double> param1 = {5, 4};
+    std::vector<double> param2 = {6, 3};
+    FunctionHandler<std::vector<double>, std::vector<double>> handlerTest3Param(testFunction2ParamPC, param1, param2);
+    
+    QuadratureRule quadrature(lowerBound, upperBound, handlerTest3Param);
+    quadrature.calculateQuadratureNodes();
+    quadrature.compressFunctionSpace();
+    quadrature.obtainBasisCoefficients();
+    quadrature.optimizeQuadrature();
+
+    std::vector<double> chebyshevNodes = quadrature.getChebyshevNodes();
+    std::vector<double> chebyshevWeights = quadrature.getChebyshevWeights();
+    std::vector<std::vector<std::vector<double>>> basisCoefficients = quadrature.getBasisCoefficients();
+    std::vector<std::vector<std::vector<double>>> splitCompressedBasis = quadrature.getSplitCompressedBasis();
+    std::vector<double> basisIntegrals = quadrature.getBasisIntegrals();
+    std::vector<double> endpoints = quadrature.getConsolidatedEndpoints();
+    std::vector<std::vector<double>> splitNodes = quadrature.getSplitNodes();
+
+    OptimizerFixture optimizer(chebyshevNodes, chebyshevWeights, basisCoefficients, splitCompressedBasis, basisIntegrals, endpoints, splitNodes);
+
+    std::vector<std::pair<double, int>> sortedStepDirectionNorms = optimizer.getSortedStepDirectionNorms();
+
+    std::vector<double> sortedNorms; 
+
+    for (auto element = sortedStepDirectionNorms.begin(); element != sortedStepDirectionNorms.end(); ++element)
+    {
+        sortedNorms.push_back(element->first);
+    }
+
+    BOOST_CHECK_EQUAL(boost::algorithm::is_sorted(sortedNorms), true);
 }
 
 

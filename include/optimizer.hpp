@@ -25,6 +25,7 @@ private:
     MatrixXd A;
     std::vector<VectorXd> stepDirections; 
     std::vector<double> stepDirectionNorms;
+    std::vector<std::pair<double, int>> sortedStepDirectionNorms; 
 
 
 public: 
@@ -40,7 +41,8 @@ public:
         formJacobian();
         formA();
         calculateStepDirections();
-        calculateStepDirectionNorms(); 
+        calculateStepDirectionNorms();
+        reorderNodesBasedOnNorms();
     };
 
     ~Optimizer(){};
@@ -76,10 +78,27 @@ public:
     }
 
 
+    std::vector<double> getStepDirectionNorms() const 
+    {
+        return stepDirectionNorms; 
+    }
+
+
+    std::vector<std::pair<double, int>> getSortedStepDirectionNorms() const 
+    {
+        return sortedStepDirectionNorms;
+    }
+
+
 protected:
     void reorderNodesBasedOnNorms()
     {
+        for (size_t i = 0; i < stepDirectionNorms.size(); ++i)
+        {
+            sortedStepDirectionNorms.push_back({stepDirectionNorms[i], i});
+        }
         
+        std::sort(sortedStepDirectionNorms.begin(), sortedStepDirectionNorms.end());
     }
 
 
@@ -111,21 +130,11 @@ protected:
         size_t n = chebyshevNodes.size(); 
         stepDirections.resize(n);
 
-        std::cout << "a" << std::endl;
-
         for (size_t k = 0; k < chebyshevNodes.size(); ++k)
         {
             MatrixXd A_k = shermanMorrisonWoodburry(A, k, n);
 
-            std::cout << "A_k size " << A_k.rows() << " " << A_k.cols() << std::endl;
-
-            std::cout << "Jacobian size " << Jacobian.rows() << " " << Jacobian.cols() << std::endl;
-
-            std::cout << "r size" << eigenBasisIntegrals.rows() << " " << eigenBasisIntegrals.cols() << std::endl;
-
             MatrixXd J_k = updateJacobian(Jacobian, k, n);
-
-            std::cout << J_k.rows() << J_k.cols() << std::endl;
 
             VectorXd stepDirection = J_k.transpose() * A_k * eigenBasisIntegrals;
 
@@ -141,9 +150,6 @@ protected:
 		MatrixXd A_prime = input;
 	
 		VectorXd u_k = Jacobian.col(k); 
-
-        std::cout << u_k.size() << std::endl;
-        std::cout << input.rows() << input.cols() << std::endl;
 
 		double scalar1 = 1.0 + u_k.transpose() * input * u_k;
 
