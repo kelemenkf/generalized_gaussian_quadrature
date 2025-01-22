@@ -11,10 +11,11 @@ class DGN
 private: 
     std::vector<std::vector<std::vector<double>>> basisCoefficients;
     std::vector<double> endpoints;
-    VectorXd r; 
+    VectorXd R; 
     VectorXd x;
     MatrixXd Jacobian; 
     unsigned int numberOfSteps; 
+    //is alpha an input? 
     double alpha; 
     double lambda; 
     double beta;
@@ -38,8 +39,8 @@ private:
         while (k < numberOfSteps)
         {
             evaluateRAtNewNodes();
-            modifyJacobian();
-            iterate();
+            //modifyJacobian();
+            //iterate();
         }
     }
 
@@ -52,13 +53,31 @@ private:
 
     void evaluateRAtNewNodes()
     {
-        Evaluator(basisCoefficients);
+        for (size_t u = 0; u < basisCoefficients.size(); ++u)
+        {
+            double R_temp = 0; 
+            for (size_t endpoint = 0; endpoint < endpoints.size(); ++endpoint)
+            {
+                int n = x.size() / 2; 
+                for (int i = 0; i < n; ++i)
+                {
+                    if (x[i] > endpoints[endpoint] && x[i] < endpoints[endpoint+1])
+                    {
+                        Evaluator evaluator(basisCoefficients[u][endpoint], endpoints[endpoint], endpoints[endpoint+1], {});
+                        double u = evaluator.evaluateUnreversed(x[i]); 
+                        double w = x[i + n];
+                        R_temp += u*w;
+                    }
+                }
+            }
+            R[u] = R_temp;
+        }
     }
 
 
     void iterate()
     {
-        x = x - Jacobian.transpose() * (Jacobian * Jacobian.transpose() + MatrixXd::Identity(Jacobian.rows(), Jacobian.rows())) * r;
+        x = x - Jacobian.transpose() * (Jacobian * Jacobian.transpose() + MatrixXd::Identity(Jacobian.rows(), Jacobian.rows())) * R;
     }
 
 

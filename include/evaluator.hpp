@@ -79,19 +79,6 @@ public:
     }
 
 
-    double evaluateQuadrature(const std::vector<double>& nodes, const std::vector<double>& weights)
-    {
-        double result = 0; 
-
-        for (size_t i = 0; i < nodes.size(); ++i)
-        {
-            result += evaluateUnreversed(reverseNode(nodes[i])) * weights[i];
-        }
-
-        return result;
-    }
-
-
     void evaluateInput()
     {
         reverseNodes();

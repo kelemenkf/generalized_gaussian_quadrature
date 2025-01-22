@@ -45,6 +45,7 @@ public:
         calculateStepDirectionNorms();
         reorderNodesBasedOnNorms();
         formInitialJacobianDGN(sortedStepDirectionNorms[0].second, chebyshevNodes.size()); 
+        formX();
     };
 
     ~Optimizer(){};
@@ -102,12 +103,30 @@ protected:
             //Calls DGN with all combinations of nodes removed in order of inreasing eta        
             //First take current nodes, remove the one on the current iteration then apply the calculated delta x_k. This is the frist step
             //and input for DGN. 
+            VectorXd x_initial = stepDirections[sortedStepDirectionNorms[i].second];
+            //DGN();
         }
     }
 
-    void removeNode()
+
+    void removeNode(int node)
     {
 
+    }
+
+
+    void formX()
+    {
+        int n = chebyshevNodes.size();
+        VectorXd x(2 * n);
+
+        for (size_t node = 0; node < chebyshevNodes.size(); ++node)
+        {
+            x[node] = chebyshevNodes[node];
+            x[node + n] = chebyshevWeights[node];
+        }
+
+        std::cout << "x for DGN formed at size " << x.size() << std::endl;
     }
 
     

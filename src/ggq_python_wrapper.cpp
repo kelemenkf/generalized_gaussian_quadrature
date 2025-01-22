@@ -80,7 +80,6 @@ void declare_evaluator(py::module& m) {
     ;
 }
 
-
 PYBIND11_MODULE(ggq, m) {
     declare_function_handler<>(m, "0Param");
     declare_function_handler<std::vector<double>>(m, "1Param");
