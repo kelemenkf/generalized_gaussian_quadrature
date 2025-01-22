@@ -23,8 +23,8 @@ private:
 
 
 public:
-    Evaluator(std::vector<double> inputValue, const std::vector<double>& coefficientsInput, double inputLowerBound, 
-    double inputUpperBound) : inputNodes(inputValue), coefficients(coefficientsInput), lowerBound(inputLowerBound), upperBound(inputUpperBound) 
+    Evaluator(const std::vector<double>& coefficientsInput, double inputLowerBound, double inputUpperBound, std::vector<double> inputValues) : 
+    inputNodes(inputValues), coefficients(coefficientsInput), lowerBound(inputLowerBound), upperBound(inputUpperBound) 
     {
     };
 
@@ -54,6 +54,8 @@ public:
     {
         double result = 0; 
 
+        std::cout << x << " " << reverseNode(x) << std::endl;
+
         for (size_t i = 0; i < coefficients.size(); ++i)
         {
             result += coefficients[i] * boost::math::legendre_p_prime(i, reverseNode(x));
@@ -71,6 +73,19 @@ public:
         {
             double res = boost::math::legendre_p(i, reverseNode(x));
             result += coefficients[i] * res;
+        }
+
+        return result;
+    }
+
+
+    double evaluateQuadrature(const std::vector<double>& nodes, const std::vector<double>& weights)
+    {
+        double result = 0; 
+
+        for (size_t i = 0; i < nodes.size(); ++i)
+        {
+            result += evaluateUnreversed(reverseNode(nodes[i])) * weights[i];
         }
 
         return result;

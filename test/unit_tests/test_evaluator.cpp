@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE( TestNodeInversion ) {
 
     std::vector<double> alphas = divider.getAlphaVector();
 
-    Evaluator evaluator(splitNodes[0], alphas, endpoints[0], endpoints[1]);
+    Evaluator evaluator(alphas, endpoints[0], endpoints[1], splitNodes[0]);
     evaluator.evaluateInput();
 
     std::vector<double> reversedNodes = evaluator.getReversedNodes();
@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE( TestNodeEvaluation ) {
 
     std::vector<double> alphas = divider.getAlphaVector();
 
-    Evaluator evaluator(splitNodes[0], alphas, endpoints[0], endpoints[1]);
+    Evaluator evaluator(alphas, endpoints[0], endpoints[1], splitNodes[0]);
     evaluator.evaluateInput();
 
     std::vector<double> reversedNodes = evaluator.getReversedNodes();
@@ -121,9 +121,9 @@ BOOST_AUTO_TEST_CASE( TestFirstDerivativeEvaluator ) {
     std::vector<double> coefficients{1, 2, 3};
     std::vector<double> inputNodes{1, 2, 3};
 
-    Evaluator evaluator(inputNodes, coefficients, 2, 3);
+    Evaluator evaluator(coefficients, 2, 3, inputNodes);
 
-    double result = evaluator.evaluateFirstDerivative(1); 
+    double result = evaluator.evaluateFirstDerivative(2); 
 
     std::cout << result << std::endl;
 

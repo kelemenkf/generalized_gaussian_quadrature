@@ -74,7 +74,7 @@ void declare_interpolator(py::module& m, const std::string& suffix) {
  
 void declare_evaluator(py::module& m) {
     py::class_<Evaluator>(m, "Evaluator")
-        .def(py::init<std::vector<double>, const std::vector<double>&, double, double>())
+        .def(py::init<const std::vector<double>&, double, double, std::vector<double>>())
         .def("get_evaluated_nodes", &Evaluator::getOutput)
         .def("evaluate_input", &Evaluator::evaluateInput)
     ;

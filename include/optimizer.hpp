@@ -246,7 +246,7 @@ protected:
                     int lowerBound = endpoints[interval]; 
                     int upperBound = endpoints[interval + 1]; 
                     std::vector<double> alphas = basisCoefficients[function][interval];
-                    Evaluator evaluator(splitNodes[interval], alphas, lowerBound, upperBound);
+                    Evaluator evaluator(alphas, lowerBound, upperBound, splitNodes[interval]);
                     double derivativeAtChebyshevNode = evaluator.evaluateFirstDerivative(((element->second)[i]).first);
                     double u = evaluator.evaluateUnreversed((element->second)[i].first);
                     Jacobian(function, nodeIndex) = derivativeAtChebyshevNode * (element->second)[i].second;  
@@ -263,7 +263,7 @@ protected:
         {
             std::cout << "System is underdetermined of size " << m << " by " << n << std::endl;
         }
-        else if (m = n)
+        else if (m == n)
         {
             std::cout << "System is " << m << " by " << n << std::endl;
         }
