@@ -76,6 +76,20 @@ vector<T> convertStdVectorToBoost(const std::vector<T>& input)
 
 
 template<typename T>
+std::vector<T> convertEigenVectorToStd(const VectorXd& input)
+{
+    std::vector<T> result(input.size());
+
+    for (size_t i = 0; i < input.size(); ++i)
+    {
+        result[i] = input[i];
+    }
+
+    return result;
+}
+
+
+template<typename T>
 VectorXd convertStdVectorToEigen(const std::vector<T>& input)
 {
     VectorXd result(input.size());

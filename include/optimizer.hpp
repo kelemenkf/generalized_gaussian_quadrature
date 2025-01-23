@@ -104,33 +104,20 @@ protected:
             //First take current nodes, remove the one on the current iteration then apply the calculated delta x_k. This is the frist step
             //and input for DGN. 
             VectorXd x_initial = stepDirections[sortedStepDirectionNorms[i].second];
+            VectorXd x_1 = firstStep(x_initial, i, x_initial.size());
             //DGN();
         }
     }
 
 
-    void removeNode(int node)
+    VectorXd firstStep(const VectorXd& x_initial, int i, int n)
     {
-
-    }
-
-
-    void formX()
-    {
-        int n = chebyshevNodes.size();
-        VectorXd x(2 * n);
-
-        for (size_t node = 0; node < chebyshevNodes.size(); ++node)
-        {
-            x[node] = chebyshevNodes[node];
-            x[node + n] = chebyshevWeights[node];
-        }
-
-        std::cout << "x for DGN formed at size " << x.size() << std::endl;
+        VectorXd x = formX();   
+        return removeNode(x, i, n) - removeNode(x_initial, i, n);
     }
 
     
-    void calculatePrecision()
+    double calculatePrecision()
     {
         //takes a quadrature as an input and cacluates precision
         //for the original input this should already be known?  
@@ -289,7 +276,49 @@ protected:
     }
 
 
-private: 
+private:   
+    VectorXd removeNode(VectorXd input, int node, int n)
+    {
+        std::cout << "Size of input vector before removal " << input.size() << std::endl;
+        std::vector<double> temp = convertEigenVectorToStd<double>(input);
+
+        std::vector<int> indicesToRemove = {node + n};
+        indicesToRemove.push_back(node);
+
+        for (size_t index: indicesToRemove)
+        {
+            if (index < temp.size())
+            {
+                temp.erase(temp.begin() + index);
+            }
+        }
+
+        VectorXd result = convertStdVectorToEigen(temp); 
+
+        std::cout << "Size of vector after removal " << result.size() << std::endl;
+
+        return result;
+    }
+
+ 
+    VectorXd formX()
+    {
+        int n = chebyshevNodes.size();
+        VectorXd x(2 * n);
+
+        for (size_t node = 0; node < chebyshevNodes.size(); ++node)
+        {
+            x[node] = chebyshevNodes[node];
+            x[node + n] = chebyshevWeights[node];
+        }
+
+        std::cout << "x for DGN formed at size " << x.size() << std::endl;
+        std::cout << x << std::endl;
+
+        return x;
+    }
+
+
     void assignChebyshevNodesToInterval()
     {
        for (int interval = 0; interval < splitNodes.size(); ++interval)

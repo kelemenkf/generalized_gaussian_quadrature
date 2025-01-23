@@ -91,7 +91,6 @@ public:
         evaluateBasisIntegrals();
         Optimizer optimizer(chebyshevNodes, chebyshevWeights, basisCoefficients, splitCompressedBasis, basisIntegrals, consolidatedEndpoints, 
         splitNodes);
-        Jacobian = optimizer.getJacobian();
     }
 
 

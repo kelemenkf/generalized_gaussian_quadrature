@@ -152,6 +152,8 @@ private:
         HouseholderQR<MatrixXd> qr(A);
 
         U = qr.householderQ();
+
+        std::cout << "Initial orthogonalization outputs matrix with size " << U.rows() << " " << U.cols() << std::endl;
         R = qr.matrixQR().triangularView<Eigen::Upper>();
     }
 
@@ -191,15 +193,18 @@ private:
 
     void discardFunctions()
     {
+        int numberOfDiscardedFunctions = 0;
         for (size_t i = 0; i < normalizingFactors.size(); ++i)
         {
             if (normalizingFactors[i] > quadraturePrecision)
             {
+                ++numberOfDiscardedFunctions; 
                 Eigen::VectorXd column = scaledU.col(i);
                 std::vector<double> vec(column.data(), column.data() + column.size());
                 scaledDiscardedU.push_back(vec);
             }
         }
+        std::cout << "Number of discarded functions " << numberOfDiscardedFunctions << std::endl;
     }
 
 
@@ -291,6 +296,9 @@ private:
     {
         chebyshevWeights.resize(selectedK.size());
         chebyshevNodes.resize(selectedK.size());
+
+        std::cout << "SelectedK size " << selectedK.size() << std::endl;
+
         for (size_t i = 0; i < selectedK.size(); ++i)
         {   
             chebyshevWeights[i] = z(i) * sqrt(weights[selectedK[i]]);

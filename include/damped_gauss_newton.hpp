@@ -38,20 +38,15 @@ private:
         unsigned int k = 0; 
         while (k < numberOfSteps)
         {
-            evaluateRAtNewNodes();
-            //modifyJacobian();
+            updateJacobianAndR();
             //iterate();
+            std::cout << "Damped Gauss Newton iteration number " << k + 1 << std::endl;
+            ++k;
         }
     }
 
 
-    void modifyJacobian()
-    {
-
-    }
-
-
-    void evaluateRAtNewNodes()
+    void updateJacobianAndR()
     {
         for (size_t u = 0; u < basisCoefficients.size(); ++u)
         {
@@ -64,9 +59,12 @@ private:
                     if (x[i] > endpoints[endpoint] && x[i] < endpoints[endpoint+1])
                     {
                         Evaluator evaluator(basisCoefficients[u][endpoint], endpoints[endpoint], endpoints[endpoint+1], {});
-                        double u = evaluator.evaluateUnreversed(x[i]); 
+                        double u_x = evaluator.evaluateUnreversed(x[i]); 
+                        double u_x_prime = evaluator.evaluateFirstDerivative(x[i]);
                         double w = x[i + n];
                         R_temp += u*w;
+                        Jacobian(u, i) = u_x_prime * w; 
+                        Jacobian(u, i + n) = u_x;
                     }
                 }
             }
@@ -77,13 +75,12 @@ private:
 
     void iterate()
     {
-        x = x - Jacobian.transpose() * (Jacobian * Jacobian.transpose() + MatrixXd::Identity(Jacobian.rows(), Jacobian.rows())) * R;
+        x = x - Jacobian.transpose() * (Jacobian * Jacobian.transpose() + lambda * MatrixXd::Identity(Jacobian.rows(), Jacobian.rows())) * R;
     }
 
 
     void checkWolfeConditons()
     {
-        //Does it need evaluation, if so 
     }
 };
 
