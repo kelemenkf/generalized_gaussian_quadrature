@@ -32,10 +32,13 @@ private:
     size_t numberOfParameters;
     size_t index; 
     std::vector<std::vector<double>> parameterCombinations;
+    bool cartesianProduct; 
 
 
 public:
-    FunctionHandler(InputFunction inputFunction, Parameter... parameters) : functionVariant(inputFunction) 
+    FunctionHandler(InputFunction inputFunction, bool cartesianProductInput, Parameter... parameters) 
+    : functionVariant(inputFunction), 
+    cartesianProduct(cartesianProductInput) 
     {
         index = functionVariant.index();
         (paramSpace.push_back(parameters),...);
@@ -43,7 +46,7 @@ public:
         buildParameterCombinations();
     }
 
-
+    
     static void incrementCombinationIndex()
     {
         ++combinationIndex;
@@ -64,43 +67,58 @@ public:
 
     void buildParameterCombinations()
     {
-        if (numberOfParameters == 0)
+        if (cartesianProduct)
         {
-            parameterCombinations = {};
-        }
-        else if (numberOfParameters == 1)
-        {
-            for (size_t i = 0; i < paramSpace[0].size(); ++i)
+            if (numberOfParameters == 0)
             {
-                std::vector<double> params = {paramSpace[0][i]};
-                parameterCombinations.push_back(params);
+                parameterCombinations = {};
             }
-        }
-        else if (numberOfParameters == 2)
-        {
-            for (size_t i = 0; i < paramSpace[0].size(); ++i)
+            else if (numberOfParameters == 1)
             {
-                for (size_t j = 0; j < paramSpace[1].size(); ++j)
+                for (size_t i = 0; i < paramSpace[0].size(); ++i)
                 {
-                    std::vector<double> params = {paramSpace[0][i], paramSpace[1][j]};
+                    std::vector<double> params = {paramSpace[0][i]};
                     parameterCombinations.push_back(params);
                 }
             }
-        }
-        else if (numberOfParameters == 3)
-        {
-            for (size_t i = 0; i < paramSpace[0].size(); ++i)
+            else if (numberOfParameters == 2)
             {
-                for (size_t j = 0; j < paramSpace[1].size(); ++j)
+                for (size_t i = 0; i < paramSpace[0].size(); ++i)
                 {
-                    for (size_t k = 0; k < paramSpace[2].size(); ++k)
+                    for (size_t j = 0; j < paramSpace[1].size(); ++j)
                     {
-                        std::vector<double> params = {paramSpace[0][i], paramSpace[1][j], paramSpace[2][k]};
+                        std::vector<double> params = {paramSpace[0][i], paramSpace[1][j]};
                         parameterCombinations.push_back(params);
                     }
                 }
             }
+            else if (numberOfParameters == 3)
+            {
+                for (size_t i = 0; i < paramSpace[0].size(); ++i)
+                {
+                    for (size_t j = 0; j < paramSpace[1].size(); ++j)
+                    {
+                        for (size_t k = 0; k < paramSpace[2].size(); ++k)
+                        {
+                            std::vector<double> params = {paramSpace[0][i], paramSpace[1][j], paramSpace[2][k]};
+                            parameterCombinations.push_back(params);
+                        }
+                    }
+                }
+            }
         }
+    }
+
+
+    void removeParams(const std::vector<std::vector<double>>& paramsToRemove)
+    {
+        parameterCombinations.erase(
+        std::remove_if(parameterCombinations.begin(), parameterCombinations.end(),
+            [&paramsToRemove](const std::vector<double>& param) {
+                return std::find(paramsToRemove.begin(), paramsToRemove.end(), param) != paramsToRemove.end();
+            }),
+            parameterCombinations.end()
+        );
     }
 
 

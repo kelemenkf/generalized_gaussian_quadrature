@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_SUITE( FunctionHandlerTestSuite )
 BOOST_AUTO_TEST_CASE( TestParamSpaceConstruction ) {
     std::vector<double> param1 = {2, 3, 5, 6, 7, 0};
 
-    FunctionHandler<std::vector<double>> handler(testFunction, param1);
+    FunctionHandler<std::vector<double>> handler(testFunction, true, param1);
 
     std::vector<std::vector<double>> paramSpace = handler.getParamSpace();
 
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE( TestParamSpaceConstruction ) {
 
 
 BOOST_AUTO_TEST_CASE( TestFunctionProcessing0Param ) {;
-    FunctionHandler<> handler(testFunction);
+    FunctionHandler<> handler(testFunction, true);
 
     double testValue;
     testValue = handler.callFunction(5);
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE( TestFunctionProcessing3Param ) {
     std::vector<double> param2 = {1, 25, 7, 3, 6, 2};
     std::vector<double> param3 = {1, 4, 6, 43, 56, 90};
 
-    FunctionHandler<std::vector<double>, std::vector<double>, std::vector<double>> handler(testFunction3Params, param1, param2, param3);
+    FunctionHandler<std::vector<double>, std::vector<double>, std::vector<double>> handler(testFunction3Params, true, param1, param2, param3);
 
     double testValue;
     testValue = handler.callFunction(5);
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE( TestFunctionProcessingInvalidParam ) {
     std::vector<double> param1 = {2, 3, 5, 6, 7, 0};
     std::vector<double> param2 = {1, 25, 7, 3, 6, 2};
 
-    FunctionHandler<std::vector<double>, std::vector<double>> handler(testFunction3Params, param1, param2);
+    FunctionHandler<std::vector<double>, std::vector<double>> handler(testFunction3Params, true, param1, param2);
 
     BOOST_CHECK_THROW(handler.callFunction(5), std::runtime_error);
 }
@@ -112,10 +112,10 @@ BOOST_AUTO_TEST_CASE( TestParameterCombinationBuilder ) {
         {3, 25, 4}
     };
 
-    FunctionHandler<> handler0(testFunction);
-    FunctionHandler<std::vector<double>> handler1(testFunction1Param, param1);
-    FunctionHandler<std::vector<double>, std::vector<double>> handler2(testFunction2Param, param1, param2);
-    FunctionHandler<std::vector<double>, std::vector<double>, std::vector<double>> handler3(testFunction2Param, param1, param2, param3);
+    FunctionHandler<> handler0(testFunction, true);
+    FunctionHandler<std::vector<double>> handler1(testFunction1Param, true, param1);
+    FunctionHandler<std::vector<double>, std::vector<double>> handler2(testFunction2Param, true, param1, param2);
+    FunctionHandler<std::vector<double>, std::vector<double>, std::vector<double>> handler3(testFunction2Param, true, param1, param2, param3);
    
     std::vector<std::vector<double>> combo1 = handler1.getParameterCombinations();
     std::vector<std::vector<double>> combo2 = handler2.getParameterCombinations();
@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE( TestParameterCombinationBuilder ) {
 
 
 BOOST_AUTO_TEST_CASE( TestCombinationIndexIncrementer ) {
-    FunctionHandler<> handler(testFunction);
+    FunctionHandler<> handler(testFunction, true);
 
     handler.incrementCombinationIndex();
 
@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE( TestCombinationIndexIncrementer ) {
 
 
 BOOST_AUTO_TEST_CASE( TestResetCombinationIndex ) {
-    FunctionHandler<> handler(testFunction);
+    FunctionHandler<> handler(testFunction, true);
 
     handler.incrementCombinationIndex();
     handler.resetCombinationIndex();

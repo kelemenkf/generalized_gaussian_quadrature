@@ -165,6 +165,8 @@ private:
         {
             scaledU.row(row) /= sqrt(weights[row]);
         }
+
+        std::cout << "Scaled U shape " << scaledU.rows() << " " << scaledU.cols() << std::endl;
     }
 
 
@@ -194,6 +196,13 @@ private:
     void discardFunctions()
     {
         int numberOfDiscardedFunctions = 0;
+
+        std::cout << "Normalizing factors" << std::endl;
+
+        displayVector(normalizingFactors);
+
+        std::cout << "Precision " << quadraturePrecision << std::endl;
+
         for (size_t i = 0; i < normalizingFactors.size(); ++i)
         {
             if (normalizingFactors[i] > quadraturePrecision)
@@ -204,7 +213,7 @@ private:
                 scaledDiscardedU.push_back(vec);
             }
         }
-        std::cout << "Number of discarded functions " << numberOfDiscardedFunctions << std::endl;
+        std::cout << "Number of functions kept " << numberOfDiscardedFunctions << std::endl;
     }
 
 

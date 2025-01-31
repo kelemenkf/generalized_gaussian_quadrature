@@ -62,6 +62,10 @@ struct OptimizerFixture : public Optimizer
     }
 };
 
+std::vector<double> param1 = {5, 4, 5, 2, 1};
+std::vector<double> param2 = {6, 3, 9, 8, 7}; 
+FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, true, param1, param2);
+
 
 BOOST_AUTO_TEST_SUITE( OptimizerTestSuite )
 
@@ -71,7 +75,6 @@ BOOST_AUTO_TEST_CASE( TestOptimizerConstructor ) {
     int k = 30;
     std::vector<double> param1 = {5, 4, 5, 2, 1};
     std::vector<double> param2 = {6, 3, 9, 8, 7};
-    FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
     
     QuadratureRule quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
     quadrature.calculateQuadratureNodes();
@@ -96,9 +99,8 @@ BOOST_AUTO_TEST_CASE( TestOptimizerIntervalChyebyshevNodeMap ) {
     int k = 30;
     std::vector<double> param1 = {5, 4};
     std::vector<double> param2 = {6, 3};
-    FunctionHandler<std::vector<double>, std::vector<double>> handlerTest3Param(testFunction2ParamPC, param1, param2);
     
-    QuadratureRule quadrature(lowerBound, upperBound, handlerTest3Param);
+    QuadratureRule quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
     quadrature.calculateQuadratureNodes();
     quadrature.compressFunctionSpace();
     quadrature.obtainBasisCoefficients();
@@ -134,9 +136,8 @@ BOOST_AUTO_TEST_CASE( TestFormJacobian ) {
     int k = 30;
     std::vector<double> param1 = {5, 4};
     std::vector<double> param2 = {6, 3};
-    FunctionHandler<std::vector<double>, std::vector<double>> handlerTest3Param(testFunction2ParamPC, param1, param2);
     
-    QuadratureRule quadrature(lowerBound, upperBound, handlerTest3Param);
+    QuadratureRule quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
     quadrature.calculateQuadratureNodes();
     quadrature.compressFunctionSpace();
     quadrature.obtainBasisCoefficients();
@@ -165,9 +166,8 @@ BOOST_AUTO_TEST_CASE( TestCalculateStepDirections ) {
     int k = 30;
     std::vector<double> param1 = {5, 4};
     std::vector<double> param2 = {6, 3};
-    FunctionHandler<std::vector<double>, std::vector<double>> handlerTest3Param(testFunction2ParamPC, param1, param2);
     
-    QuadratureRule quadrature(lowerBound, upperBound, handlerTest3Param);
+    QuadratureRule quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
     quadrature.calculateQuadratureNodes();
     quadrature.compressFunctionSpace();
     quadrature.obtainBasisCoefficients();
@@ -201,9 +201,8 @@ BOOST_AUTO_TEST_CASE( TestStepDirectionNormReordering ) {
     int k = 30;
     std::vector<double> param1 = {5, 4};
     std::vector<double> param2 = {6, 3};
-    FunctionHandler<std::vector<double>, std::vector<double>> handlerTest3Param(testFunction2ParamPC, param1, param2);
     
-    QuadratureRule quadrature(lowerBound, upperBound, handlerTest3Param);
+    QuadratureRule quadrature(lowerBound, upperBound, handlerPiecewiseSmooth);
     quadrature.calculateQuadratureNodes();
     quadrature.compressFunctionSpace();
     quadrature.obtainBasisCoefficients();

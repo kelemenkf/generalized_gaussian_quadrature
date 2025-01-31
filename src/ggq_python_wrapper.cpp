@@ -21,8 +21,9 @@ void declare_function_handler(py::module& m, const std::string& suffix) {
     std::string class_name = "FunctionHandler" + suffix;
 
     py::class_<Class>(m, class_name.c_str())
-        .def(py::init<InputFunction, Parameters...>())
+        .def(py::init<InputFunction, bool, Parameters...>())
         .def("param_space", &Class::getParameterCombinations)
+        .def("remove_params", &Class::removeParams)
         ;
 }
 

@@ -21,7 +21,7 @@ double testFunction(const double& x)
 }
 
 
-FunctionHandler<> handler(testFunction);
+FunctionHandler<> handler(testFunction, true);
 
 
 template<typename T>
@@ -187,7 +187,7 @@ BOOST_AUTO_TEST_CASE( TestLagrangeVectorValuesWithPassedObject ) {
 
     auto method = std::bind(&TestClass::testMethod, testObjectPtr, std::placeholders::_1);
     std::function<double(const double&)> methodPtr = method;
-    FunctionHandler<> handler(methodPtr);
+    FunctionHandler<> handler(methodPtr, true);
 
     InterpolatorFixture interpolator(k, lowerBound, upperBound, handler);
     interpolator.processInterval();

@@ -46,9 +46,9 @@ double highlyOscillatoryFunction(const double& x)
 }
 
 
-FunctionHandler<> handlerPolynomial(testFunction);
-FunctionHandler<> handlerPiecewiseSmooth(piecewiseSmoothFunction);
-FunctionHandler<> handlerHighlyOscillatory(highlyOscillatoryFunction);
+FunctionHandler<> handlerPolynomial(testFunction, true);
+FunctionHandler<> handlerPiecewiseSmooth(piecewiseSmoothFunction, true);
+FunctionHandler<> handlerHighlyOscillatory(highlyOscillatoryFunction, true);
 
 
 template<typename T>

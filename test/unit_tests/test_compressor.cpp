@@ -61,7 +61,7 @@ double lowerBound = 0;
 double upperBound = 2; 
 std::vector<double> param1 = {5, 4};
 std::vector<double> param2 = {6, 3};
-FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, param1, param2);
+FunctionHandler<std::vector<double>, std::vector<double>> handlerPiecewiseSmooth(testFunction2ParamPC, true, param1, param2);
 
 QuadratureRule<FunctionHandler<std::vector<double>, std::vector<double>>> quadratureObject(lowerBound, upperBound, handlerPiecewiseSmooth);
 QuadratureRule<FunctionHandler<std::vector<double>, std::vector<double>>>* quadrature = &quadratureObject;
