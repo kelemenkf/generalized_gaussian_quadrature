@@ -40,9 +40,21 @@ public:
     : functionVariant(inputFunction), 
     cartesianProduct(cartesianProductInput) 
     {
+        if (cartesianProduct)
+        {
+            index = functionVariant.index();
+            (paramSpace.push_back(parameters),...);
+            numberOfParameters = sizeof...(parameters);
+            buildParameterCombinations();
+        }
+    }
+
+    
+    FunctionHandler(InputFunction inputFunction, bool cartesianProductInput, std::vector<std::vector<double>> paramSpaceInput)
+    : paramSpace(paramSpaceInput), cartesianProduct(cartesianProductInput), functionVariant(inputFunction)
+    {
         index = functionVariant.index();
-        (paramSpace.push_back(parameters),...);
-        numberOfParameters = sizeof...(parameters);
+        std::cout << "Function index " << index << std::endl;
         buildParameterCombinations();
     }
 
@@ -106,6 +118,13 @@ public:
                     }
                 }
             }
+        }
+        else
+        {
+            parameterCombinations = paramSpace;
+            numberOfParameters = parameterCombinations[0].size();
+            std::cout << "index " << index << std::endl;
+            std::cout << "number of params " << numberOfParameters << std::endl; 
         }
     }
 

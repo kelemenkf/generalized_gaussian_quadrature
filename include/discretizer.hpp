@@ -66,6 +66,7 @@ public:
             //Smart update so only previously unused intervals use measures
             measureVector.push_back(measure);
         }
+        displayVector(measureVector);
     }
 
 

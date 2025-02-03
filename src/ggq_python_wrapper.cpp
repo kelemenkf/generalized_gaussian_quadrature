@@ -22,6 +22,7 @@ void declare_function_handler(py::module& m, const std::string& suffix) {
 
     py::class_<Class>(m, class_name.c_str())
         .def(py::init<InputFunction, bool, Parameters...>())
+        .def(py::init<InputFunction, bool, std::vector<std::vector<double>>>())
         .def("param_space", &Class::getParameterCombinations)
         .def("remove_params", &Class::removeParams)
         ;
