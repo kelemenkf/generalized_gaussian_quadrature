@@ -56,17 +56,16 @@ public:
         measureVector.reserve(endpoints.size() - 1);
         for (size_t i = 0; i < endpoints.size() - 1; ++i)
         {
-            Interpolator divider(k, endpoints[i], endpoints[i+1], handler);
+            Interpolator interpolator(k, endpoints[i], endpoints[i+1], handler);
 
-            divider.processInterval();
+            interpolator.processInterval();
 
             double measure;
-            measure = divider.getMeasure();
+            measure = interpolator.getMeasure();
 
             //Smart update so only previously unused intervals use measures
             measureVector.push_back(measure);
         }
-        displayVector(measureVector);
     }
 
 
@@ -92,7 +91,9 @@ private:
             }
         }
         if (!stop) 
+        {
             determineNewEndpoints(impreciseSubintervalIndeces);
+        }
 
         return stop;
     }

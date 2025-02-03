@@ -50,7 +50,7 @@ public:
         doubleOrthogonalization();
         solveSystem();
         formNewQuadrature();
-        std::cout << "Compressor outputs a function space with " << scaledU.cols() << " functions." << std::endl;
+        std::cout << "Compressor outputs a function space with " << scaledU.rows() << " functions." << std::endl;
         std::cout << "Compressor outputs a quadrature with " << chebyshevNodes.size() << " nodes." << std::endl; 
     }
 

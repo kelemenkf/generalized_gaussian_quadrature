@@ -176,6 +176,8 @@ private:
 
     void calculateSquaredAlphas()
     {
+        measure = 0;
+
         for (size_t i = k; i <= 2*k - 1; ++i)
         {
             measure += (alphaVector[i] * alphaVector[i]);
