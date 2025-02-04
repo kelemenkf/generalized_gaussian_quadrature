@@ -20,13 +20,17 @@ private:
 
 public:
     Discretizer(int kInput, double precisionInput, double lowerBoundInput, double upperBoundInput, const T& handlerInput) 
-    : k(validateK(kInput)), precision(validatePrecision(precisionInput)), lowerBound(lowerBoundInput), upperBound(upperBoundInput), handler(handlerInput)
+    : k(validateK(kInput)), precision(validatePrecision(precisionInput)), lowerBound(lowerBoundInput), upperBound(upperBoundInput), handler(handlerInput)  
+    {};
+
+    ~Discretizer() {};
+
+
+    void discretize()
     {
         endpoints = {this->lowerBound, this->upperBound};
         determineFinalEndpoints();
-    };
-
-    ~Discretizer() {};
+    }
 
 
     double getLowerBound() const
@@ -37,6 +41,44 @@ public:
     double getUpperBound() const 
     {
         return upperBound;
+    }
+
+
+    std::vector<double> evaluateAlphaOfExistingEndpointSet(const std::vector<double>& existingEndpoints)
+    {
+        std::vector<double> measures;
+
+        for (size_t i = 0; i < existingEndpoints.size() - 1; ++i)
+        {
+            Interpolator interpolator(k, existingEndpoints[i], existingEndpoints[i+1], handler);
+
+            interpolator.processInterval();
+
+            double measure;
+            measure = interpolator.getMeasure();
+
+            //Smart update so only previously unused intervals use measures
+            measures.push_back(measure);
+        } 
+
+        return measures;
+    }
+
+
+    bool evaluateStoppingConditionOfExistingEndpoints(const std::vector<double>& existingEndpoints)
+    {
+        std::vector<double> measures = evaluateAlphaOfExistingEndpointSet(existingEndpoints);
+        bool stop = true;
+
+        for (size_t i = 0; i < measures.size(); ++i)
+        {
+            if (measures[i] >= precision)
+            {
+                stop = false;
+            }
+        }
+
+        return stop;
     }
 
 
@@ -63,7 +105,6 @@ public:
             double measure;
             measure = interpolator.getMeasure();
 
-            //Smart update so only previously unused intervals use measures
             measureVector.push_back(measure);
         }
     }

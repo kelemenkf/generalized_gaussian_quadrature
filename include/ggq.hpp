@@ -11,6 +11,7 @@
 #include "compressor.hpp"
 #include "optimizer.hpp"
 #include "evaluator.hpp"
+//#include "legendre_precompute.hpp"
 using namespace std::numbers;
 
 
@@ -24,6 +25,7 @@ protected:
     double discretizerPrecision;
     double quadraturePrecision;
     T handler;
+    matrix<double> invertedLegendreMatrix;
     std::vector<double> consolidatedEndpoints;
     //Legendre nodes and weights - rename
     std::vector<double> nodes;
@@ -328,6 +330,11 @@ protected:
     }
 
 
+    //After a set of nodes are already stored, those need to be interpolated.
+    //Where is the functionality of evaluating nodes and getting alphas? The only difference is that 
+    //nodes are not dynamically determined but are taken as an input to Discretizer. 
+    //What's the alogrithm? Input the endpoints check if they are already precise enough. Only if not start from the beginning.
+
     void calculateConsolidatedEndpoints()
     {
         size_t sizeOfParameterCombinations = handler.getParameterCombinationsSize();
@@ -335,10 +342,22 @@ protected:
         for (size_t i = 0; i < sizeOfParameterCombinations; ++i)
         {
             Discretizer<T> discretizer(k, discretizerPrecision, lowerBound, upperBound, handler);
-            std::vector<double> endpoints = discretizer.getFinalEndpoints();
-            consolidatedEndpoints.insert(consolidatedEndpoints.end(), endpoints.begin(), endpoints.end());
-            std::cout << "Discretize function number " << i + 1 << std::endl;
-            T::incrementCombinationIndex();
+            if (consolidatedEndpoints.size() != 0 && discretizer.evaluateStoppingConditionOfExistingEndpoints(consolidatedEndpoints))
+            {
+                std::cout << "Discretize function number " << i + 1 << std::endl;
+                T::incrementCombinationIndex();
+                continue;
+            }
+            else 
+            {
+                discretizer.discretize();
+                std::vector<double> endpoints = discretizer.getFinalEndpoints();
+                consolidatedEndpoints.insert(consolidatedEndpoints.end(), endpoints.begin(), endpoints.end());
+                sortConsolidatedEndpoints();
+                removeDuplicateEndpoits();
+                std::cout << "Discretize function number " << i + 1 << std::endl;
+                T::incrementCombinationIndex();
+            }
         }
 
         T::resetCombinationIndex();
